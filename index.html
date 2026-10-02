@@ -15485,7 +15485,20 @@ const ALL_PAGES = [
     "widget-settings-page", "proxy-page", "social-networks-page", "qr-page"
 ];
 
-function switchPage(pageId) {
+function switchPage(pageId, addHistory = true) {
+    if (!ALL_PAGES.includes(pageId) || !document.getElementById(pageId)) return;
+    const currentPage = ALL_PAGES.find(id => {
+        const el = document.getElementById(id);
+        return el && getComputedStyle(el).display !== "none";
+    }) || "home-page";
+    if (!history.state || history.state.appNavigation !== true) {
+        history.replaceState({ appNavigation: true, appPage: currentPage, appDepth: 0 }, "");
+    }
+    if (addHistory && history.state.appPage !== pageId) {
+        history.pushState({ appNavigation: true, appPage: pageId,
+            appDepth: (history.state.appDepth || 0) + 1 }, "");
+    }
+
     ALL_PAGES.forEach(id => {
         const el = document.getElementById(id);
         if (el) {
@@ -15543,15 +15556,12 @@ function showDepositPage() {
 }
 
 function hideDepositPage() {
-    let page = document.getElementById('deposit-page');
-    if (page) {
-        page.classList.remove('active');
-        setTimeout(() => page.style.display = 'none', 350);
-    }
+    appBack();
 }
 
 function showWithdrawPage() {
     loadWithdrawPage();
+    switchPage('withdraw-page');
     let page = document.getElementById('withdraw-page');
     if (page) {
         page.style.display = 'block';
@@ -15560,11 +15570,7 @@ function showWithdrawPage() {
 }
 
 function hideWithdrawPage() {
-    let page = document.getElementById('withdraw-page');
-    if (page) {
-        page.classList.remove('active');
-        setTimeout(() => page.style.display = 'none', 350);
-    }
+    appBack();
 }
 
 function loadDepositPage() {
@@ -15727,45 +15733,27 @@ async function shareInfo() {
 /* =========================================
    5. GLOBAL APP BACK & HISTORY SYSTEM
    ========================================= */
-const APP_BACK_PAGES = ["login-page", "register-page", "profile-page", "settings-page", "deposit-page", "withdraw-page"];
-let appPageHistory = [];
-
 window.openAppPage = function(pageId, addHistory = true) {
-    const page = document.getElementById(pageId);
-    if (!page) return;
-
-    let currentPage = null;
-    APP_BACK_PAGES.forEach(function(id) {
-        const el = document.getElementById(id);
-        if (el && getComputedStyle(el).display !== "none") {
-            currentPage = id;
-        }
-    });
-
-    if (addHistory && currentPage && currentPage !== pageId) {
-        appPageHistory.push(currentPage);
-    }
-
-    switchPage(pageId);
+    switchPage(pageId, addHistory);
 };
 
 window.appBack = function() {
-    if (appPageHistory.length > 0) {
-        const previousPage = appPageHistory.pop();
-        window.openAppPage(previousPage, false);
-        return;
-    }
-
-    if (typeof showHome === "function") {
-        showHome();
-        return;
+    if (history.state && history.state.appNavigation && history.state.appDepth > 0) {
+        history.back();
+    } else if (history.state && history.state.appPage !== "home-page") {
+        history.replaceState({ appNavigation: true, appPage: "home-page", appDepth: 0 }, "");
+        switchPage("home-page", false);
     }
 };
 
-window.addEventListener("popstate", function() { appBack(); });
+window.addEventListener("popstate", function(event) {
+    if (event.state && event.state.appNavigation && ALL_PAGES.includes(event.state.appPage)) {
+        switchPage(event.state.appPage, false);
+    }
+});
 
-window.pushAppHistory = function(pageId, title = "") {
-    history.pushState({ appPage: pageId }, title, "#" + pageId);
+window.pushAppHistory = function(pageId) {
+    switchPage(pageId);
 };
 
 

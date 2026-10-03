@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#f7f8fc">
+<title id="pageTitle">Online supper shop</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<style>
+:root{--ink:#152238;--muted:#64748b;--line:#e5eaf1;--rose:#e11d48;--amber:#f59e0b;--green:#059669;--theme-primary:#be123c;--theme-accent:#f59e0b}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{font-family:'Hind Siliguri',sans-serif;background:#f6f8fc;color:var(--ink)}.pulse-btn{animation:pulse 2.4s infinite}@keyframes pulse{0%{box-shadow:0 0 0 0 #e11d4838}70%{box-shadow:0 0 0 13px #e11d4800}100%{box-shadow:0 0 0 0 #e11d4800}}
+.card{background:#fff;border:1px solid var(--line);border-radius:24px;box-shadow:0 12px 34px #0f172a0b}.soft{background:#f8fafc;border:1px solid var(--line)}input,select{outline:none}input:focus,select:focus{border-color:#e11d48!important;box-shadow:0 0 0 4px #e11d481c!important}select option{background:#fff;color:#152238}
+/* Readable page sizing and slideshow polish */
+body{font-size:20px;line-height:1.65}
+.text-xs{font-size:17px!important;line-height:1.6!important}
+.text-sm{font-size:19px!important;line-height:1.6!important}
+.text-base{font-size:21px!important;line-height:1.6!important}
+.text-lg{font-size:23px!important;line-height:1.45!important}
+.text-xl{font-size:25px!important;line-height:1.35!important}
+.text-2xl{font-size:clamp(27px,5vw,34px)!important;line-height:1.25!important}
+.text-3xl{font-size:clamp(32px,6vw,42px)!important;line-height:1.2!important}
+.text-4xl{font-size:clamp(38px,8vw,54px)!important}
+#mainImage{transition:opacity .35s ease,transform .35s ease}
+#mainImage:hover{transform:scale(1.025)}
+#sliderDots button{width:10px;height:10px;border-radius:50%;border:0;background:#cbd5e1;padding:0}
+#sliderDots button.active{background:#111827;transform:scale(1.15)}
+#customerReviewsContainer .proof-photo{width:100%;max-height:330px;object-fit:contain;border-radius:14px;background:#f1f5f9;border:1px solid #e2e8f0}
+header{background:linear-gradient(110deg,var(--theme-primary),var(--theme-accent))!important}
+.pulse-btn,#btnSubmitOrder,a[href="#orderSection"]{background-image:linear-gradient(110deg,var(--theme-primary),var(--theme-accent))!important}
+#offerPriceDisplay,#billTotal,#pkgSinglePrice{color:var(--theme-primary)!important}
+#orderSection>div{border-color:color-mix(in srgb,var(--theme-primary) 52%,white)!important}
+@media(max-width:640px){body{font-size:19px}.text-xs{font-size:16px!important;line-height:1.55!important}.text-sm{font-size:18px!important;line-height:1.55!important}.text-base{font-size:20px!important}#prevImage,#nextImage{width:38px;height:38px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body class="pb-24 md:pb-0 text-slate-900">
+<header class="bg-gradient-to-r from-rose-800 via-rose-600 to-amber-500 text-white shadow-lg">
+  <div class="max-w-6xl mx-auto px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-2">
+    <div class="flex items-center gap-3">
+      <span class="w-10 h-10 rounded-2xl bg-white/15 border border-white/25 grid place-items-center text-xl"><i class="fa-solid fa-bag-shopping"></i></span>
+      <div><div class="font-black text-lg sm:text-xl">Online supper shop</div><div class="text-xs text-white/85">বিশ্বস্ত গ্যাজেট · ক্যাশ অন ডেলিভারি</div></div>
+    </div>
+    <div class="flex items-center justify-center gap-2 rounded-full bg-black/15 px-4 py-2">
+      <span class="relative flex h-3 w-3"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-70"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-white"></span></span>
+      <span id="topNoticeText" class="font-extrabold text-sm sm:text-base text-center">🔥 আজকের মেগা অফার: অরিজিনাল গ্যাজেটে বিশেষ ছাড় চলছে!</span>
+    </div>
+  </div>
+</header>
+<div class="bg-white border-b border-slate-200">
+  <div class="max-w-xl mx-auto px-4 py-2.5 flex items-center justify-center gap-2 text-xs sm:text-sm font-bold text-slate-600">
+    <i class="fa-regular fa-clock text-rose-600"></i><span>অফার শেষ হতে বাকি:</span>
+    <div class="font-mono font-black text-rose-700 flex gap-1"><span id="timerHours" class="bg-rose-50 border border-rose-100 rounded-md px-2 py-0.5">০৫</span>:<span id="timerMinutes" class="bg-rose-50 border border-rose-100 rounded-md px-2 py-0.5">৪৫</span>:<span id="timerSeconds" class="bg-rose-50 border border-rose-100 rounded-md px-2 py-0.5">২০</span></div>
+  </div>
+</div>
+<section class="max-w-5xl mx-auto px-4 pt-8 pb-2 text-center">
+  <div class="inline-flex bg-white border border-slate-200 rounded-2xl px-6 py-2.5 shadow-sm mb-4"><h2 class="text-2xl sm:text-3xl font-black bg-gradient-to-r from-amber-500 to-rose-600 bg-clip-text text-transparent uppercase tracking-wide">Online supper shop</h2></div>
+  <h1 class="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 leading-tight mb-3"><span id="heroHeadline">প্রিমিয়াম কোয়ালিটি ও দ্রুত ডেলিভারিতে</span><br class="hidden sm:inline"> <span id="prodNameDisplay" class="text-rose-600 underline decoration-amber-400 decoration-wavy decoration-2">F11-2 Dual Wireless Mic</span></h1>
+  <p id="prodSubModelDisplay" class="text-base sm:text-xl font-medium text-slate-600 max-w-3xl mx-auto leading-relaxed">কোনো তারের ঝামেলা নেই! মোবাইল ও ক্যামেরায় সরাসরি লাইভ, ভিডিও ব্লগ, ওয়াজ ও অনলাইন ক্লাসের নিখুঁত রেকর্ডিং।</p>
+  <div class="mt-3 flex justify-center items-center gap-1.5 text-amber-500 text-sm font-bold"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i><span class="text-slate-800 ml-1">৪.৯/৫ (৮৫০+ সন্তুষ্ট কাস্টমার)</span></div>
+</section>
+<main class="max-w-6xl mx-auto px-4 py-6">
+  <section class="grid grid-cols-1 lg:grid-cols-2 gap-5 items-stretch">
+    <div class="card p-3 sm:p-4">
+      <div class="relative h-72 sm:h-[430px] bg-slate-50 rounded-2xl overflow-hidden border border-slate-200 flex items-center justify-center">
+        <img id="mainImage" src="" alt="পণ্যের ছবি" class="w-full h-full object-contain p-3 transition-opacity duration-300" onerror="handleImageError(this)">
+        <button id="prevImage" type="button" aria-label="আগের ছবি" class="absolute left-3 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/90 text-slate-800 shadow-lg border border-slate-200 grid place-items-center"><i class="fa-solid fa-chevron-left"></i></button>
+        <button id="nextImage" type="button" aria-label="পরের ছবি" class="absolute right-3 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/90 text-slate-800 shadow-lg border border-slate-200 grid place-items-center"><i class="fa-solid fa-chevron-right"></i></button>
+        <div id="sliderDots" class="absolute bottom-3 left-0 right-0 flex justify-center gap-2"></div>
+      </div>
+      <div id="thumbGallery" class="mt-3 flex justify-center gap-2 overflow-x-auto pb-1"></div>
+    </div>
+    <div class="card p-5 sm:p-7 flex flex-col justify-center gap-4 border-rose-100 bg-gradient-to-br from-white to-rose-50/70">
+      <div class="flex justify-between items-center gap-3 border-b border-slate-200 pb-4">
+        <div><span id="regPriceDisplay" class="block text-slate-500 line-through font-bold">পূর্বের মূল্য: ১২০০ টাকা</span><span class="inline-flex mt-2 bg-amber-50 border border-amber-200 text-amber-800 rounded-full px-3 py-1 text-xs font-extrabold">মেগা ডিসকাউন্ট</span></div>
+        <div class="text-right"><span class="block text-xs text-slate-500 font-bold">আজকের অফার মূল্য</span><div id="offerPriceDisplay" class="text-4xl sm:text-5xl font-black text-rose-600">৳৬০০</div></div>
+      </div>
+      <div class="soft rounded-2xl p-4 space-y-2 text-sm sm:text-base font-bold">
+        <div class="flex justify-between gap-2"><span><i class="fa-solid fa-truck-fast text-amber-600 mr-2"></i>ঢাকা সিটির ভেতরে চার্জ</span><span id="dhakaDeliveryTag">৳৭০</span></div>
+        <div class="flex justify-between gap-2"><span><i class="fa-solid fa-map-location-dot text-amber-600 mr-2"></i>ঢাকার বাইরে সারা বাংলাদেশ</span><span id="outDeliveryTag">৳১৩০</span></div>
+        <p class="text-xs text-emerald-700 border-t border-slate-200 pt-2 mb-0">✅ কোনো অগ্রিম টাকা লাগবে না। পার্সেল হাতে পেয়ে দেখে মূল্য পরিশোধ করবেন।</p>
+      </div>
+      <a href="#orderSection" class="pulse-btn block text-center bg-gradient-to-r from-rose-700 via-rose-600 to-amber-500 hover:brightness-105 text-white text-xl sm:text-2xl font-black py-3.5 px-4 rounded-2xl shadow-lg transition"><i class="fa-solid fa-cart-shopping mr-1"></i> সরাসরি অর্ডার করুন</a>
+      <div class="flex flex-wrap gap-2 text-xs font-bold text-slate-600"><span class="bg-white border border-slate-200 rounded-full px-3 py-1.5"><i class="fa-solid fa-shield-halved text-emerald-600 mr-1"></i>ক্যাশ অন ডেলিভারি</span><span class="bg-white border border-slate-200 rounded-full px-3 py-1.5"><i class="fa-solid fa-box-open text-amber-600 mr-1"></i>পার্সেল চেক</span><span class="bg-white border border-slate-200 rounded-full px-3 py-1.5"><i class="fa-solid fa-rotate-left text-rose-600 mr-1"></i>৩ দিনের রিপ্লেসমেন্ট</span></div>
+    </div>
+  </section>
+</main>
+<section class="max-w-5xl mx-auto px-4 py-2">
+  <div class="card p-5"><h3 class="text-lg sm:text-xl font-black text-center mb-4">📦 বক্সের সাথে যা যা পাবেন</h3><div id="featuresListContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 text-sm font-bold text-slate-700"></div></div>
+</section>
+<section class="max-w-5xl mx-auto px-4 py-5">
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+    <article class="card p-5 text-center"><i class="fa-solid fa-shield-heart text-3xl text-emerald-600"></i><h3 class="font-extrabold mt-2">১০০% অরিজিনাল পণ্য</h3><p class="text-xs text-slate-500 mb-0">সেরা গ্রেডের প্রিমিয়াম গ্যাজেট সরবরাহ করি।</p></article>
+    <article class="card p-5 text-center"><i class="fa-solid fa-box-open text-3xl text-amber-500"></i><h3 class="font-extrabold mt-2">দেখে নেওয়ার সুবিধা</h3><p class="text-xs text-slate-500 mb-0">ডেলিভারি ম্যানের সামনে পার্সেল খুলে দেখে নিন।</p></article>
+    <article class="card p-5 text-center"><i class="fa-solid fa-rotate-left text-3xl text-rose-600"></i><h3 class="font-extrabold mt-2">৩ দিনের রিপ্লেসমেন্ট</h3><p class="text-xs text-slate-500 mb-0">সমস্যা হলে ৩ দিনের মধ্যে রিপ্লেসমেন্ট সুবিধা।</p></article>
+  </div>
+</section>
+<section id="orderSection" class="max-w-4xl mx-auto px-4 py-7 scroll-mt-5">
+  <div class="card p-5 sm:p-8 border-rose-100">
+    <div class="text-center border-b border-slate-200 pb-4 mb-5"><span class="inline-flex bg-rose-600 text-white px-3 py-1 rounded-full text-xs font-extrabold">ক্যাশ অন ডেলিভারি</span><h2 class="text-2xl sm:text-4xl font-black mt-2">অর্ডার কনফার্ম করতে তথ্য দিন</h2><p class="text-sm text-slate-500 mb-0">সঠিক জেলা ও থানা নির্বাচন করুন। কোনো অগ্রিম পেমেন্ট লাগবে না।</p></div>
+    <form id="orderForm" class="space-y-4">
+      <div><label class="block font-extrabold mb-2">১. প্যাকেজ নির্বাচন করুন</label><div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <label class="package-option cursor-pointer bg-white border-2 border-rose-500 p-3.5 rounded-2xl flex items-center justify-between gap-2"><span class="flex items-center gap-2"><input type="radio" name="orderPackage" value="1" checked><span id="pkgSingleName" class="font-black">1 সেট অফার প্যাক</span></span><span id="pkgSinglePrice" class="text-lg font-black text-rose-600">৳৬০০</span></label>
+        <label class="package-option cursor-pointer bg-white border-2 border-slate-200 p-3.5 rounded-2xl flex items-center justify-between gap-2"><span class="flex items-center gap-2"><input type="radio" name="orderPackage" value="2"><span><b>২ সেট কম্বো প্যাক</b><small class="block text-xs text-amber-700">ফ্রি ডেলিভারি অফার!</small></span></span><span id="pkgComboPrice" class="text-lg font-black text-amber-700">৳১১৫০</span></label>
+      </div></div>
+      <div><label for="custName" class="block text-sm font-bold text-slate-700 mb-1">আপনার পূর্ণ নাম *</label><input id="custName" type="text" required autocomplete="name" placeholder="মো: রাকিবুল ইসলাম" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-3"></div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div><label for="custPhone" class="block text-sm font-bold text-slate-700 mb-1">মোবাইল নম্বর (১১ ডিজিট) *</label><input id="custPhone" type="tel" inputmode="numeric" required maxlength="11" autocomplete="tel" placeholder="01XXXXXXXXX" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-3"><span id="phoneError" class="hidden text-xs text-rose-600 font-bold">সঠিক ১১ ডিজিটের মোবাইল নম্বর দিন</span></div>
+        <div><label for="custAltPhone" class="block text-sm font-bold text-slate-700 mb-1">বিকল্প মোবাইল (ঐচ্ছিক)</label><input id="custAltPhone" type="tel" inputmode="numeric" maxlength="11" placeholder="01XXXXXXXXX" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-3"></div>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div><label for="custDistrict" class="block text-sm font-bold text-slate-700 mb-1">জেলা *</label><select id="custDistrict" required class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-3"><option value="">-- জেলা বেছে নিন --</option></select></div>
+        <div><label for="custUpazila" class="block text-sm font-bold text-slate-700 mb-1">থানা / উপজেলা *</label><select id="custUpazila" required class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-3"><option value="">-- আগে জেলা নির্বাচন করুন --</option></select></div>
+      </div>
+      <div><label for="custUnion" class="block text-sm font-bold text-slate-700 mb-1">ইউনিয়ন / পৌরসভা / এলাকা / ওয়ার্ড *</label><input id="custUnion" required placeholder="যেমন: ৫নং ওয়ার্ড / পৌর এলাকা" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-3"></div>
+      <div><label for="custAddress" class="block text-sm font-bold text-slate-700 mb-1">গ্রাম / পাড়া / রোড / বাসা / ল্যান্ডমার্ক *</label><input id="custAddress" required placeholder="যেমন: মসজিদের পাশে অথবা হাউজ #১০, রোড #২" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-3"></div>
+      <div><label for="custNote" class="block text-sm font-bold text-slate-700 mb-1">ডেলিভারি নোট (ঐচ্ছিক)</label><input id="custNote" placeholder="যেমন: বিকেলে ডেলিভারি দিলে ভালো হয়" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5"></div>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs font-bold"><div class="soft p-2.5 rounded-xl text-emerald-700"><i class="fa-solid fa-box-open mr-1"></i> খুলে দেখে মূল্য পরিশোধ</div><div class="soft p-2.5 rounded-xl text-emerald-700"><i class="fa-solid fa-handshake mr-1"></i> ১০০% ক্যাশ অন ডেলিভারি</div><div class="soft p-2.5 rounded-xl text-amber-700"><i class="fa-solid fa-shield-halved mr-1"></i> ৩ দিনের রিপ্লেসমেন্ট</div></div>
+      <div class="soft rounded-2xl p-4 space-y-1.5 font-bold"><div class="flex justify-between text-slate-600"><span>পণ্যের মূল্য</span><span id="billSubtotal" class="text-slate-900">৳৬০০</span></div><div class="flex justify-between text-slate-600"><span>ডেলিভারি (<span id="billLocationTag">সিলেক্ট করুন</span>)</span><span id="billDelivery" class="text-slate-900">৳৭০</span></div><div class="border-t border-slate-200 pt-2 flex justify-between gap-2 text-lg sm:text-xl font-black"><span>সর্বমোট পরিশোধযোগ্য</span><span id="billTotal" class="text-rose-600">৳৬৭০</span></div></div>
+      <button id="btnSubmitOrder" type="submit" class="pulse-btn w-full bg-gradient-to-r from-rose-700 via-rose-600 to-amber-500 text-white text-lg sm:text-2xl font-black py-4 px-4 rounded-2xl shadow-xl flex items-center justify-center gap-2"><i class="fa-solid fa-circle-check"></i> অর্ডার কনফার্ম করুন (৳<span id="btnSubmitPrice">৬৭০</span>)</button>
+    </form>
+  </div>
+</section>
+<section class="max-w-5xl mx-auto px-4 py-6">
+  <div class="text-center mb-5"><span class="inline-flex rounded-full bg-emerald-50 border border-emerald-100 text-emerald-800 px-3 py-1 text-sm font-bold">বাস্তব অভিজ্ঞতা ও প্রমাণ</span><h3 class="text-2xl sm:text-3xl font-black mt-2">কাস্টমার রিভিউ ও ডেলিভারি প্রমাণ</h3></div>
+  <div id="customerReviewsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+</section>
+<section class="max-w-4xl mx-auto px-4 py-5">
+  <h3 class="text-xl sm:text-2xl font-black text-center mb-5">❓ সচরাচর জিজ্ঞাসা</h3>
+  <div class="space-y-3">
+    <details class="card p-4 group"><summary class="cursor-pointer font-bold flex justify-between gap-3">ডেলিভারি পেতে কতদিন লাগবে?<i class="fa-solid fa-chevron-down text-amber-600"></i></summary><p class="text-sm text-slate-600 mt-3 mb-0">ঢাকায় সাধারণত ২৪–৪৮ ঘণ্টা এবং ঢাকার বাইরে ২–৩ দিনের মধ্যে পৌঁছে দেওয়া হয়।</p></details>
+    <details class="card p-4 group"><summary class="cursor-pointer font-bold flex justify-between gap-3">পণ্য দেখে টাকা দিতে পারব?<i class="fa-solid fa-chevron-down text-amber-600"></i></summary><p class="text-sm text-slate-600 mt-3 mb-0">হ্যাঁ, ডেলিভারি ম্যানের সামনে পার্সেল খুলে দেখে মূল্য পরিশোধ করবেন।</p></details>
+    <details class="card p-4 group"><summary class="cursor-pointer font-bold flex justify-between gap-3">পণ্যে সমস্যা হলে কী করব?<i class="fa-solid fa-chevron-down text-amber-600"></i></summary><p class="text-sm text-slate-600 mt-3 mb-0">পণ্য পাওয়ার ৩ দিনের মধ্যে হটলাইনে যোগাযোগ করুন। প্রযোজ্য ক্ষেত্রে রিপ্লেসমেন্ট দেওয়া হবে।</p></details>
+  </div>
+</section>
+<footer class="bg-slate-950 text-slate-300 mt-10 py-9 px-4">
+  <div class="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-7">
+    <div><h3 class="text-xl font-black text-white uppercase">ONLINE SUPPER SHOP</h3><p class="text-sm text-slate-400 mt-2">সারা বাংলাদেশে ক্যাশ অন ডেলিভারিতে গ্যাজেট সরবরাহ। আপনার বিশ্বস্ত সঙ্গী প্রতিষ্ঠান।</p><p class="text-sm text-slate-300 mt-2"><i class="fa-solid fa-location-dot text-amber-400 mr-1"></i>অফিস: নারায়ণগঞ্জ, ঢাকা, বাংলাদেশ</p><b class="text-emerald-400 text-xs"><i class="fa-solid fa-certificate mr-1"></i>ভেরিফাইড ই-কমার্স শপ</b></div>
+    <div><h4 class="font-bold text-white">শর্তাবলী</h4><ul class="text-sm text-slate-400 space-y-1 mt-2"><li>100% ক্যাশ অন ডেলিভারি</li><li>পার্সেল চেকের সুযোগ</li><li>৩ দিনের রিপ্লেসমেন্ট নীতি</li><li>কোনো গোপন চার্জ নেই</li></ul></div>
+    <div><h4 class="font-bold text-white">ডেলিভারি পার্টনার</h4><p class="text-sm text-slate-400 mt-2">Steadfast, Pathao ও RedX কুরিয়ার পার্টনারের মাধ্যমে সারা দেশে ডেলিভারি দেওয়া হয়।</p></div>
+    <div><h4 class="font-bold text-white">কাস্টমার সাপোর্ট</h4><p class="text-sm mt-2"><a href="tel:+880963826061" class="font-bold"><i class="fa-solid fa-phone text-amber-400 mr-1"></i>+880963826061</a></p><p class="text-sm"><a href="https://wa.me/8801724417830" target="_blank" rel="noopener" class="text-emerald-400 font-bold"><i class="fa-brands fa-whatsapp mr-1"></i>WhatsApp</a></p><p class="text-sm mt-1"><a id="shopEmailLink" href="#" class="font-bold text-slate-300 break-all"><i class="fa-solid fa-envelope text-amber-400 mr-1"></i><span id="shopEmailText">onlinesuppershop24hours@gmail.com</span></a></p><p class="text-xs text-slate-400">সকাল 9 am – রাত 11 pm</p></div>
+  </div>
+  <div class="max-w-6xl mx-auto border-t border-slate-800 mt-7 pt-5 text-center text-xs text-slate-500">© <span id="currentYear"></span> ONLINE SUPPER SHOP. সর্বস্বত্ব সংরক্ষিত।</div>
+</footer>
+<div id="successModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/75 backdrop-blur-sm p-4">
+  <div class="w-full max-w-md bg-white border border-emerald-200 rounded-3xl p-6 text-center shadow-2xl">
+    <div class="w-16 h-16 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-600 text-3xl grid place-items-center mx-auto"><i class="fa-solid fa-check"></i></div>
+    <h3 class="text-2xl font-black mt-3">ধন্যবাদ! অর্ডার সফল হয়েছে</h3><p class="text-sm text-slate-600">অর্ডারটি সিস্টেমে পাঠানো হয়েছে। দ্রুত কনফার্ম করতে WhatsApp-এ মেসেজ পাঠাতে পারেন।</p>
+    <a id="btnCustomerWhatsApp" href="#" target="_blank" rel="noopener" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold py-3 px-4 rounded-xl flex items-center justify-center gap-2"><i class="fa-brands fa-whatsapp text-xl"></i> WhatsApp-এ কনফার্ম করুন</a>
+    <div id="receiptBox" class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-left text-sm space-y-1 mt-3"></div>
+    <button id="closeSuccess" class="w-full mt-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl">ঠিক আছে</button>
+  </div>
+</div>
+<div class="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur border-t border-slate-200 p-2.5 flex gap-2 shadow-xl">
+  <a href="tel:+880963826061" class="flex-1 bg-slate-100 text-slate-800 border border-slate-200 font-extrabold py-3 rounded-xl flex items-center justify-center gap-2"><i class="fa-solid fa-phone text-amber-600"></i> কল</a>
+  <a href="#orderSection" class="flex-[2] bg-gradient-to-r from-rose-700 to-amber-500 text-white font-black py-3 rounded-xl flex items-center justify-center gap-2 shadow"><i class="fa-solid fa-bolt"></i> অর্ডার করুন</a>
+</div>
+
+<script>
+'use strict';
+const TELEGRAM_BOT_TOKEN="8831757967:AAGmvxoxzSwio4TTg4bndI0MPmklI9rtZTo";
+const TELEGRAM_CHAT_ID="5670423800";
+const EMAIL_ACCESS_KEY="e8b9b111-0235-4caf-9329-2d2ad95bd086";
+const GOOGLE_SHEET_URL="https://script.google.com/macros/s/AKfycby21WlzeoiJ4VFJS_lON1D7Nk-_L3ar4s5P5CxTe9W0ZY06TeKnG_yEx-YXDAj9iQ4q/exec";
+const ADMIN_WHATSAPP_NUMBER="8801724417830";
+const PRODUCT_KEY='online_supper_shop_products_data';
+const ACTIVE_PRODUCT_KEY='online_supper_shop_active_product_id';
+const CONTACT_EMAIL_KEY='online_supper_shop_contact_email';
+const THEME_KEY='online_supper_shop_theme_data';
+const DEFAULT_CONTACT_EMAIL='onlinesuppershop24hours@gmail.com';
+const REVIEWS_KEY='online_supper_shop_reviews_data';
+const ORDERS_KEY='online_supper_shop_orders_data';
+const DEFAULT_IMAGE='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="500" height="500"%3E%3Crect width="500" height="500" fill="%23f1f5f9"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" fill="%2364748b" font-size="24" font-family="sans-serif"%3EProduct Image%3C/text%3E%3C/svg%3E';
+const BD_DISTRICTS_DATA={
+"ঢাকা":["ধানমন্ডি","মিরপুর","উত্তরা","মোহাম্মদপুর","গুলশান","বনানী","মতিঝিল","পল্টন","যাত্রাবাড়ী","বাড্ডা","তেজগাঁও","খিলগাঁও","কাকরাইল","শ্যামপুর","লালবাগ","সাভার","ধামরাই","কেরানীগঞ্জ","নবাবগঞ্জ","দোহার"],
+"গাজীপুর":["গাজীপুর সদর","টঙ্গী","কালিয়াকৈর","শ্রীপুর","কাপাসিয়া","কালীগঞ্জ"],
+"নারায়ণগঞ্জ":["নারায়ণগঞ্জ সদর","সিদ্ধিরগঞ্জ","ফতুল্লা","রূপগঞ্জ","আড়াইহাজার","সোনারগাঁও","বন্দর"],
+"নরসিংদী":["নরসিংদী সদর","পলাশ","শিবপুর","মনোহরদী","বেলাবো","রায়পুরা"],
+"মানিকগঞ্জ":["মানিকগঞ্জ সদর","সিংগাইর","শিবালয়","সাটুরিয়া","ঘিওর","দৌলতপুর","হরিরামপুর"],
+"মুন্সীগঞ্জ":["মুন্সীগঞ্জ সদর","টংগিবাড়ী","সিরাজদিখান","লৌহজং","শ্রীনগর","গজারিয়া"],
+"কিশোরগঞ্জ":["কিশোরগঞ্জ সদর","ভৈরব","বাজিতপুর","হোসেনপুর","কটিয়াদী","করিমগঞ্জ","তাড়াইল","পাকুন্দিয়া","নিকলী","কুলিয়ারচর","অষ্টগ্রাম","ইটনা","মিঠামইন"],
+"টাঙ্গাইল":["টাঙ্গাইল সদর","মির্জাপুর","কালিহাতী","ঘাটাইল","মধুপুর","সখিপুর","ভূঞাপুর","গোপালপুর","দেলদুয়ার","নাগরপুর","বাসাইল","ধনবাড়ী"],
+"ফরিদপুর":["ফরিদপুর সদর","বোয়ালমারী","ভাঙ্গা","আলফাডাঙ্গা","মধুখালী","নগরকান্দা","সদরপুর","চরভদ্রাসন","সালথা"],
+"গোপালগঞ্জ":["গোপালগঞ্জ সদর","কোটালীপাড়া","কাশিয়ানী","মুকসুদপুর","টুঙ্গিপাড়া"],
+"মাদারীপুর":["মাদারীপুর সদর","শিবচর","কালকিনি","রাজৈর","ডাসার"],
+"শরীয়তপুর":["শরীয়তপুর সদর","নড়িয়া","জাজিরা","গোসাইরহাট","ডামুড্যা","ভেদরগঞ্জ"],
+"রাজবাড়ী":["রাজবাড়ী সদর","পাংশা","বালিয়াকান্দি","গোয়ালন্দ","কালুখালী"],
+"চট্টগ্রাম":["কোতোয়ালী","পাঁচলাইশ","হালিশহর","পতেঙ্গা","খুলশী","চান্দগাঁও","সীতাকুণ্ড","মিরসরাই","হাটহাজারী","রাউজান","ফটিকছড়ি","পটিয়া","বোয়ালখালী","চন্দনাইশ","সাতকানিয়া","বাঁশখালী","আনোয়ারা","লোহাগাড়া","সন্দ্বীপ","কর্ণফুলী"],
+"কক্সবাজার":["কক্সবাজার সদর","চকোরিয়া","মহেশখালী","টেকনাফ","উখিয়া","রামু","পেকুয়া","কুতুবদিয়া","ঈদগাঁও"],
+"কুমিল্লা":["কুমিল্লা আদর্শ সদর","দাউদকান্দি","চান্দিনা","বুড়িচং","লাকসাম","চৌদ্দগ্রাম","মুরাদনগর","দেবীদ্বার","হোমনা","বরুড়া","ব্রাহ্মণপাড়া","মেঘনা","তিতাস","মনোহরগঞ্জ","সদর দক্ষিণ","লালমাই"],
+"ব্রাহ্মণবাড়িয়া":["ব্রাহ্মণবাড়িয়া সদর","আশুগঞ্জ","সরাইল","কসবা","আখাউড়া","নবীনগর","বাঞ্ছারামপুর","নাসিরনগর","বিজয়নগর"],
+"চাঁদপুর":["চাঁদপুর সদর","ফরিদগঞ্জ","হাজীগঞ্জ","শাহরাস্তি","মতলব উত্তর","মতলব দক্ষিণ","কচুয়া","হাইমচর"],
+"নোয়াখালী":["নোয়াখালী সদর","বেগমগঞ্জ","চাটখিল","কোম্পানীগঞ্জ","সেনবাগ","হাতিয়া","সোনাইমুড়ী","সুবর্ণচর","কবিরহাট"],
+"ফেনী":["ফেনী সদর","দাগনভূঞা","সোনাগাজী","ছাগলনাইয়া","পরশুরাম","ফুলগাজী"],
+"লক্ষ্মীপুর":["লক্ষ্মীপুর সদর","রায়পুর","রামগঞ্জ","রামগতি","কমলনগর"],
+"রাঙ্গামাটি":["রাঙ্গামাটি সদর","কাপ্তাই","কাউখালী","বাঘাইছড়ি","বরকল","লংগদু","নানিয়ারচর","জুরাইছড়ি","রাজস্থলী","বিলাইছড়ি"],
+"বান্দরবান":["বান্দরবান সদর","রোয়াংছড়ি","রুমা","থানচি","লামা","আলীকদম","নাইক্ষ্যংছড়ি"],
+"খাগড়াছড়ি":["খাগড়াছড়ি সদর","দীঘিনালা","পানছড়ি","মহালছড়ি","মাটিরাঙ্গা","মানিকছড়ি","রামগড়","গুইমারা"],
+"রাজশাহী":["বোয়ালিয়া","রাজপাড়া","মতিহার","পবা","গোদাগাড়ী","তানোর","বাগমারা","পুঠিয়া","চারঘাট","বাঘা","দুর্গাপুর","মোহনপুর"],
+"বগুড়া":["বগুড়া সদর","শিবগঞ্জ","শেরপুর","দুপচাঁচিয়া","সারিয়াকান্দি","নন্দীগ্রাম","শাজাহানপুর","কাহালু","গাবতলী","আদমদীঘি","ধুনট","সোনাতলা"],
+"পাবনা":["পাবনা সদর","ঈশ্বরদী","আটঘরিয়া","চাটমোহর","ভাঙ্গুড়া","সুজানগর","সাঁথিয়া","বেড়া","ফরিদপুর"],
+"সিরাজগঞ্জ":["সিরাজগঞ্জ সদর","শাহজাদপুর","উল্লাপাড়া","বেলকুচি","রায়গঞ্জ","তাড়াশ","কামারখন্দ","কাজীপুর","চৌহালী"],
+"নওগাঁ":["নওগাঁ সদর","পত্নীতলা","ধামইরহাট","মহাদেবপুর","পোরশা","সাপাহার","বদলগাছী","মান্দা","নিয়ামতপুর","আত্রাই","রাণীনগর"],
+"নাটোর":["নাটোর সদর","সিংড়া","বড়াইগ্রাম","গুরুদাসপুর","লালপুর","বাগাতিপাড়া","নলডাঙ্গা"],
+"চাঁপাইনবাবগঞ্জ":["চাঁপাইনবাবগঞ্জ সদর","শিবগঞ্জ","গোমস্তাপুর","নাচোল","ভোলাহাট"],
+"জয়পুরহাট":["জয়পুরহাট সদর","পাঁচবিবি","কালাই","ক্ষেতলাল","আক্কেলপুর"],
+"খুলনা":["খুলনা সদর","সোনাডাঙ্গা","খালিশপুর","দৌলতপুর","বটিয়াঘাটা","ডুমুরিয়া","দিঘলিয়া","পাইকগাছা","রূপসা","ফুলতলা","তেরখাদা","কয়রা"],
+"যশোর":["যশোর সদর","শার্শা","ঝিকরগাছা","মনিরামপুর","অভয়নগর","কেশবপুর","চৌগাছা","বাঘারপাড়া"],
+"কুষ্টিয়া":["কুষ্টিয়া সদর","কুমারখালী","খোকসা","মিরপুর","ভেড়ামারা","দৌলতপুর"],
+"সাতক্ষীরা":["সাতক্ষীরা সদর","কলারোয়া","তালা","কালীগঞ্জ","শ্যামনগর","আশাশুনি","দেবহাটা"],
+"ঝিনাইদহ":["ঝিনাইদহ সদর","শৈলকুপা","হরিণাকুণ্ডু","কালীগঞ্জ","কোটচাঁদপুর","মহেশপুর"],
+"বাগেরহাট":["বাগেরহাট সদর","ফকিরহাট","মোল্লাহাট","রামপাল","মোংলা","কচুয়া","চিতলমারী","শরণখোলা","মোরেলগঞ্জ"],
+"চুয়াডাঙ্গা":["চুয়াডাঙ্গা সদর","আলমডাঙ্গা","দামুড়হুদা","জীবননগর"],
+"মাগুরা":["মাগুরা সদর","শ্রীপুর","মহম্মদপুর","শালিখা"],
+"মেহেরপুর":["মেহেরপুর সদর","গাংনী","মুজিবনগর"],
+"নড়াইল":["নড়াইল সদর","লোহাগড়া","কালিয়া"],
+"বরিশাল":["কোতোয়ালী","বাবুগঞ্জ","উজিরপুর","গৌরনদী","বাকেরগঞ্জ","বানারীপাড়া","মুলাদী","মেহেন্দিগঞ্জ","হিজলা","আগৈলঝাড়া"],
+"পটুয়াখালী":["পটুয়াখালী সদর","গলাচিপা","বাউফল","দশমিনা","কলাপাড়া","দুমকি","মির্জাগঞ্জ","রাঙ্গাবালী"],
+"ভোলা":["ভোলা সদর","দৌলতখান","বোরহানউদ্দিন","তজুমদ্দিন","মনপুরা","চরফ্যাশন","লালমোহন"],
+"পিরোজপুর":["পিরোজপুর সদর","ভাণ্ডারিয়া","মঠবাড়িয়া","নাজিরপুর","নেছারাবাদ","কাউখালী","ইন্দুরকানী"],
+"বরগুনা":["বরগুনা সদর","আমতলী","তালতলী","পাথরঘাটা","বেতাগী","বামনা"],
+"ঝালকাঠি":["ঝালকাঠি সদর","নলছিটি","রাজাপুর","কাঠালিয়া"],
+"সিলেট":["সিলেট সদর","দক্ষিণ সুরমা","গোলাপগঞ্জ","বিয়ানীবাজার","বিশ্বনাথ","ফেঞ্চুগঞ্জ","বালাগঞ্জ","জৈন্তাপুর","গোয়াইনঘাট","কানাইঘাট","কোম্পানীগঞ্জ","জকিগঞ্জ","ওসমানীনগর"],
+"মৌলভীবাজার":["মৌলভীবাজার সদর","শ্রীমঙ্গল","কমলগঞ্জ","কুলাউড়া","বড়লেখা","রাজনগর","জুড়ী"],
+"হবিগঞ্জ":["হবিগঞ্জ সদর","নবীগঞ্জ","বাহুবল","মাধবপুর","চুনারুঘাট","বানিয়াচং","লাখাই","আজমিরীগঞ্জ","শায়েস্তাগঞ্জ"],
+"সুনামগঞ্জ":["সুনামগঞ্জ সদর","ছাতক","জগন্নাথপুর","দেরাই","তাহিরপুর","ধর্মপাশা","জামালগঞ্জ","শাল্লা","বিশ্বম্ভরপুর","দোয়ারাবাজার","শান্তিগঞ্জ","মধ্যনগর"],
+"রংপুর":["রংপুর সদর","গঙ্গাচড়া","বদরগঞ্জ","মিঠাপুকুর","পীরগাছা","পীরগঞ্জ","কাউনিয়া","তারাগঞ্জ"],
+"দিনাজপুর":["দিনাজপুর সদর","বীরগঞ্জ","কাহারোল","বোচাগঞ্জ","চিরিরবন্দর","ফুলবাড়ী","পার্বতীপুর","বিরামপুর","নবাবগঞ্জ","ঘোড়াঘাট","হাকিমপুর","খানসামা"],
+"কুড়িগ্রাম":["কুড়িগ্রাম সদর","উলিপুর","নাগেশ্বরী","ভুরুঙ্গামারী","রাজারহাট","চিলমারী","রৌমারী","চর রাজিবপুর","ফুলবাড়ী"],
+"গাইবান্ধা":["গাইবান্ধা সদর","গোবিন্দগঞ্জ","পলাশবাড়ী","সুন্দরগঞ্জ","সাদুল্লাপুর","সাঘাটা","ফুলছড়ি"],
+"নীলফামারী":["নীলফামারী সদর","সৈয়দপুর","ডোমার","ডিমলা","জলঢাকা","কিশোরগঞ্জ"],
+"পঞ্চগড়":["পঞ্চগড় সদর","তেঁতুলিয়া","বোদা","দেবীগঞ্জ","আটোয়ারী"],
+"ঠাকুরগাঁও":["ঠাকুরগাঁও সদর","পীরগঞ্জ","বালিয়াডাঙ্গী","রাণীশংকৈল","হরিপুর"],
+"লালমনিরহাট":["লালমনিরহাট সদর","হাতীবান্ধা","পাটগ্রাম","কালীগঞ্জ","আদিতমারী"],
+"ময়মনসিংহ":["ময়মনসিংহ সদর","ভালুকা","ত্রিশাল","গফরগাঁও","মুক্তাগাছা","ফুলবাড়িয়া","ঈশ্বরগঞ্জ","নান্দাইল","ফুলপুর","হালুয়াঘাট","ধোবাউড়া","তারাকান্দা"],
+"জামালপুর":["জামালপুর সদর","মেলান্দহ","মাদারগঞ্জ","ইসলামপুর","সরিষাবাড়ী","বকশীগঞ্জ","দেওয়ানগঞ্জ"],
+"নেত্রকোণা":["নেত্রকোণা সদর","কেন্দুয়া","পূর্বধলা","মোহনগঞ্জ","দুর্গাপুর","কলমাকান্দা","বারহাট্টা","মদন","খালিয়াজুড়ি","আটপাড়া"],
+"শেরপুর":["শেরপুর সদর","নকলা","নালিতাবাড়ী","ঝিনাইগাতী","শ্রীবরদী"]
+};
+let currentProduct={name:"F11-2 Dual Wireless Mic",model:"ক্লিয়ার ও নয়েজমুক্ত সাউন্ডে অরিজিনাল ওয়্যারলেস মাইক",price:600,regPrice:1200,comboPrice:1150,dhakaDelivery:70,outDelivery:130,images:["https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=800&auto=format&fit=crop&q=80","https://images.unsplash.com/photo-1546776310-eef45dd6d63c?w=800&auto=format&fit=crop&q=80"],features:["২ টি ওয়্যারলেস মাইক","১ টি প্লাগইন রিসিভার","২ টি উইন্ডপ্রুফ ডেটক্যাট","১ টি ফাস্ট চার্জিং কেবল","ইউজার ম্যানুয়াল","অরিজিনাল প্যাকেজিং বক্স"]};
+let lastLoadedActiveId=null;
+let productImages=[];
+let currentImageIndex=0;
+let slideTimer=null;
+function safeRead(key,fallback){try{return JSON.parse(localStorage.getItem(key))||fallback}catch(_){return fallback}}
+function handleImageError(img){if(img.src!==DEFAULT_IMAGE)img.src=DEFAULT_IMAGE}
+function setText(id,text){const el=document.getElementById(id);if(el)el.textContent=text}
+function updateContactEmail(){
+  const savedEmail=localStorage.getItem(CONTACT_EMAIL_KEY);
+  const email=(savedEmail===null?DEFAULT_CONTACT_EMAIL:savedEmail).trim();
+  const link=document.getElementById('shopEmailLink');
+  const label=document.getElementById('shopEmailText');
+  if(!link||!label)return;
+  if(email){
+    link.href='mailto:'+email;
+    label.textContent=email;
+    link.classList.remove('text-slate-300');
+    link.classList.add('text-emerald-300');
+  }else{
+    link.removeAttribute('href');
+    label.textContent='অ্যাডমিন প্যানেল থেকে ইমেইল যোগ করুন';
+    link.classList.add('text-slate-300');
+    link.classList.remove('text-emerald-300');
+  }
+}
+function applyShopTheme(){
+  const theme=safeRead(THEME_KEY,{});
+  const primary=/^#[0-9a-f]{6}$/i.test(theme.primary||'')?theme.primary:'#be123c';
+  const accent=/^#[0-9a-f]{6}$/i.test(theme.accent||'')?theme.accent:'#f59e0b';
+  document.documentElement.style.setProperty('--theme-primary',primary);
+  document.documentElement.style.setProperty('--theme-accent',accent);
+}
+function loadActiveProductData(){
+  const products=safeRead(PRODUCT_KEY,[]),activeId=localStorage.getItem(ACTIVE_PRODUCT_KEY);
+  if(Array.isArray(products)&&products.length){currentProduct=products.find(p=>p.id===activeId)||products[0];lastLoadedActiveId=currentProduct.id||null}
+  document.title=(currentProduct.name||"Online supper shop")+" - Online supper shop";
+  setText("topNoticeText","🔥 আজকের মেগা অফার: মাত্র "+currentProduct.price+" টাকায় অরিজিনাল "+currentProduct.name+"!");
+  setText("prodNameDisplay",currentProduct.name);setText("prodSubModelDisplay",currentProduct.model);
+  setText("regPriceDisplay","পূর্বের মূল্য: "+currentProduct.regPrice+" টাকা");
+  setText("offerPriceDisplay","৳"+Number(currentProduct.price||0).toLocaleString("bn-BD"));
+  setText("dhakaDeliveryTag","৳"+currentProduct.dhakaDelivery);setText("outDeliveryTag","৳"+currentProduct.outDelivery);
+  setText("pkgSingleName","1 সেট "+currentProduct.name);setText("pkgSinglePrice","৳"+currentProduct.price);setText("pkgComboPrice","৳"+currentProduct.comboPrice);
+  const gallery=document.getElementById("thumbGallery"),main=document.getElementById("mainImage"),dots=document.getElementById("sliderDots");gallery.innerHTML="";dots.innerHTML="";
+  productImages=Array.isArray(currentProduct.images)?currentProduct.images.filter(Boolean):[];
+  if(!productImages.length)productImages=[DEFAULT_IMAGE];
+  productImages.forEach((src,index)=>{
+    const button=document.createElement("button");button.type="button";
+    button.className="w-16 h-16 flex-none rounded-xl overflow-hidden border-2 border-slate-200 bg-white p-1";
+    const image=document.createElement("img");image.src=src;image.alt="পণ্যের ছবি "+(index+1);image.className="w-full h-full object-contain";image.onerror=function(){handleImageError(this)};
+    button.appendChild(image);button.addEventListener("click",()=>{showProductImage(index);restartSlideshow()});gallery.appendChild(button);
+    const dot=document.createElement("button");dot.type="button";dot.setAttribute("aria-label","ছবি "+(index+1));dot.addEventListener("click",()=>{showProductImage(index);restartSlideshow()});dots.appendChild(dot);
+  });
+  showProductImage(0);restartSlideshow();
+  const features=document.getElementById("featuresListContainer");features.innerHTML="";
+  (Array.isArray(currentProduct.features)?currentProduct.features:[]).forEach(feature=>{
+    const item=document.createElement("div");item.className="soft p-2.5 rounded-xl flex items-center gap-2";
+    const icon=document.createElement("i");icon.className="fa-solid fa-circle-check text-rose-600";
+    const label=document.createElement("span");label.textContent=feature;item.append(icon,label);features.appendChild(item);
+  });
+  calculateBill();
+}
+function showProductImage(index){
+  if(!productImages.length)return;
+  currentImageIndex=(index+productImages.length)%productImages.length;
+  const main=document.getElementById("mainImage");
+  main.style.opacity="0.45";
+  window.setTimeout(()=>{main.src=productImages[currentImageIndex]||DEFAULT_IMAGE;main.style.opacity="1"},100);
+  document.querySelectorAll("#thumbGallery button").forEach((button,i)=>{button.classList.toggle("border-rose-500",i===currentImageIndex);button.classList.toggle("border-slate-200",i!==currentImageIndex)});
+  document.querySelectorAll("#sliderDots button").forEach((button,i)=>button.classList.toggle("active",i===currentImageIndex));
+}
+function restartSlideshow(){
+  clearInterval(slideTimer);
+  if(productImages.length>1)slideTimer=setInterval(()=>showProductImage(currentImageIndex+1),4000);
+}
+function renderCustomerReviews(){
+  const container=document.getElementById("customerReviewsContainer");
+  let reviews=safeRead(REVIEWS_KEY,null);
+  if(reviews===null){
+    reviews=[
+      {id:"seed-review-1",type:"review",name:"তানভীর হোসাইন",location:"ঢাকা",text:"ডেলিভারি ম্যানের সামনে চেক করে নিয়েছি। সাউন্ড কোয়ালিটি অনেক পরিষ্কার।",rating:5,photo:""},
+      {id:"seed-review-2",type:"review",name:"মাহমুদুল হাসান",location:"চট্টগ্রাম",text:"কোনো অগ্রিম ছাড়াই দেখে টাকা দিতে পেরেছি। ধন্যবাদ সেলারকে।",rating:5,photo:""}
+    ];
+    localStorage.setItem(REVIEWS_KEY,JSON.stringify(reviews));
+  }
+  if(!Array.isArray(reviews))reviews=[];
+  if(!reviews.length){container.innerHTML='<div class="card p-5 text-center text-slate-600 sm:col-span-2"><i class="fa-regular fa-comment-dots text-3xl text-emerald-600"></i><p class="mt-2 mb-0">কাস্টমার রিভিউ বা ডেলিভারি প্রমাণ শিগগিরই যোগ হবে।</p></div>';return}
+  container.innerHTML=reviews.map(item=>{
+    const label=item.type==="proof"?"সেলস / ডেলিভারি প্রমাণ":"কাস্টমার রিভিউ";
+    const stars="★".repeat(Math.max(1,Math.min(5,Number(item.rating)||5)));
+    const photo=item.photo?'<img class="proof-photo mt-3" src="'+item.photo+'" alt="'+escapeHtml(label)+'">':"";
+    return '<article class="card p-4 sm:p-5"><div class="flex items-center justify-between gap-2"><span class="inline-flex rounded-full bg-emerald-50 text-emerald-800 px-3 py-1 text-xs font-bold">'+label+'</span><span class="text-amber-500" aria-label="'+(item.rating||5)+' তারকা">'+stars+'</span></div><h4 class="font-black mt-3 mb-0">'+escapeHtml(item.name||label)+'</h4><div class="text-sm text-slate-500">'+escapeHtml(item.location||"")+'</div><p class="text-slate-700 mt-2 mb-0">'+escapeHtml(item.text||"")+'</p>'+photo+'</article>';
+  }).join("");
+}
+function initDistricts(){
+  const select=document.getElementById("custDistrict");
+  Object.keys(BD_DISTRICTS_DATA).sort((a,b)=>a.localeCompare(b,"bn")).forEach(district=>{const opt=document.createElement("option");opt.value=district;opt.textContent=district;select.appendChild(opt)});
+}
+function handleDistrictChange(){
+  const district=document.getElementById("custDistrict").value,select=document.getElementById("custUpazila");
+  select.innerHTML='<option value="">-- থানা/উপজেলা বেছে নিন --</option>';
+  (BD_DISTRICTS_DATA[district]||[]).forEach(thana=>{const option=document.createElement("option");option.value=thana;option.textContent=thana;select.appendChild(option)});
+  calculateBill();
+}
+function selectedPackage(){return document.querySelector('input[name="orderPackage"]:checked')?.value||"1"}
+function calculateBill(){
+  const packageType=selectedPackage(),district=document.getElementById("custDistrict").value;
+  const subtotal=packageType==="1"?Number(currentProduct.price)||0:Number(currentProduct.comboPrice)||0;
+  let delivery=0,location="সিলেক্ট করুন";
+  if(packageType==="2"){location="ফ্রি ডেলিভারি"}else if(district==="ঢাকা"){delivery=Number(currentProduct.dhakaDelivery)||0;location="ঢাকা সিটি"}else if(district){delivery=Number(currentProduct.outDelivery)||0;location="ঢাকার বাইরে"}else delivery=Number(currentProduct.dhakaDelivery)||0;
+  const total=subtotal+delivery;
+  setText("billSubtotal","৳"+subtotal.toLocaleString("bn-BD"));setText("billLocationTag",location);
+  setText("billDelivery",delivery===0?"ফ্রি (৳০)":"৳"+delivery.toLocaleString("bn-BD"));
+  setText("billTotal","৳"+total.toLocaleString("bn-BD"));setText("btnSubmitPrice",total.toLocaleString("bn-BD"));
+}
+function escapeHtml(value){return String(value??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]))}
+async function postJson(url,data,options){
+  try{return await fetch(url,Object.assign({method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)},options||{}))}
+  catch(error){console.error("Order delivery request failed",error);return null}
+}
+async function handleCustomerOrderSubmit(event){
+  event.preventDefault();
+  const phone=document.getElementById("custPhone").value.trim(),phoneError=document.getElementById("phoneError");
+  if(!/^01[3-9]\d{8}$/.test(phone)){phoneError.classList.remove("hidden");document.getElementById("custPhone").focus();return}
+  phoneError.classList.add("hidden");
+  const button=document.getElementById("btnSubmitOrder"),original=button.innerHTML;button.disabled=true;button.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> অর্ডার প্রসেস হচ্ছে...';
+  const id="ORD-"+Math.floor(100000+Math.random()*900000);
+  const name=document.getElementById("custName").value.trim(),altPhone=document.getElementById("custAltPhone").value.trim();
+  const district=document.getElementById("custDistrict").value,upazila=document.getElementById("custUpazila").value;
+  const union=document.getElementById("custUnion").value.trim(),address=document.getElementById("custAddress").value.trim(),note=document.getElementById("custNote").value.trim();
+  const isCombo=selectedPackage()==="2";
+  const packageType=isCombo?"২ সেট কম্বো (৳"+currentProduct.comboPrice+" - ফ্রি ডেলিভারি)":"1 সেট "+currentProduct.name+" (৳"+currentProduct.price+")";
+  const subtotal=isCombo?Number(currentProduct.comboPrice)||0:Number(currentProduct.price)||0;
+  const delivery=isCombo?0:(district==="ঢাকা"?Number(currentProduct.dhakaDelivery)||0:Number(currentProduct.outDelivery)||0);
+  const total=subtotal+delivery,totalText="৳"+total.toLocaleString("bn-BD");
+  const now=new Date(),dateTime=now.toLocaleDateString("bn-BD")+" "+now.toLocaleTimeString("bn-BD",{hour:"2-digit",minute:"2-digit"});
+  const fullAddress=[address,union,upazila,district].filter(Boolean).join(", ");
+  const message="🛍️ Online supper shop - নতুন অর্ডার এসেছে!\nঅর্ডার আইডি: "+id+"\nকাস্টমার: "+name+"\nমোবাইল: "+phone+(altPhone?"\nবিকল্প: "+altPhone:"")+"\nজেলা: "+district+" | থানা: "+upazila+"\nএলাকা: "+union+"\nঠিকানা: "+address+(note?"\nনোট: "+note:"")+"\nপ্যাকেজ: "+packageType+"\nমোট বিল: "+totalText+"\nসময়: "+dateTime;
+  const telegramPromise=postJson("https://api.telegram.org/bot"+TELEGRAM_BOT_TOKEN+"/sendMessage",{chat_id:TELEGRAM_CHAT_ID,text:message});
+  const emailPromise=postJson("https://api.web3forms.com/submit",{access_key:EMAIL_ACCESS_KEY,subject:"নতুন অর্ডার: "+name+" ("+totalText+")",from_name:"Online Supper Shop",message:message});
+  const sheetPromise=postJson(GOOGLE_SHEET_URL,{orderId:id,dateTime:dateTime,name:name,phone:phone+(altPhone?" / "+altPhone:""),district:district,upazila:upazila,address:union+", "+address+(note?" (নোট: "+note+")":""),packageType:packageType,total:totalText},{mode:"no-cors"});
+  const localOrders=safeRead(ORDERS_KEY,[]);
+  localOrders.unshift({orderId:id,dateTime:dateTime,name:name,phone:phone+(altPhone?" / "+altPhone:""),district:district,upazila:upazila,address:union+", "+address+(note?" [নোট: "+note+"]":""),packageType:packageType,total:totalText});
+  try{localStorage.setItem(ORDERS_KEY,JSON.stringify(localOrders))}catch(error){console.warn("Local order backup could not be saved",error)}
+  await Promise.allSettled([telegramPromise,emailPromise,sheetPromise]);
+  const waText="হ্যালো Online supper shop, আমি ওয়েবসাইটে একটি অর্ডার করেছি।\nঅর্ডার আইডি: "+id+"\nপণ্য: "+packageType+"\nনাম: "+name+"\nমোবাইল: "+phone+"\nঠিকানা: "+fullAddress+"\nমোট বিল: "+totalText+" (ক্যাশ অন ডেলিভারি)\nদয়া করে অর্ডারটি কনফার্ম করুন।";
+  const waUrl="https://wa.me/"+ADMIN_WHATSAPP_NUMBER+"?text="+encodeURIComponent(waText);
+  document.getElementById("btnCustomerWhatsApp").href=waUrl;
+  document.getElementById("receiptBox").innerHTML="<div><b>অর্ডার নং:</b> "+escapeHtml(id)+"</div><div><b>পণ্য:</b> "+escapeHtml(packageType)+"</div><div><b>নাম:</b> "+escapeHtml(name)+"</div><div><b>মোবাইল:</b> "+escapeHtml(phone)+(altPhone?" ("+escapeHtml(altPhone)+")":"")+"</div><div><b>ঠিকানা:</b> "+escapeHtml(fullAddress)+"</div><div class='text-rose-600 font-black pt-1'>মোট বিল: "+escapeHtml(totalText)+"</div>";
+  const modal=document.getElementById("successModal");modal.classList.remove("hidden");modal.classList.add("flex");
+  if(typeof confetti==="function")confetti({particleCount:90,spread:60});
+  try{window.open(waUrl,"_blank","noopener")}catch(_){}
+  document.getElementById("orderForm").reset();document.querySelector('input[name="orderPackage"][value="1"]').checked=true;
+  document.getElementById("custUpazila").innerHTML='<option value="">-- আগে জেলা নির্বাচন করুন --</option>';calculateBill();
+  button.disabled=false;button.innerHTML=original;
+}
+function startTimer(){
+  let remaining=5*3600+45*60+20;
+  setInterval(()=>{if(remaining<=0)remaining=6*3600;remaining--;setText("timerHours",String(Math.floor(remaining/3600)).padStart(2,"0").replace(/\d/g,d=>"০১২৩৪৫৬৭৮৯"[d]));setText("timerMinutes",String(Math.floor(remaining%3600/60)).padStart(2,"0").replace(/\d/g,d=>"০১২৩৪৫৬৭৮৯"[d]));setText("timerSeconds",String(remaining%60).padStart(2,"0").replace(/\d/g,d=>"০১২৩৪৫৬৭৮৯"[d]))},1000)
+}
+document.querySelectorAll('input[name="orderPackage"]').forEach(input=>input.addEventListener("change",calculateBill));
+document.getElementById("custDistrict").addEventListener("change",handleDistrictChange);
+document.getElementById("prevImage").addEventListener("click",()=>{showProductImage(currentImageIndex-1);restartSlideshow()});
+document.getElementById("nextImage").addEventListener("click",()=>{showProductImage(currentImageIndex+1);restartSlideshow()});
+document.getElementById("orderForm").addEventListener("submit",handleCustomerOrderSubmit);
+document.getElementById("closeSuccess").addEventListener("click",()=>{const modal=document.getElementById("successModal");modal.classList.add("hidden");modal.classList.remove("flex")});
+window.addEventListener("storage",event=>{if(!event.key||event.key===PRODUCT_KEY||event.key===ACTIVE_PRODUCT_KEY)loadActiveProductData();if(!event.key||event.key===CONTACT_EMAIL_KEY)updateContactEmail();if(!event.key||event.key===REVIEWS_KEY)renderCustomerReviews();if(!event.key||event.key===THEME_KEY)applyShopTheme()});
+window.addEventListener("focus",()=>{const active=localStorage.getItem(ACTIVE_PRODUCT_KEY);if(active&&active!==lastLoadedActiveId)loadActiveProductData();updateContactEmail()});
+setInterval(()=>{const active=localStorage.getItem(ACTIVE_PRODUCT_KEY);if(active&&active!==lastLoadedActiveId)loadActiveProductData();updateContactEmail();applyShopTheme()},1200);
+document.addEventListener("DOMContentLoaded",()=>{initDistricts();loadActiveProductData();updateContactEmail();applyShopTheme();renderCustomerReviews();startTimer();setText("currentYear",new Date().getFullYear())});
+</script>
+</body>
+</html>

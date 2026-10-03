@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#f5f7fb">
+<title>Admin Dashboard - Online Supper Shop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+:root{--ink:#172033;--muted:#64748b;--line:#e3eaf2;--soft:#f5f7fb;--white:#fff;--brand:#d97706;--pink:#e11d48;--green:#059669;--blue:#4f46e5;--shadow:0 12px 32px rgba(15,23,42,.06)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--soft);color:var(--ink);font-family:'Hind Siliguri',sans-serif}button,input,select{font:inherit}button,a{-webkit-tap-highlight-color:transparent}button{cursor:pointer}a{color:inherit;text-decoration:none}
+.topbar{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);box-shadow:0 8px 24px rgba(15,23,42,.06)}
+.top-inner{max-width:1280px;margin:auto;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px}.brand-icon{width:44px;height:44px;border-radius:15px;background:#fff7e6;color:#b45309;border:1px solid #fde3a7;display:grid;place-items:center;font-size:20px}.brand h1{font-size:20px;line-height:1.1;margin:0;font-weight:900}.brand p{font-size:12px;color:#b45309;font-weight:700;margin:4px 0 0}
+.nav{display:flex;gap:8px;flex-wrap:wrap}.nav button,.shop-link{border:1px solid var(--line);border-radius:12px;background:#f1f5f9;color:#475569;padding:9px 13px;font-weight:800;font-size:14px;display:flex;align-items:center;gap:8px}.nav button.active{background:#f59e0b;color:#172033;border-color:#f59e0b;box-shadow:0 5px 14px #d977062d}.shop-link{background:#e11d48;color:white;border-color:#e11d48}
+main{max-width:1280px;margin:auto;padding:22px 18px 70px}.view{display:none}.view.active{display:block}.view-title{display:flex;align-items:end;justify-content:space-between;gap:12px;margin:4px 0 16px}.view-title h2{font-size:24px;margin:0;font-weight:900}.view-title p{color:var(--muted);font-size:14px;margin:4px 0 0}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin-bottom:16px}.stat,.panel,.order-card,.region-card,.product-card,.form-card{background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow)}.stat{padding:16px;display:flex;align-items:center;justify-content:space-between;gap:10px}.stat-label{font-size:13px;color:var(--muted);font-weight:700}.stat-num{font-size:30px;font-weight:900;line-height:1.2;margin-top:4px}.stat-icon{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;font-size:20px;background:#fff7e6;color:#b45309}.stat:nth-child(2) .stat-icon{background:#eef2ff;color:var(--blue)}.stat:nth-child(3) .stat-icon{background:#ecfdf5;color:var(--green)}.stat:nth-child(4) .stat-icon{background:#fff1f2;color:var(--pink)}
+.toolbar{background:#fff;border:1px solid var(--line);border-radius:18px;padding:13px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:15px;box-shadow:var(--shadow)}.filters{display:flex;gap:7px;flex-wrap:wrap}.filter-btn{border:0;border-radius:10px;padding:8px 11px;background:#f1f5f9;color:#475569;font-size:13px;font-weight:800}.filter-btn.active{background:#f59e0b;color:#172033}.search-row{display:flex;gap:8px;align-items:center;flex:1;justify-content:flex-end}.search-box{position:relative;max-width:340px;width:100%}.search-box i{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:#94a3b8}.search-box input,.field input,.field select,.field textarea{width:100%;border:1px solid #d6dfeb;border-radius:12px;background:#fff;color:var(--ink);padding:10px 12px;outline:none;transition:.18s}.search-box input{padding-left:38px}.search-box input:focus,.field input:focus,.field select:focus,.field textarea:focus{border-color:#d97706;box-shadow:0 0 0 4px #d977061f}.icon-btn{border:1px solid var(--line);background:#f1f5f9;color:#475569;border-radius:11px;padding:10px 12px}.panel{overflow:hidden}.panel-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 17px;background:#f8fafc;border-bottom:1px solid var(--line)}.panel-head h3{margin:0;font-size:17px;font-weight:900}.muted{color:var(--muted);font-size:13px}.orders-grid{padding:13px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.order-card{padding:14px;box-shadow:0 5px 18px rgba(15,23,42,.045);min-width:0}.order-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;padding-bottom:10px;border-bottom:1px solid var(--line)}.order-id{font-weight:900;color:#b45309}.order-date{font-size:12px;color:var(--muted);margin-top:2px}.badge{display:inline-flex;align-items:center;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:800;white-space:nowrap}.badge-new{background:#fffbeb;color:#b45309;border:1px solid #fde68a}.badge-confirmed{background:#eef2ff;color:#4f46e5;border:1px solid #c7d2fe}.badge-delivered{background:#ecfdf5;color:#059669;border:1px solid #a7f3d0}.badge-cancelled{background:#fff1f2;color:#e11d48;border:1px solid #fecdd3}.order-main{display:grid;grid-template-columns:1fr auto;gap:8px;padding:11px 0}.customer-name{font-size:17px;font-weight:900}.location-line{font-size:13px;color:#b45309;font-weight:800;margin-top:3px}.address{font-size:13px;color:#64748b;margin-top:4px;overflow-wrap:anywhere}.amount{text-align:right;color:#e11d48;font-weight:900;font-size:19px;white-space:nowrap}.package-line{background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:13px;color:#475569;font-weight:700;overflow-wrap:anywhere}.contact-row,.actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.small-link,.action-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:10px;padding:8px 10px;font-size:12px;font-weight:800}.call{background:#fff7e6;color:#a16207}.wa{background:#ecfdf5;color:#047857}.action-confirm{background:#4f46e5;color:#fff}.action-delivered{background:#059669;color:#fff}.action-cancel{background:#fff1f2;color:#be123c}.action-btn:disabled{opacity:.55;cursor:not-allowed}
+.empty{padding:42px 16px;text-align:center;color:var(--muted)}.empty i{font-size:35px;color:#cbd5e1;display:block;margin-bottom:8px}
+.area-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:0 0 13px}.area-hint{background:#fff7e6;border:1px solid #fde3a7;color:#92400e;border-radius:12px;padding:9px 12px;font-size:13px;font-weight:700}.region-list{display:grid;gap:14px}.region-card{overflow:hidden}.region-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:15px 17px;background:linear-gradient(100deg,#fff,#fffaf0);border-bottom:1px solid var(--line)}.region-head h3{margin:0;font-size:19px;font-weight:900;display:flex;align-items:center;gap:9px}.count-pill{background:#fff7e6;color:#a16207;border:1px solid #fde3a7;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:900;white-space:nowrap}.region-body{padding:12px}.thana-block{border:1px solid var(--line);border-radius:15px;overflow:hidden;margin-bottom:11px}.thana-block:last-child{margin-bottom:0}.thana-head{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left;border:0;background:#f8fafc;padding:11px 13px;color:var(--ink);font-weight:900}.thana-title{display:flex;align-items:center;gap:8px}.thana-title i{color:#d97706}.thana-content{padding:10px;background:#fbfcfe}.thana-content .orders-grid{padding:0;grid-template-columns:repeat(2,minmax(0,1fr))}.thana-content[hidden]{display:none}.chevron{transition:transform .2s}.thana-head[aria-expanded="true"] .chevron{transform:rotate(180deg)}
+.form-card{padding:18px;margin-bottom:16px}.form-card h3{font-size:20px;font-weight:900;margin:0 0 3px}.form-card>p{color:var(--muted);font-size:13px;margin:0 0 15px}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.form-grid.prices{grid-template-columns:repeat(4,minmax(0,1fr))}.field label{display:block;font-size:13px;font-weight:800;color:#334155;margin-bottom:5px}.field input,.field select{min-height:44px}.file-drop{display:block;border:2px dashed #cbd5e1;background:#f8fafc;border-radius:16px;padding:20px;text-align:center;cursor:pointer;color:#475569}.file-drop:hover{background:#fffbeb;border-color:#d97706}.file-drop i{display:block;color:#d97706;font-size:26px;margin-bottom:5px}.file-drop input{display:none}.preview-list{display:flex;gap:9px;flex-wrap:wrap;margin-top:10px}.preview{position:relative;width:78px;height:78px;border-radius:12px;border:2px solid #f59e0b;overflow:hidden;background:#f8fafc}.preview img{width:100%;height:100%;object-fit:contain}.preview button{position:absolute;right:3px;top:3px;border:0;width:22px;height:22px;border-radius:50%;background:#e11d48;color:white}.primary-btn,.secondary-btn{border:0;border-radius:12px;padding:10px 15px;font-weight:900;display:inline-flex;align-items:center;gap:8px}.primary-btn{background:#f59e0b;color:#172033;box-shadow:0 7px 16px #d9770628}.secondary-btn{background:#edf2f7;color:#475569}.product-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;padding:14px}.product-card{padding:13px;box-shadow:0 5px 18px rgba(15,23,42,.045)}.product-image{height:145px;background:#f8fafc;border:1px solid var(--line);border-radius:13px;overflow:hidden;display:grid;place-items:center;margin-bottom:10px}.product-image img{width:100%;height:100%;object-fit:contain}.product-card h4{font-size:16px;margin:0;font-weight:900;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.product-card p{font-size:12px;color:var(--muted);margin:2px 0 10px}.product-meta{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);padding-top:8px;font-weight:800}.product-price{color:#e11d48;font-size:18px}.live-chip{font-size:11px;background:#ecfdf5;color:#047857;padding:4px 8px;border-radius:99px;font-weight:900}.product-actions{display:grid;grid-template-columns:1fr auto auto;gap:6px;margin-top:10px}.product-actions button{border:0;border-radius:9px;padding:8px 9px;font-size:12px;font-weight:800}.go-live{background:#059669;color:#fff}.edit{background:#edf2f7;color:#475569}.delete{background:#fff1f2;color:#be123c}
+footer{text-align:center;color:#94a3b8;font-size:12px;padding:10px}
+.toast{position:fixed;left:50%;bottom:22px;z-index:50;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#172033;color:#fff;padding:10px 16px;border-radius:12px;box-shadow:0 10px 30px #0f172a33;transition:.2s;font-weight:700}.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:900px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.orders-grid,.thana-content .orders-grid{grid-template-columns:1fr}.product-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.form-grid.prices{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.top-inner{padding:10px 12px}.brand h1{font-size:17px}.brand-icon{width:39px;height:39px}.nav{width:100%;display:grid;grid-template-columns:1fr 1fr 1fr}.nav button,.shop-link{justify-content:center;padding:9px 7px;font-size:12px}.nav button i{display:none}main{padding:16px 11px 50px}.view-title h2{font-size:21px}.view-title{align-items:flex-start;flex-direction:column}.stats{gap:8px}.stat{padding:12px;border-radius:16px}.stat-num{font-size:24px}.stat-icon{width:38px;height:38px;font-size:17px}.toolbar{padding:10px}.search-row{width:100%;justify-content:stretch}.search-box{max-width:none}.filters{width:100%}.filter-btn{flex:1 1 auto}.panel-head{padding:12px}.orders-grid{padding:9px}.order-card{padding:12px}.form-grid,.form-grid.prices{grid-template-columns:1fr}.product-grid{grid-template-columns:1fr 1fr;padding:9px;gap:8px}.product-card{padding:9px}.product-image{height:115px}.region-head{padding:12px}.region-head h3{font-size:17px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="top-inner">
+    <div class="brand">
+      <div class="brand-icon"><i class="fa-solid fa-gauge-high"></i></div>
+      <div><h1>Online supper shop</h1><p>অর্ডার ও প্রোডাক্ট ম্যানেজমেন্ট</p></div>
+    </div>
+    <nav class="nav" aria-label="ড্যাশবোর্ড মেনু">
+      <button class="active" data-view="orders"><i class="fa-solid fa-cart-flatbed"></i> অর্ডার</button>
+      <button data-view="areas"><i class="fa-solid fa-map-location-dot"></i> এলাকা অনুযায়ী</button>
+      <button data-view="products"><i class="fa-solid fa-boxes-packing"></i> প্রোডাক্ট</button>
+      <a class="shop-link" href="index.html" target="_blank" rel="noopener"><i class="fa-solid fa-store"></i> শপ</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<section id="view-orders" class="view active">
+  <div class="view-title"><div><h2>অর্ডার ড্যাশবোর্ড</h2><p>নতুন অর্ডার দেখুন, খুঁজুন ও ডেলিভারির অবস্থা আপডেট করুন।</p></div></div>
+  <div class="stats">
+    <div class="stat"><div><div class="stat-label">মোট অর্ডার</div><div class="stat-num" id="statTotalOrders">০</div></div><div class="stat-icon"><i class="fa-solid fa-boxes-stacked"></i></div></div>
+    <div class="stat"><div><div class="stat-label">কনফার্মড</div><div class="stat-num" id="statConfirmedOrders">০</div></div><div class="stat-icon"><i class="fa-solid fa-clipboard-check"></i></div></div>
+    <div class="stat"><div><div class="stat-label">ডেলিভারি সম্পন্ন</div><div class="stat-num" id="statDeliveredOrders">০</div></div><div class="stat-icon"><i class="fa-solid fa-truck-fast"></i></div></div>
+    <div class="stat"><div><div class="stat-label">মোট বিক্রয়</div><div class="stat-num" id="statTotalRevenue">৳০</div></div><div class="stat-icon"><i class="fa-solid fa-bangladeshi-taka-sign"></i></div></div>
+  </div>
+  <div class="toolbar">
+    <div class="filters">
+      <button class="filter-btn active" data-filter="all">সব <span id="countAll">০</span></button>
+      <button class="filter-btn" data-filter="new">নতুন <span id="countNew">০</span></button>
+      <button class="filter-btn" data-filter="confirmed">কনফার্মড <span id="countConfirmed">০</span></button>
+      <button class="filter-btn" data-filter="delivered">ডেলিভার্ড <span id="countDelivered">০</span></button>
+      <button class="filter-btn" data-filter="cancelled">বাতিল <span id="countCancelled">০</span></button>
+    </div>
+    <div class="search-row">
+      <label class="search-box"><i class="fa-solid fa-magnifying-glass"></i><input id="searchInput" type="search" placeholder="নাম, ফোন, অর্ডার আইডি, জেলা বা থানা"></label>
+      <button class="icon-btn" id="refreshOrders" title="রিফ্রেশ" aria-label="রিফ্রেশ"><i id="refreshIcon" class="fa-solid fa-rotate"></i></button>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-head"><h3><i class="fa-solid fa-list-check" style="color:#d97706"></i> অর্ডারের তালিকা</h3><span class="muted" id="tableShowingText">প্রদর্শন হচ্ছে: ০ টি</span></div>
+    <div id="ordersContainer" class="orders-grid"></div>
+    <div id="emptyOrderMessage" class="empty" hidden><i class="fa-solid fa-box-open"></i><b>কোনো অর্ডার পাওয়া যায়নি</b><div class="muted">নতুন অর্ডার এলে এখানে দেখা যাবে।</div></div>
+  </div>
+</section>
+
+<section id="view-areas" class="view">
+  <div class="view-title"><div><h2>জেলা ও থানা অনুযায়ী অর্ডার</h2><p>একই জেলার এবং একই থানা/উপজেলার অর্ডার এক জায়গায় একসাথে সাজানো হয়েছে।</p></div></div>
+  <div class="area-toolbar">
+    <label class="search-box"><i class="fa-solid fa-magnifying-glass"></i><input id="areaSearch" type="search" placeholder="জেলা বা থানা খুঁজুন"></label>
+    <div class="area-hint"><i class="fa-solid fa-circle-info"></i> জেলা খুলে সংশ্লিষ্ট থানার অর্ডার দেখুন</div>
+  </div>
+  <div id="regionList" class="region-list"></div>
+  <div id="emptyRegionMessage" class="empty panel" hidden><i class="fa-solid fa-map"></i><b>এই নামে কোনো জেলা বা থানা পাওয়া যায়নি</b></div>
+</section>
+
+<section id="view-products" class="view">
+  <div class="view-title"><div><h2>প্রোডাক্ট ম্যানেজার</h2><p>পণ্য যোগ করুন, তথ্য বদলান এবং শপে কোন পণ্য দেখাবে সেটি বাছুন।</p></div></div>
+  <div class="form-card" id="contactSettingsCard">
+    <h3><i class="fa-solid fa-envelope" style="color:#d97706"></i> শপের ইমেইল ঠিকানা</h3>
+    <p>এখানে ইমেইল সেভ করলে একই ওয়েবসাইটে খোলা landing page-এর কাস্টমার সাপোর্ট অংশে দেখাবে।</p>
+    <div class="form-grid">
+      <div class="field"><label for="shopEmailInput">কাস্টমার সাপোর্ট ইমেইল</label><input id="shopEmailInput" type="email" autocomplete="email" placeholder="আপনার ইমেইল ঠিকানা লিখুন"></div>
+      <div style="display:flex;align-items:end"><button id="saveShopEmail" type="button" class="primary-btn"><i class="fa-solid fa-floppy-disk"></i> ইমেইল সেভ করুন</button></div>
+    </div>
+    <div id="shopEmailSaveStatus" class="muted" style="margin-top:8px">ইমেইল এখনো যোগ করা হয়নি।</div>
+  </div>
+  <div class="form-card" id="themeSettingsCard">
+    <h3><i class="fa-solid fa-palette" style="color:#d97706"></i> Landing page-এর থিম ও রং</h3>
+    <p>এখান থেকে মূল রং বেছে নিয়ে সেভ করলে একই ওয়েবসাইটে খোলা landing page-এ নতুন থিম দেখা যাবে।</p>
+    <div class="form-grid">
+      <div class="field"><label for="themePreset">থিমের ধরন</label><select id="themePreset"><option value="rose">রোজ ও অ্যাম্বার</option><option value="ocean">ওশান ব্লু</option><option value="forest">ফরেস্ট গ্রিন</option><option value="custom">নিজস্ব রং</option></select></div>
+      <div class="field"><label for="themePrimary">প্রধান রং</label><input id="themePrimary" type="color" value="#be123c" style="height:46px;padding:5px"></div>
+      <div class="field"><label for="themeAccent">সহযোগী রং</label><input id="themeAccent" type="color" value="#f59e0b" style="height:46px;padding:5px"></div>
+      <div style="display:flex;align-items:end"><button id="saveShopTheme" type="button" class="primary-btn"><i class="fa-solid fa-palette"></i> থিম সেভ করুন</button></div>
+    </div>
+    <div id="shopThemeSaveStatus" class="muted" style="margin-top:8px">বর্তমান থিম: রোজ ও অ্যাম্বার</div>
+  </div>
+  <div class="form-card" id="reviewSettingsCard">
+    <h3><i class="fa-solid fa-star" style="color:#d97706"></i> কাস্টমার রিভিউ / সেলস প্রমাণ</h3>
+    <p>বাস্তব রিভিউ লিখুন বা ডেলিভারির প্রমাণের ছবি যোগ করুন। সেভ করলে landing page-এ দেখাবে।</p>
+    <form id="reviewForm">
+      <input type="hidden" id="editReviewId">
+      <div class="form-grid">
+        <div class="field"><label for="reviewType">কনটেন্টের ধরন</label><select id="reviewType"><option value="review">কাস্টমার রিভিউ</option><option value="proof">সেলস / ডেলিভারি প্রমাণ</option></select></div>
+        <div class="field"><label for="reviewRating">রেটিং</label><select id="reviewRating"><option value="5">৫ স্টার</option><option value="4">৪ স্টার</option><option value="3">৩ স্টার</option><option value="2">২ স্টার</option><option value="1">১ স্টার</option></select></div>
+        <div class="field"><label for="reviewName">কাস্টমারের নাম / প্রমাণের শিরোনাম *</label><input id="reviewName" required placeholder="নাম অথবা ডেলিভারি প্রমাণ"></div>
+        <div class="field"><label for="reviewLocation">জেলা / এলাকা</label><input id="reviewLocation" placeholder="যেমন: ফেনী"></div>
+      </div>
+      <div class="field" style="margin-top:12px"><label for="reviewText">রিভিউ বা প্রমাণের বিবরণ *</label><textarea id="reviewText" rows="3" required placeholder="কাস্টমারের অনুমতি নিয়ে রিভিউ বা অর্ডার ডেলিভারির তথ্য লিখুন"></textarea></div>
+      <div class="field" style="margin-top:12px"><label for="reviewPhotoInput">প্রমাণের ছবি (ঐচ্ছিক)</label><input id="reviewPhotoInput" type="file" accept="image/*"><div id="reviewPhotoPreview" class="preview-list"></div></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:13px"><button type="submit" class="primary-btn"><i class="fa-solid fa-floppy-disk"></i> রিভিউ / প্রমাণ সেভ করুন</button><button type="button" id="resetReviewForm" class="secondary-btn">ফর্ম পরিষ্কার</button></div>
+    </form>
+  </div>
+  <div class="panel" style="margin-bottom:16px">
+    <div class="panel-head"><h3><i class="fa-solid fa-comments" style="color:#d97706"></i> প্রকাশিত রিভিউ ও প্রমাণ</h3><span class="muted" id="reviewCount"></span></div>
+    <div id="savedReviewsList" class="product-grid"></div>
+  </div>
+  <div class="form-card">
+    <h3><i class="fa-solid fa-circle-plus" style="color:#d97706"></i> প্রোডাক্ট যোগ বা এডিট</h3>
+    <p>প্রোডাক্টের ছবি কমপ্রেস করে এই ব্রাউজারের localStorage-এ সেভ হবে।</p>
+    <form id="productForm">
+      <input type="hidden" id="editProductId">
+      <div class="form-grid">
+        <div class="field"><label for="prodName">প্রোডাক্টের নাম *</label><input id="prodName" required placeholder="F11-2 Dual Wireless Mic"></div>
+        <div class="field"><label for="prodModel">মডেল বা সংক্ষিপ্ত বিবরণ *</label><input id="prodModel" required placeholder="পণ্যের বিবরণ"></div>
+      </div>
+      <div class="form-grid prices" style="margin-top:12px">
+        <div class="field"><label for="prodPrice">অফার মূল্য *</label><input type="number" id="prodPrice" min="0" required placeholder="600"></div>
+        <div class="field"><label for="prodRegPrice">আগের মূল্য *</label><input type="number" id="prodRegPrice" min="0" required placeholder="1200"></div>
+        <div class="field"><label for="prodComboPrice">২ পিস কম্বো মূল্য *</label><input type="number" id="prodComboPrice" min="0" required placeholder="1150"></div>
+        <div class="field"><label>ডেলিভারি চার্জ (ঢাকা / বাইরে)</label><div style="display:flex;gap:7px"><input type="number" id="prodDhakaDelivery" min="0" required placeholder="70" aria-label="ঢাকার ডেলিভারি"><input type="number" id="prodOutDelivery" min="0" required placeholder="130" aria-label="ঢাকার বাইরের ডেলিভারি"></div></div>
+      </div>
+      <div class="field" style="margin-top:13px"><label>প্রোডাক্টের ছবি (এক বা একাধিক) *</label>
+        <label class="file-drop"><i class="fa-solid fa-cloud-arrow-up"></i><b>ছবি বেছে নিতে চাপুন</b><div class="muted">ছবি কমপ্রেস করে সেভ হবে</div><input type="file" id="imageFileInput" multiple accept="image/*"></label>
+        <div id="imagePreviewContainer" class="preview-list"></div>
+      </div>
+      <div class="field" style="margin-top:13px"><label for="prodFeatures">বক্সের উপাদান/ফিচার (কমা দিয়ে আলাদা করুন)</label><input id="prodFeatures" placeholder="মাইক, রিসিভার, চার্জিং কেবল"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:15px"><button id="btnSaveProduct" class="primary-btn" type="submit"><i class="fa-solid fa-floppy-disk"></i> সংরক্ষণ ও লাইভ করুন</button><button type="button" id="resetProduct" class="secondary-btn">ফর্ম পরিষ্কার</button></div>
+    </form>
+  </div>
+  <div class="panel">
+    <div class="panel-head"><h3><i class="fa-solid fa-boxes-stacked" style="color:#d97706"></i> সংরক্ষিত প্রোডাক্ট</h3><span class="muted" id="productCount"></span></div>
+    <div id="savedProductsList" class="product-grid"></div>
+  </div>
+</section>
+</main>
+<footer>Online supper shop • অর্ডার ম্যানেজমেন্ট</footer>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script>
+'use strict';
+// আগের অ্যাডমিন/শপ কোডের সঙ্গে সামঞ্জস্য রাখতে একই storage key রাখা হয়েছে।
+const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycby21WlzeoiJ4VFJS_lON1D7Nk-_L3ar4s5P5CxTe9W0ZY06TeKnG_yEx-YXDAj9iQ4q/exec";
+const ADMIN_WHATSAPP_NUMBER = "8801724417830";
+const STORAGE_KEY_ORDERS = 'online_supper_shop_orders_data';
+const STATUS_KEY_ORDERS = 'online_supper_shop_order_statuses';
+const STORAGE_KEY_PRODUCTS = 'online_supper_shop_products_data';
+const ACTIVE_PROD_KEY = 'online_supper_shop_active_product_id';
+const CONTACT_EMAIL_KEY = 'online_supper_shop_contact_email';
+const THEME_KEY = 'online_supper_shop_theme_data';
+const DEFAULT_CONTACT_EMAIL = 'onlinesuppershop24hours@gmail.com';
+const REVIEWS_KEY = 'online_supper_shop_reviews_data';
+let allOrders = [];
+let orderStatuses = readJSON(STATUS_KEY_ORDERS, {});
+let currentFilter = 'all';
+let currentUploadedImages = [];
+let currentReviewPhoto = '';
+let toastTimer;
+
+function readJSON(key, fallback) {
+  try { const value = JSON.parse(localStorage.getItem(key)); return value ?? fallback; }
+  catch (_) { return fallback; }
+}
+function esc(value) {
+  return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+const THEME_PRESETS={rose:{primary:'#be123c',accent:'#f59e0b',label:'রোজ ও অ্যাম্বার'},ocean:{primary:'#1d4ed8',accent:'#06b6d4',label:'ওশান ব্লু'},forest:{primary:'#047857',accent:'#84cc16',label:'ফরেস্ট গ্রিন'}};
+function loadShopThemeSetting(){
+  const saved=readJSON(THEME_KEY,{}),preset=Object.entries(THEME_PRESETS).find(([,v])=>v.primary===saved.primary&&v.accent===saved.accent);
+  document.getElementById('themePreset').value=preset?preset[0]:'custom';
+  document.getElementById('themePrimary').value=/^#[0-9a-f]{6}$/i.test(saved.primary||'')?saved.primary:'#be123c';
+  document.getElementById('themeAccent').value=/^#[0-9a-f]{6}$/i.test(saved.accent||'')?saved.accent:'#f59e0b';
+  document.getElementById('shopThemeSaveStatus').textContent='বর্তমান থিম: '+(preset?preset[1].label:'নিজস্ব রং');
+}
+document.getElementById('themePreset').addEventListener('change',event=>{
+  const preset=THEME_PRESETS[event.target.value];
+  if(preset){document.getElementById('themePrimary').value=preset.primary;document.getElementById('themeAccent').value=preset.accent;}
+});
+document.getElementById('saveShopTheme').addEventListener('click',()=>{
+  const theme={primary:document.getElementById('themePrimary').value,accent:document.getElementById('themeAccent').value};
+  try{localStorage.setItem(THEME_KEY,JSON.stringify(theme));localStorage.setItem('online_supper_shop_sync_trigger',Date.now().toString());
+    const preset=Object.entries(THEME_PRESETS).find(([,v])=>v.primary===theme.primary&&v.accent===theme.accent);
+    document.getElementById('shopThemeSaveStatus').textContent='থিম সেভ হয়েছে: '+(preset?preset[1].label:'নিজস্ব রং');showToast('Landing page-এর থিম আপডেট হয়েছে');
+  }catch(error){showToast('থিম সেভ করা যায়নি—browser storage পরীক্ষা করুন');}
+});
+function loadShopEmailSetting() {
+  const savedEmail = localStorage.getItem(CONTACT_EMAIL_KEY);
+  const email = savedEmail === null ? DEFAULT_CONTACT_EMAIL : savedEmail;
+  const input = document.getElementById('shopEmailInput');
+  const status = document.getElementById('shopEmailSaveStatus');
+  if (input) input.value = email;
+  if (status) status.textContent = email ? 'বর্তমান ইমেইল: ' + email : 'ইমেইল এখনো যোগ করা হয়নি।';
+}
+document.getElementById('saveShopEmail').addEventListener('click', () => {
+  const input = document.getElementById('shopEmailInput');
+  const email = input.value.trim();
+  if (email && !input.checkValidity()) {
+    input.reportValidity();
+    return;
+  }
+  if (email) localStorage.setItem(CONTACT_EMAIL_KEY, email);
+  else localStorage.removeItem(CONTACT_EMAIL_KEY);
+  localStorage.setItem('online_supper_shop_sync_trigger', Date.now().toString());
+  loadShopEmailSetting();
+  showToast(email ? 'ইমেইল landing page-এ আপডেট হয়েছে' : 'ইমেইল সরানো হয়েছে');
+});
+
+function showToast(message) {
+  const el = document.getElementById('toast');
+  el.textContent = message;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2600);
+}
+function orderValue(order, english, bangla, fallback='') {
+  return order?.[english] ?? order?.[bangla] ?? fallback;
+}
+function getOrderId(order) {
+  return String(orderValue(order, 'orderId', 'অর্ডার আইডি', 'N/A'));
+}
+function getStatus(order) { return orderStatuses[getOrderId(order)] || 'নতুন অর্ডার'; }
+function getOrderDistrict(order) { return String(orderValue(order, 'district', 'জেলা', 'জেলা দেওয়া নেই')).trim() || 'জেলা দেওয়া নেই'; }
+function getOrderThana(order) { return String(orderValue(order, 'upazila', 'থানা / উপজেলা', 'থানা দেওয়া নেই')).trim() || 'থানা দেওয়া নেই'; }
+function getOrderName(order) { return orderValue(order, 'name', 'কাস্টমার নাম', 'নাম নেই'); }
+function getOrderPhone(order) { return String(orderValue(order, 'phone', 'মোবাইল নম্বর', '')).replace(/['"]/g, '').split('/')[0].trim(); }
+function getOrderAddress(order) { return orderValue(order, 'address', 'পূর্ণাঙ্গ ঠিকানা', ''); }
+function getOrderPackage(order) { return orderValue(order, 'packageType', 'প্যাকেজ', 'পণ্য অর্ডার'); }
+function getOrderTotal(order) { return orderValue(order, 'total', 'মোট প্রদেয় বিল', '৳০'); }
+function getOrderDate(order) { return orderValue(order, 'dateTime', 'তারিখ ও সময়', ''); }
+function normalizedSearch(value) { return String(value ?? '').toLocaleLowerCase('bn-BD').trim(); }
+
+function switchView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === 'view-' + name));
+  document.querySelectorAll('.nav [data-view]').forEach(b => b.classList.toggle('active', b.dataset.view === name));
+  if (name === 'areas') renderRegions();
+  if (name === 'products') renderSavedProducts();
+}
+document.querySelectorAll('.nav [data-view]').forEach(btn => btn.addEventListener('click', () => switchView(btn.dataset.view)));
+
+function setOrderStatus(orderId, status) {
+  orderStatuses[orderId] = status;
+  localStorage.setItem(STATUS_KEY_ORDERS, JSON.stringify(orderStatuses));
+  renderDashboard();
+  if (document.getElementById('view-areas').classList.contains('active')) renderRegions();
+  showToast('অর্ডারের অবস্থা আপডেট হয়েছে');
+}
+function statusMarkup(status) {
+  const map = {
+    'কনফার্মড':['badge-confirmed','কনফার্মড'],
+    'ডেলিভারি সম্পন্ন':['badge-delivered','ডেলিভারি সম্পন্ন'],
+    'বাতিল':['badge-cancelled','বাতিল'],
+    'নতুন অর্ডার':['badge-new','নতুন অর্ডার']
+  };
+  const item = map[status] || map['নতুন অর্ডার'];
+  return '<span class="badge '+item[0]+'">'+item[1]+'</span>';
+}
+function statusActionButtons(orderId, status) {
+  const safeId = esc(orderId);
+  return '<div class="actions">'+
+    '<button class="action-btn action-confirm" data-order-id="'+safeId+'" data-status="কনফার্মড" '+(status==='কনফার্মড'?'disabled':'')+'><i class="fa-solid fa-check"></i> কনফার্ম</button>'+
+    '<button class="action-btn action-delivered" data-order-id="'+safeId+'" data-status="ডেলিভারি সম্পন্ন" '+(status==='ডেলিভারি সম্পন্ন'?'disabled':'')+'><i class="fa-solid fa-truck"></i> ডেলিভারি</button>'+
+    '<button class="action-btn action-cancel" data-order-id="'+safeId+'" data-status="বাতিল" '+(status==='বাতিল'?'disabled':'')+'><i class="fa-solid fa-xmark"></i> বাতিল</button></div>';
+}
+function orderCard(order) {
+  const id = getOrderId(order), status = getStatus(order), name = getOrderName(order);
+  const phone = getOrderPhone(order), district = getOrderDistrict(order), thana = getOrderThana(order);
+  const address = getOrderAddress(order), pkg = getOrderPackage(order), total = getOrderTotal(order);
+  const tel = phone.replace(/[^0-9+]/g, '');
+  const waPhone = tel.startsWith('0') ? '88'+tel : tel;
+  const waText = encodeURIComponent('হ্যালো '+name+', Online supper shop থেকে আপনার অর্ডার নং '+id+' এর বিষয়ে যোগাযোগ করা হয়েছে।');
+  return '<article class="order-card">'+
+    '<div class="order-top"><div><div class="order-id">'+esc(id)+'</div><div class="order-date">'+esc(getOrderDate(order))+'</div></div>'+statusMarkup(status)+'</div>'+
+    '<div class="order-main"><div><div class="customer-name">'+esc(name)+'</div><div class="location-line"><i class="fa-solid fa-location-dot"></i> '+esc(district)+' · '+esc(thana)+'</div><div class="address">'+esc(address)+'</div></div><div class="amount">'+esc(total)+'</div></div>'+
+    '<div class="package-line"><i class="fa-solid fa-box"></i> '+esc(pkg)+'</div>'+
+    '<div class="contact-row">'+(phone?'<a class="small-link call" href="tel:'+esc(tel)+'"><i class="fa-solid fa-phone"></i> কল '+esc(phone)+'</a><a class="small-link wa" href="https://wa.me/'+esc(waPhone)+'?text='+waText+'" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>':'')+'</div>'+
+    statusActionButtons(id,status)+'</article>';
+}
+function getVisibleOrders() {
+  const term = normalizedSearch(document.getElementById('searchInput').value);
+  return allOrders.filter(order => {
+    const id = getOrderId(order), status = getStatus(order);
+    const searchable = [id,getOrderName(order),getOrderPhone(order),getOrderDistrict(order),getOrderThana(order),getOrderAddress(order)].map(normalizedSearch).join(' ');
+    const searchMatch = !term || searchable.includes(term);
+    const filterMatch = currentFilter==='all' ||
+      (currentFilter==='new' && status==='নতুন অর্ডার') ||
+      (currentFilter==='confirmed' && status==='কনফার্মড') ||
+      (currentFilter==='delivered' && status==='ডেলিভারি সম্পন্ন') ||
+      (currentFilter==='cancelled' && status==='বাতিল');
+    return searchMatch && filterMatch;
+  });
+}
+function renderDashboard() {
+  const counts = {'নতুন অর্ডার':0,'কনফার্মড':0,'ডেলিভারি সম্পন্ন':0,'বাতিল':0};
+  let revenue=0;
+  allOrders.forEach(order => {
+    const status=getStatus(order); counts[status]=(counts[status]||0)+1;
+    if(status==='কনফার্মড'||status==='ডেলিভারি সম্পন্ন') revenue += parseInt(String(getOrderTotal(order)).replace(/[^0-9]/g,''),10)||0;
+  });
+  document.getElementById('statTotalOrders').textContent=allOrders.length.toLocaleString('bn-BD');
+  document.getElementById('statConfirmedOrders').textContent=(counts['কনফার্মড']||0).toLocaleString('bn-BD');
+  document.getElementById('statDeliveredOrders').textContent=(counts['ডেলিভারি সম্পন্ন']||0).toLocaleString('bn-BD');
+  document.getElementById('statTotalRevenue').textContent='৳'+revenue.toLocaleString('bn-BD');
+  document.getElementById('countAll').textContent=allOrders.length.toLocaleString('bn-BD');
+  document.getElementById('countNew').textContent=(counts['নতুন অর্ডার']||0).toLocaleString('bn-BD');
+  document.getElementById('countConfirmed').textContent=(counts['কনফার্মড']||0).toLocaleString('bn-BD');
+  document.getElementById('countDelivered').textContent=(counts['ডেলিভারি সম্পন্ন']||0).toLocaleString('bn-BD');
+  document.getElementById('countCancelled').textContent=(counts['বাতিল']||0).toLocaleString('bn-BD');
+  const visible=getVisibleOrders(), container=document.getElementById('ordersContainer'), empty=document.getElementById('emptyOrderMessage');
+  document.getElementById('tableShowingText').textContent='দেখানো হচ্ছে: '+visible.length.toLocaleString('bn-BD')+' টি';
+  container.innerHTML=visible.map(orderCard).join('');
+  empty.hidden=visible.length!==0;
+}
+document.querySelector('.filters').addEventListener('click', e => {
+  const btn=e.target.closest('[data-filter]'); if(!btn)return;
+  currentFilter=btn.dataset.filter;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.toggle('active',b===btn));
+  renderDashboard();
+});
+document.getElementById('searchInput').addEventListener('input',renderDashboard);
+document.getElementById('ordersContainer').addEventListener('click',e=>{
+  const btn=e.target.closest('[data-order-id][data-status]'); if(btn)setOrderStatus(btn.dataset.orderId,btn.dataset.status);
+});
+document.getElementById('regionList').addEventListener('click',e=>{
+  const btn=e.target.closest('[data-order-id][data-status]');
+  if(btn){setOrderStatus(btn.dataset.orderId,btn.dataset.status);return;}
+  const head=e.target.closest('.thana-head');
+  if(head){const content=document.getElementById(head.dataset.target);const open=head.getAttribute('aria-expanded')==='true';head.setAttribute('aria-expanded',String(!open));content.hidden=open;}
+});
+function renderRegions() {
+  const term=normalizedSearch(document.getElementById('areaSearch').value);
+  const grouped=new Map();
+  allOrders.forEach(order=>{
+    const district=getOrderDistrict(order), thana=getOrderThana(order);
+    const hay=normalizedSearch(district+' '+thana);
+    if(term&&!hay.includes(term))return;
+    if(!grouped.has(district))grouped.set(district,new Map());
+    const thanaMap=grouped.get(district);
+    if(!thanaMap.has(thana))thanaMap.set(thana,[]);
+    thanaMap.get(thana).push(order);
+  });
+  const sortedDistricts=[...grouped.keys()].sort((a,b)=>a.localeCompare(b,'bn'));
+  const html=sortedDistricts.map((district,di)=>{
+    const thanaMap=grouped.get(district);
+    const districtOrders=[...thanaMap.values()].flat();
+    const thanaHtml=[...thanaMap.keys()].sort((a,b)=>a.localeCompare(b,'bn')).map((thana,ti)=>{
+      const orders=thanaMap.get(thana), target='thana-'+di+'-'+ti;
+      return '<div class="thana-block"><button class="thana-head" type="button" data-target="'+target+'" aria-expanded="true"><span class="thana-title"><i class="fa-solid fa-map-pin"></i>'+esc(thana)+'</span><span style="display:flex;align-items:center;gap:9px"><span class="count-pill">'+orders.length.toLocaleString('bn-BD')+' অর্ডার</span><i class="fa-solid fa-chevron-down chevron"></i></span></button><div class="thana-content" id="'+target+'"><div class="orders-grid">'+orders.map(orderCard).join('')+'</div></div></div>';
+    }).join('');
+    return '<section class="region-card"><div class="region-head"><h3><i class="fa-solid fa-map-location-dot" style="color:#d97706"></i>'+esc(district)+'</h3><span class="count-pill">'+districtOrders.length.toLocaleString('bn-BD')+' অর্ডার · '+thanaMap.size.toLocaleString('bn-BD')+' থানা</span></div><div class="region-body">'+thanaHtml+'</div></section>';
+  }).join('');
+  document.getElementById('regionList').innerHTML=html;
+  document.getElementById('emptyRegionMessage').hidden=sortedDistricts.length!==0;
+}
+document.getElementById('areaSearch').addEventListener('input',renderRegions);
+
+async function loadOrders() {
+  const icon=document.getElementById('refreshIcon');icon.classList.add('fa-spin');
+  allOrders=readJSON(STORAGE_KEY_ORDERS,[]);
+  if(!Array.isArray(allOrders))allOrders=[];
+  try{
+    const response=await fetch(GOOGLE_SHEET_URL,{method:'GET',cache:'no-store'});
+    if(response.ok){
+      const cloudOrders=await response.json();
+      if(Array.isArray(cloudOrders)&&cloudOrders.length){
+        allOrders=cloudOrders;
+        localStorage.setItem(STORAGE_KEY_ORDERS,JSON.stringify(allOrders));
+      }
+    }
+  }catch(error){console.warn('Google Sheet fetch failed; showing saved orders.',error);}
+  icon.classList.remove('fa-spin');
+  renderDashboard();renderRegions();
+}
+document.getElementById('refreshOrders').addEventListener('click',loadOrders);
+
+// Product management — keeps the original product storage keys and fields.
+function getReviewsList() {
+  const value = readJSON(REVIEWS_KEY, []);
+  return Array.isArray(value) ? value : [];
+}
+function resetReviewForm() {
+  document.getElementById('reviewForm').reset();
+  document.getElementById('editReviewId').value = '';
+  currentReviewPhoto = '';
+  document.getElementById('reviewPhotoPreview').innerHTML = '';
+}
+function renderReviewPhoto() {
+  const box = document.getElementById('reviewPhotoPreview');
+  box.innerHTML = currentReviewPhoto ? '<div class="preview"><img src="'+currentReviewPhoto+'" alt="রিভিউ প্রমাণ"><button type="button" id="removeReviewPhoto" aria-label="ছবি বাদ দিন">×</button></div>' : '';
+  const remove = document.getElementById('removeReviewPhoto');
+  if (remove) remove.addEventListener('click', () => { currentReviewPhoto=''; renderReviewPhoto(); });
+}
+function renderReviewsAdmin() {
+  const reviews = getReviewsList();
+  document.getElementById('reviewCount').textContent = reviews.length.toLocaleString('bn-BD') + 'টি';
+  const container = document.getElementById('savedReviewsList');
+  if (!reviews.length) {
+    container.innerHTML = '<div class="muted" style="padding:14px">এখনো কোনো রিভিউ বা সেলস প্রমাণ যোগ করা হয়নি।</div>';
+    return;
+  }
+  container.innerHTML = reviews.map(item =>
+    '<article class="product-card"><div class="product-image">'+(item.photo?'<img src="'+item.photo+'" alt="প্রমাণের ছবি">':'<i class="fa-solid fa-comment-dots" style="font-size:34px;color:#94a3b8"></i>')+'</div>'+
+    '<span class="live-chip">'+(item.type==='proof'?'সেলস প্রমাণ':'রিভিউ')+'</span><h4 style="margin-top:8px">'+esc(item.name)+'</h4><p>'+esc(item.location||'')+'</p><p style="white-space:normal;overflow-wrap:anywhere">'+esc(item.text)+'</p>'+
+    '<div class="product-actions"><button class="edit" data-review-action="edit" data-review-id="'+esc(item.id)+'">এডিট</button><button class="delete" data-review-action="delete" data-review-id="'+esc(item.id)+'">মুছুন</button></div></article>'
+  ).join('');
+}
+document.getElementById('reviewPhotoInput').addEventListener('change', async event => {
+  const file=event.target.files && event.target.files[0];
+  if(!file)return;
+  try { currentReviewPhoto=await compressImage(file,1000,.72); renderReviewPhoto(); }
+  catch(error) { showToast('ছবিটি প্রসেস করা যায়নি'); }
+  event.target.value='';
+});
+document.getElementById('resetReviewForm').addEventListener('click', resetReviewForm);
+document.getElementById('reviewForm').addEventListener('submit', event => {
+  event.preventDefault();
+  const reviews=getReviewsList(), editId=document.getElementById('editReviewId').value;
+  const item={
+    id:editId||'REV-'+Date.now(),
+    type:document.getElementById('reviewType').value,
+    rating:Number(document.getElementById('reviewRating').value)||5,
+    name:document.getElementById('reviewName').value.trim(),
+    location:document.getElementById('reviewLocation').value.trim(),
+    text:document.getElementById('reviewText').value.trim(),
+    photo:currentReviewPhoto
+  };
+  if(editId){const index=reviews.findIndex(x=>x.id===editId);if(index>=0)reviews[index]=item;}
+  else reviews.unshift(item);
+  try {
+    localStorage.setItem(REVIEWS_KEY,JSON.stringify(reviews));
+    localStorage.setItem('online_supper_shop_sync_trigger',Date.now().toString());
+    resetReviewForm();renderReviewsAdmin();showToast('রিভিউ / প্রমাণ landing page-এ আপডেট হয়েছে');
+  } catch(error) { showToast('স্টোরেজ পূর্ণ—ছবির সাইজ কমিয়ে চেষ্টা করুন'); }
+});
+document.getElementById('savedReviewsList').addEventListener('click', event => {
+  const button=event.target.closest('[data-review-action]');
+  if(!button)return;
+  const reviews=getReviewsList(),item=reviews.find(x=>x.id===button.dataset.reviewId);
+  if(!item)return;
+  if(button.dataset.reviewAction==='delete'){
+    if(!confirm('এই রিভিউ / প্রমাণ মুছবেন?'))return;
+    localStorage.setItem(REVIEWS_KEY,JSON.stringify(reviews.filter(x=>x.id!==item.id)));
+    renderReviewsAdmin();showToast('রিভিউ / প্রমাণ মুছে ফেলা হয়েছে');
+    return;
+  }
+  document.getElementById('editReviewId').value=item.id;
+  document.getElementById('reviewType').value=item.type||'review';
+  document.getElementById('reviewRating').value=String(item.rating||5);
+  document.getElementById('reviewName').value=item.name||'';
+  document.getElementById('reviewLocation').value=item.location||'';
+  document.getElementById('reviewText').value=item.text||'';
+  currentReviewPhoto=item.photo||'';renderReviewPhoto();
+  document.getElementById('reviewSettingsCard').scrollIntoView({behavior:'smooth',block:'start'});
+});
+
+function getProductsList() {
+  let products=readJSON(STORAGE_KEY_PRODUCTS,[]);
+  if(!Array.isArray(products)||products.length===0){
+    products=[{
+      id:'PROD-DEFAULT-1',name:'F11-2 Dual Wireless Mic',
+      model:'ক্লিয়ার ও নয়েজমুক্ত সাউন্ডে অরিজিনাল ওয়্যারলেস মাইক',
+      price:600,regPrice:1200,comboPrice:1150,dhakaDelivery:70,outDelivery:130,
+      images:['https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=600&auto=format&fit=crop&q=80','https://images.unsplash.com/photo-1546776310-eef45dd6d63c?w=600&auto=format&fit=crop&q=80'],
+      features:['২ টি ওয়্যারলেস মাইক','১ টি প্লাগইন রিসিভার','২ টি উইন্ডপ্রুফ ডেটক্যাট','১ টি ফাস্ট চার্জিং কেবল','ইউজার ম্যানুয়াল','অরিজিনাল প্যাকেজিং বক্স']
+    }];
+    localStorage.setItem(STORAGE_KEY_PRODUCTS,JSON.stringify(products));
+  }
+  return products;
+}
+function compressImage(file,maxWidth=800,quality=.75){
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onerror=()=>reject(new Error('ছবি পড়া যায়নি'));
+    reader.onload=e=>{
+      const img=new Image();img.onerror=()=>reject(new Error('ছবিটি খোলা যায়নি'));
+      img.onload=()=>{
+        const scale=Math.min(1,maxWidth/img.width),w=Math.round(img.width*scale),h=Math.round(img.height*scale);
+        const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
+        const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0,w,h);
+        resolve(canvas.toDataURL('image/jpeg',quality));
+      };
+      img.src=e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+function renderImagePreviews(){
+  document.getElementById('imagePreviewContainer').innerHTML=currentUploadedImages.map((src,i)=>'<div class="preview"><img src="'+src+'" alt="ছবি '+(i+1)+'"><button type="button" data-remove-image="'+i+'" aria-label="ছবি বাদ দিন">×</button></div>').join('');
+}
+document.getElementById('imageFileInput').addEventListener('change',async e=>{
+  const files=[...e.target.files];if(!files.length)return;
+  const input=e.target;
+  try{for(const file of files)currentUploadedImages.push(await compressImage(file));renderImagePreviews();showToast(files.length+'টি ছবি যোগ হয়েছে');}
+  catch(error){showToast('একটি ছবি প্রসেস করা যায়নি');}
+  input.value='';
+});
+document.getElementById('imagePreviewContainer').addEventListener('click',e=>{
+  const btn=e.target.closest('[data-remove-image]');if(!btn)return;
+  currentUploadedImages.splice(Number(btn.dataset.removeImage),1);renderImagePreviews();
+});
+function resetProductForm(){
+  document.getElementById('productForm').reset();
+  document.getElementById('editProductId').value='';
+  currentUploadedImages=[];
+  renderImagePreviews();
+  document.getElementById('btnSaveProduct').innerHTML='<i class="fa-solid fa-floppy-disk"></i> সংরক্ষণ ও লাইভ করুন';
+}
+document.getElementById('resetProduct').addEventListener('click',resetProductForm);
+document.getElementById('productForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  if(!currentUploadedImages.length){showToast('প্রোডাক্টের অন্তত একটি ছবি যোগ করুন');return;}
+  const editId=document.getElementById('editProductId').value;
+  const products=getProductsList();
+  const product={
+    id:editId||'PROD-'+Date.now(),
+    name:document.getElementById('prodName').value.trim(),
+    model:document.getElementById('prodModel').value.trim(),
+    price:Number(document.getElementById('prodPrice').value)||0,
+    regPrice:Number(document.getElementById('prodRegPrice').value)||0,
+    comboPrice:Number(document.getElementById('prodComboPrice').value)||0,
+    dhakaDelivery:Number(document.getElementById('prodDhakaDelivery').value)||0,
+    outDelivery:Number(document.getElementById('prodOutDelivery').value)||0,
+    images:[...currentUploadedImages],
+    features:document.getElementById('prodFeatures').value.trim().split(',').map(x=>x.trim()).filter(Boolean)
+  };
+  if(!product.features.length)product.features=['অরিজিনাল প্যাকেজিং বক্স'];
+  if(editId){const index=products.findIndex(p=>p.id===editId);if(index>=0)products[index]=product;}
+  else products.unshift(product);
+  try{
+    localStorage.setItem(STORAGE_KEY_PRODUCTS,JSON.stringify(products));
+    localStorage.setItem(ACTIVE_PROD_KEY,product.id);
+    localStorage.setItem('online_supper_shop_sync_trigger',Date.now().toString());
+    resetProductForm();renderSavedProducts();showToast('প্রোডাক্ট সেভ করে শপে লাইভ করা হয়েছে');
+  }catch(error){showToast('ব্রাউজারের স্টোরেজ পূর্ণ—ছবি/প্রোডাক্ট কমান');}
+});
+function renderSavedProducts(){
+  const products=getProductsList(),activeId=localStorage.getItem(ACTIVE_PROD_KEY)||products[0]?.id;
+  document.getElementById('productCount').textContent=products.length.toLocaleString('bn-BD')+'টি';
+  document.getElementById('savedProductsList').innerHTML=products.map(p=>{
+    const isActive=p.id===activeId;
+    return '<article class="product-card" data-product-card="'+esc(p.id)+'"><div class="product-image"><img src="'+esc(p.images?.[0]||'')+'" alt="'+esc(p.name)+'" onerror="this.style.display=\'none\'"></div><h4 title="'+esc(p.name)+'">'+esc(p.name)+'</h4><p>'+esc(p.model)+'</p><div class="product-meta"><span class="product-price">৳'+Number(p.price||0).toLocaleString('bn-BD')+'</span><span>'+(isActive?'<span class="live-chip"><i class="fa-solid fa-check"></i> লাইভ</span>':'')+'</span></div><div class="product-actions">'+(isActive?'<button class="secondary-btn" disabled>সক্রিয়</button>':'<button class="go-live" data-product-action="live" data-product-id="'+esc(p.id)+'">লাইভ করুন</button>')+'<button class="edit" data-product-action="edit" data-product-id="'+esc(p.id)+'" title="এডিট"><i class="fa-solid fa-pen"></i></button><button class="delete" data-product-action="delete" data-product-id="'+esc(p.id)+'" title="ডিলিট"><i class="fa-solid fa-trash"></i></button></div></article>';
+  }).join('');
+}
+document.getElementById('savedProductsList').addEventListener('click',e=>{
+  const btn=e.target.closest('[data-product-action]');if(!btn)return;
+  const id=btn.dataset.productId, action=btn.dataset.productAction;
+  let products=getProductsList(),product=products.find(p=>p.id===id);
+  if(!product)return;
+  if(action==='live'){
+    localStorage.setItem(ACTIVE_PROD_KEY,id);localStorage.setItem('online_supper_shop_sync_trigger',Date.now().toString());
+    renderSavedProducts();showToast('নির্বাচিত পণ্যটি শপে লাইভ হয়েছে');
+  }else if(action==='edit'){
+    document.getElementById('editProductId').value=product.id;
+    document.getElementById('prodName').value=product.name||'';
+    document.getElementById('prodModel').value=product.model||'';
+    document.getElementById('prodPrice').value=product.price??'';
+    document.getElementById('prodRegPrice').value=product.regPrice??'';
+    document.getElementById('prodComboPrice').value=product.comboPrice??'';
+    document.getElementById('prodDhakaDelivery').value=product.dhakaDelivery??'';
+    document.getElementById('prodOutDelivery').value=product.outDelivery??'';
+    document.getElementById('prodFeatures').value=(product.features||[]).join(', ');
+    currentUploadedImages=[...(product.images||[])];renderImagePreviews();
+    document.getElementById('btnSaveProduct').innerHTML='<i class="fa-solid fa-pen-to-square"></i> পরিবর্তন সেভ করুন';
+    window.scrollTo({top:0,behavior:'smooth'});
+  }else if(action==='delete'){
+    if(!confirm('“'+product.name+'” মুছে ফেলবেন?'))return;
+    products=products.filter(p=>p.id!==id);
+    if(!products.length){showToast('অন্তত একটি পণ্য রাখতে হবে');return;}
+    localStorage.setItem(STORAGE_KEY_PRODUCTS,JSON.stringify(products));
+    if(localStorage.getItem(ACTIVE_PROD_KEY)===id)localStorage.setItem(ACTIVE_PROD_KEY,products[0].id);
+    localStorage.setItem('online_supper_shop_sync_trigger',Date.now().toString());
+    renderSavedProducts();showToast('প্রোডাক্ট মুছে ফেলা হয়েছে');
+  }
+});
+window.addEventListener('storage',e=>{
+  if([STORAGE_KEY_ORDERS,STATUS_KEY_ORDERS,STORAGE_KEY_PRODUCTS,ACTIVE_PROD_KEY,CONTACT_EMAIL_KEY,REVIEWS_KEY,THEME_KEY].includes(e.key)){
+    allOrders=readJSON(STORAGE_KEY_ORDERS,[]);orderStatuses=readJSON(STATUS_KEY_ORDERS,{});
+    renderDashboard();renderRegions();renderSavedProducts();renderReviewsAdmin();
+  }
+});
+document.addEventListener('DOMContentLoaded',()=>{
+  allOrders=readJSON(STORAGE_KEY_ORDERS,[]);
+  if(!Array.isArray(allOrders))allOrders=[];
+  loadShopEmailSetting();loadShopThemeSetting();renderDashboard();renderRegions();getProductsList();renderSavedProducts();renderReviewsAdmin();loadOrders();
+});
+</script>
+</body>
+</html>

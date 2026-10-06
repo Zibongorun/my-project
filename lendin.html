@@ -91,6 +91,9 @@ header{background:linear-gradient(110deg,var(--theme-primary),var(--theme-accent
     </div>
   </section>
 </main>
+<section id="productVideosSection" class="max-w-5xl mx-auto px-4 py-3 hidden">
+  <div class="card p-4 sm:p-5"><h2 class="text-xl sm:text-2xl font-black mb-3"><i class="fa-solid fa-circle-play text-rose-600 mr-2"></i>পণ্যের ভিডিও</h2><div id="productVideoList" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div></div>
+</section>
 <section class="max-w-5xl mx-auto px-4 py-2">
   <div class="card p-5"><h3 class="text-lg sm:text-xl font-black text-center mb-4">📦 বক্সের সাথে যা যা পাবেন</h3><div id="featuresListContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 text-sm font-bold text-slate-700"></div></div>
 </section>
@@ -179,6 +182,8 @@ const THEME_KEY='online_supper_shop_theme_data';
 const DEFAULT_CONTACT_EMAIL='onlinesuppershop24hours@gmail.com';
 const REVIEWS_KEY='online_supper_shop_reviews_data';
 const ORDERS_KEY='online_supper_shop_orders_data';
+const DEFAULT_PRODUCT_IMAGES=["https://zibongorun.github.io/my-project/f11.jpg","https://zibongorun.github.io/my-project/f12.jpg","https://zibongorun.github.io/my-project/f13.jpg"];
+const DEFAULT_PRODUCT_VIDEOS=["https://zibongorun.github.io/my-project/video.mp4","https://zibongorun.github.io/my-project/video2.mp4"];
 const DEFAULT_IMAGE='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="500" height="500"%3E%3Crect width="500" height="500" fill="%23f1f5f9"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" fill="%2364748b" font-size="24" font-family="sans-serif"%3EProduct Image%3C/text%3E%3C/svg%3E';
 const BD_DISTRICTS_DATA={
 "ঢাকা":["ধানমন্ডি","মিরপুর","উত্তরা","মোহাম্মদপুর","গুলশান","বনানী","মতিঝিল","পল্টন","যাত্রাবাড়ী","বাড্ডা","তেজগাঁও","খিলগাঁও","কাকরাইল","শ্যামপুর","লালবাগ","সাভার","ধামরাই","কেরানীগঞ্জ","নবাবগঞ্জ","দোহার"],
@@ -246,7 +251,7 @@ const BD_DISTRICTS_DATA={
 "নেত্রকোণা":["নেত্রকোণা সদর","কেন্দুয়া","পূর্বধলা","মোহনগঞ্জ","দুর্গাপুর","কলমাকান্দা","বারহাট্টা","মদন","খালিয়াজুড়ি","আটপাড়া"],
 "শেরপুর":["শেরপুর সদর","নকলা","নালিতাবাড়ী","ঝিনাইগাতী","শ্রীবরদী"]
 };
-let currentProduct={name:"F11-2 Dual Wireless Mic",model:"ক্লিয়ার ও নয়েজমুক্ত সাউন্ডে অরিজিনাল ওয়্যারলেস মাইক",price:600,regPrice:1200,comboPrice:1150,dhakaDelivery:70,outDelivery:130,images:["https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=800&auto=format&fit=crop&q=80","https://images.unsplash.com/photo-1546776310-eef45dd6d63c?w=800&auto=format&fit=crop&q=80"],features:["২ টি ওয়্যারলেস মাইক","১ টি প্লাগইন রিসিভার","২ টি উইন্ডপ্রুফ ডেটক্যাট","১ টি ফাস্ট চার্জিং কেবল","ইউজার ম্যানুয়াল","অরিজিনাল প্যাকেজিং বক্স"]};
+let currentProduct={name:"F11-2 Dual Wireless Mic",model:"ক্লিয়ার ও নয়েজমুক্ত সাউন্ডে অরিজিনাল ওয়্যারলেস মাইক",price:600,regPrice:1200,comboPrice:1150,dhakaDelivery:70,outDelivery:130,images:["https://zibongorun.github.io/my-project/f11.jpg","https://zibongorun.github.io/my-project/f12.jpg","https://zibongorun.github.io/my-project/f13.jpg"],videos:["https://zibongorun.github.io/my-project/video.mp4","https://zibongorun.github.io/my-project/video2.mp4"],features:["২ টি ওয়্যারলেস মাইক","১ টি প্লাগইন রিসিভার","২ টি উইন্ডপ্রুফ ডেটক্যাট","১ টি ফাস্ট চার্জিং কেবল","ইউজার ম্যানুয়াল","অরিজিনাল প্যাকেজিং বক্স"]};
 let lastLoadedActiveId=null;
 let productImages=[];
 let currentImageIndex=0;
@@ -292,7 +297,7 @@ function applyShopTheme(){
 }
 function loadActiveProductData(){
   const products=Array.isArray(cloudProductList)&&cloudProductList.length?cloudProductList:safeRead(PRODUCT_KEY,[]),activeId=cloudActiveProductId||localStorage.getItem(ACTIVE_PRODUCT_KEY);
-  if(Array.isArray(products)&&products.length){currentProduct=products.find(p=>p.id===activeId)||products[0];lastLoadedActiveId=currentProduct.id||null}
+  if(Array.isArray(products)&&products.length){const selectedProduct=products.find(p=>p.id===activeId)||products[0];const isF11Landing=/f11\s*[-–]?\s*2|wireless\s*mic/i.test(String(selectedProduct.name||''));currentProduct={...selectedProduct,images:isF11Landing?DEFAULT_PRODUCT_IMAGES:(Array.isArray(selectedProduct.images)&&selectedProduct.images.filter(Boolean).length?selectedProduct.images:DEFAULT_PRODUCT_IMAGES),videos:isF11Landing?DEFAULT_PRODUCT_VIDEOS:(Array.isArray(selectedProduct.videos)&&selectedProduct.videos.filter(Boolean).length?selectedProduct.videos:DEFAULT_PRODUCT_VIDEOS)};lastLoadedActiveId=currentProduct.id||null}
   document.title=(currentProduct.name||"Online supper shop")+" - Online supper shop";
   setText("topNoticeText","🔥 আজকের মেগা অফার: মাত্র "+currentProduct.price+" টাকায় অরিজিনাল "+currentProduct.name+"!");
   setText("prodNameDisplay",currentProduct.name);setText("prodSubModelDisplay",currentProduct.model);
@@ -311,6 +316,14 @@ function loadActiveProductData(){
     const dot=document.createElement("button");dot.type="button";dot.setAttribute("aria-label","ছবি "+(index+1));dot.addEventListener("click",()=>{showProductImage(index);restartSlideshow()});dots.appendChild(dot);
   });
   showProductImage(0);restartSlideshow();
+  const videoSection=document.getElementById("productVideosSection"),videoList=document.getElementById("productVideoList");
+  const productVideos=Array.isArray(currentProduct.videos)?currentProduct.videos.filter(src=>typeof src==="string"&&/^https:\/\/.+\.mp4(?:[?#].*)?$/i.test(src)):[];
+  videoList.innerHTML="";
+  productVideos.forEach((src,index)=>{
+    const video=document.createElement("video");video.controls=true;video.playsInline=true;video.preload="metadata";video.className="w-full rounded-xl bg-black border border-slate-200";video.setAttribute("aria-label","পণ্যের ভিডিও "+(index+1));
+    const source=document.createElement("source");source.src=src;source.type="video/mp4";video.appendChild(source);videoList.appendChild(video);
+  });
+  videoSection.classList.toggle("hidden",productVideos.length===0);
   const features=document.getElementById("featuresListContainer");features.innerHTML="";
   (Array.isArray(currentProduct.features)?currentProduct.features:[]).forEach(feature=>{
     const item=document.createElement("div");item.className="soft p-2.5 rounded-xl flex items-center gap-2";

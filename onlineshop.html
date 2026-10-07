@@ -76,7 +76,7 @@ header{background:linear-gradient(110deg,var(--theme-primary),var(--theme-accent
     </div>
     <div class="card p-5 sm:p-7 flex flex-col justify-center gap-4 border-rose-100 bg-gradient-to-br from-white to-rose-50/70">
       <div class="flex justify-between items-center gap-3 border-b border-slate-200 pb-4">
-        <div><span id="regPriceDisplay" class="block text-slate-500 line-through font-bold">পূর্বের মূল্য: ১২০০ টাকা</span><span class="inline-flex mt-2 bg-amber-50 border border-amber-200 text-amber-800 rounded-full px-3 py-1 text-xs font-extrabold">মেগা ডিসকাউন্ট</span></div>
+        <div><span id="regPriceDisplay" class="block text-slate-500 line-through font-bold">পূর্বের মূল্য: ১৫০০ টাকা</span><span class="inline-flex mt-2 bg-amber-50 border border-amber-200 text-amber-800 rounded-full px-3 py-1 text-xs font-extrabold">মেগা ডিসকাউন্ট</span></div>
         <div class="text-right"><span class="block text-xs text-slate-500 font-bold">আজকের অফার মূল্য</span><div id="offerPriceDisplay" class="text-4xl sm:text-5xl font-black text-rose-600">৳৭০০</div></div>
       </div>
       <div class="soft rounded-2xl p-4 space-y-2 text-sm sm:text-base font-bold">
@@ -241,7 +241,7 @@ const BD_DISTRICTS_DATA={
 "নেত্রকোণা":["নেত্রকোণা সদর","কেন্দুয়া","পূর্বধলা","মোহনগঞ্জ","দুর্গাপুর","কলমাকান্দা","বারহাট্টা","মদন","খালিয়াজুড়ি","আটপাড়া"],
 "শেরপুর":["শেরপুর সদর","নকলা","নালিতাবাড়ী","ঝিনাইগাতী","শ্রীবরদী"]
 };
-let currentProduct={name:"F11-2 Dual Wireless Mic",model:"ক্লিয়ার ও নয়েজমুক্ত সাউন্ডে অরিজিনাল ওয়্যারলেস মাইক",price:700,regPrice:1200,comboPrice:1300,dhakaDelivery:70,outDelivery:130,images:["https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=800&auto=format&fit=crop&q=80","https://images.unsplash.com/photo-1546776310-eef45dd6d63c?w=800&auto=format&fit=crop&q=80"],features:["২ টি ওয়্যারলেস মাইক","১ টি প্লাগইন রিসিভার","২ টি উইন্ডপ্রুফ ডেটক্যাট","১ টি ফাস্ট চার্জিং কেবল","ইউজার ম্যানুয়াল","অরিজিনাল প্যাকেজিং বক্স"]};
+let currentProduct={name:"F11-2 Dual Wireless Mic",model:"ক্লিয়ার ও নয়েজমুক্ত সাউন্ডে অরিজিনাল ওয়্যারলেস মাইক",price:700,regPrice:1500,comboPrice:1300,dhakaDelivery:70,outDelivery:130,images:["https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=800&auto=format&fit=crop&q=80","https://images.unsplash.com/photo-1546776310-eef45dd6d63c?w=800&auto=format&fit=crop&q=80"],features:["২ টি ওয়্যারলেস মাইক","১ টি প্লাগইন রিসিভার","২ টি উইন্ডপ্রুফ ডেটক্যাট","১ টি ফাস্ট চার্জিং কেবল","ইউজার ম্যানুয়াল","অরিজিনাল প্যাকেজিং বক্স"]};
 let lastLoadedActiveId=null;
 let productImages=[];
 let currentImageIndex=0;
@@ -277,7 +277,7 @@ function applyShopTheme(){
 function loadActiveProductData(){
   const products=safeRead(PRODUCT_KEY,[]),activeId=localStorage.getItem(ACTIVE_PRODUCT_KEY);
   if(Array.isArray(products)&&products.length){currentProduct=products.find(p=>p.id===activeId)||products[0];lastLoadedActiveId=currentProduct.id||null}
-  if(/F11-2/i.test(String(currentProduct.name||""))){currentProduct={...currentProduct,price:700,comboPrice:1300}}
+  if(/F11-2/i.test(String(currentProduct.name||""))){currentProduct={...currentProduct,price:700,regPrice:1500,comboPrice:1300}}
   document.title=(currentProduct.name||"Online supper shop")+" - Online supper shop";
   setText("topNoticeText","🔥 আজকের মেগা অফার: মাত্র "+currentProduct.price+" টাকায় অরিজিনাল "+currentProduct.name+"!");
   setText("prodNameDisplay",currentProduct.name);setText("prodSubModelDisplay",currentProduct.model);

@@ -167,8 +167,6 @@ const TELEGRAM_CHAT_ID="5670423800";
 const EMAIL_ACCESS_KEY="e8b9b111-0235-4caf-9329-2d2ad95bd086";
 const GOOGLE_SHEET_URL="https://script.google.com/macros/s/AKfycby21WlzeoiJ4VFJS_lON1D7Nk-_L3ar4s5P5CxTe9W0ZY06TeKnG_yEx-YXDAj9iQ4q/exec";
 const ADMIN_WHATSAPP_NUMBER="8801724417830";
-const PRODUCT_KEY='online_supper_shop_products_data';
-const ACTIVE_PRODUCT_KEY='online_supper_shop_active_product_id';
 const CONTACT_EMAIL_KEY='online_supper_shop_contact_email';
 const THEME_KEY='online_supper_shop_theme_data';
 const DEFAULT_CONTACT_EMAIL='onlinesuppershop24hours@gmail.com';
@@ -241,8 +239,7 @@ const BD_DISTRICTS_DATA={
 "নেত্রকোণা":["নেত্রকোণা সদর","কেন্দুয়া","পূর্বধলা","মোহনগঞ্জ","দুর্গাপুর","কলমাকান্দা","বারহাট্টা","মদন","খালিয়াজুড়ি","আটপাড়া"],
 "শেরপুর":["শেরপুর সদর","নকলা","নালিতাবাড়ী","ঝিনাইগাতী","শ্রীবরদী"]
 };
-let currentProduct={name:"F11-2 Dual Wireless Mic",model:"ক্লিয়ার ও নয়েজমুক্ত সাউন্ডে অরিজিনাল ওয়্যারলেস মাইক",price:700,regPrice:1500,comboPrice:1300,dhakaDelivery:70,outDelivery:130,images:["https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=800&auto=format&fit=crop&q=80","https://images.unsplash.com/photo-1546776310-eef45dd6d63c?w=800&auto=format&fit=crop&q=80"],features:["২ টি ওয়্যারলেস মাইক","১ টি প্লাগইন রিসিভার","২ টি উইন্ডপ্রুফ ডেটক্যাট","১ টি ফাস্ট চার্জিং কেবল","ইউজার ম্যানুয়াল","অরিজিনাল প্যাকেজিং বক্স"]};
-let lastLoadedActiveId=null;
+const currentProduct={name:"F11-2 Dual Wireless Mic",model:"ক্লিয়ার ও নয়েজমুক্ত সাউন্ডে অরিজিনাল ওয়্যারলেস মাইক",price:700,regPrice:1500,comboPrice:1300,dhakaDelivery:70,outDelivery:130,images:["https://zibongorun.github.io/my-project/f11.jpg","https://zibongorun.github.io/my-project/f12.jpg","https://zibongorun.github.io/my-project/f13.jpg"],features:["২ টি ওয়্যারলেস মাইক","১ টি প্লাগইন রিসিভার","২ টি উইন্ডপ্রুফ ডেটক্যাট","১ টি ফাস্ট চার্জিং কেবল","ইউজার ম্যানুয়াল","অরিজিনাল প্যাকেজিং বক্স"]};
 let productImages=[];
 let currentImageIndex=0;
 let slideTimer=null;
@@ -275,9 +272,6 @@ function applyShopTheme(){
   document.documentElement.style.setProperty('--theme-accent',accent);
 }
 function loadActiveProductData(){
-  const products=safeRead(PRODUCT_KEY,[]),activeId=localStorage.getItem(ACTIVE_PRODUCT_KEY);
-  if(Array.isArray(products)&&products.length){currentProduct=products.find(p=>p.id===activeId)||products[0];lastLoadedActiveId=currentProduct.id||null}
-  if(/F11-2/i.test(String(currentProduct.name||""))){currentProduct={...currentProduct,price:700,regPrice:1500,comboPrice:1300}}
   document.title=(currentProduct.name||"Online supper shop")+" - Online supper shop";
   setText("topNoticeText","🔥 আজকের মেগা অফার: মাত্র "+currentProduct.price+" টাকায় অরিজিনাল "+currentProduct.name+"!");
   setText("prodNameDisplay",currentProduct.name);setText("prodSubModelDisplay",currentProduct.model);
@@ -408,9 +402,9 @@ document.getElementById("prevImage").addEventListener("click",()=>{showProductIm
 document.getElementById("nextImage").addEventListener("click",()=>{showProductImage(currentImageIndex+1);restartSlideshow()});
 document.getElementById("orderForm").addEventListener("submit",handleCustomerOrderSubmit);
 document.getElementById("closeSuccess").addEventListener("click",()=>{const modal=document.getElementById("successModal");modal.classList.add("hidden");modal.classList.remove("flex")});
-window.addEventListener("storage",event=>{if(!event.key||event.key===PRODUCT_KEY||event.key===ACTIVE_PRODUCT_KEY)loadActiveProductData();if(!event.key||event.key===CONTACT_EMAIL_KEY)updateContactEmail();if(!event.key||event.key===REVIEWS_KEY)renderCustomerReviews();if(!event.key||event.key===THEME_KEY)applyShopTheme()});
-window.addEventListener("focus",()=>{const active=localStorage.getItem(ACTIVE_PRODUCT_KEY);if(active&&active!==lastLoadedActiveId)loadActiveProductData();updateContactEmail()});
-setInterval(()=>{const active=localStorage.getItem(ACTIVE_PRODUCT_KEY);if(active&&active!==lastLoadedActiveId)loadActiveProductData();updateContactEmail();applyShopTheme()},1200);
+window.addEventListener("storage",event=>{if(!event.key||event.key===CONTACT_EMAIL_KEY)updateContactEmail();if(!event.key||event.key===REVIEWS_KEY)renderCustomerReviews();if(!event.key||event.key===THEME_KEY)applyShopTheme()});
+window.addEventListener("focus",updateContactEmail);
+setInterval(()=>{updateContactEmail();applyShopTheme()},1200);
 document.addEventListener("DOMContentLoaded",()=>{initDistricts();loadActiveProductData();updateContactEmail();applyShopTheme();renderCustomerReviews();startTimer();setText("currentYear",new Date().getFullYear())});
 </script>
 </body>

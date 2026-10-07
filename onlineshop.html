@@ -11,8 +11,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
 <style>
 :root{--ink:#152238;--muted:#64748b;--line:#e5eaf1;--rose:#e11d48;--amber:#f59e0b;--green:#059669;--theme-primary:#be123c;--theme-accent:#f59e0b}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{font-family:'Hind Siliguri',sans-serif;background:#f6f8fc;color:var(--ink)}.pulse-btn{animation:pulse 2.4s infinite}@keyframes pulse{0%{box-shadow:0 0 0 0 #e11d4838}70%{box-shadow:0 0 0 13px #e11d4800}100%{box-shadow:0 0 0 0 #e11d4800}}
@@ -79,7 +77,7 @@ header{background:linear-gradient(110deg,var(--theme-primary),var(--theme-accent
     <div class="card p-5 sm:p-7 flex flex-col justify-center gap-4 border-rose-100 bg-gradient-to-br from-white to-rose-50/70">
       <div class="flex justify-between items-center gap-3 border-b border-slate-200 pb-4">
         <div><span id="regPriceDisplay" class="block text-slate-500 line-through font-bold">পূর্বের মূল্য: ১২০০ টাকা</span><span class="inline-flex mt-2 bg-amber-50 border border-amber-200 text-amber-800 rounded-full px-3 py-1 text-xs font-extrabold">মেগা ডিসকাউন্ট</span></div>
-        <div class="text-right"><span class="block text-xs text-slate-500 font-bold">আজকের অফার মূল্য</span><div id="offerPriceDisplay" class="text-4xl sm:text-5xl font-black text-rose-600">৳৬০০</div></div>
+        <div class="text-right"><span class="block text-xs text-slate-500 font-bold">আজকের অফার মূল্য</span><div id="offerPriceDisplay" class="text-4xl sm:text-5xl font-black text-rose-600">৳৭০০</div></div>
       </div>
       <div class="soft rounded-2xl p-4 space-y-2 text-sm sm:text-base font-bold">
         <div class="flex justify-between gap-2"><span><i class="fa-solid fa-truck-fast text-amber-600 mr-2"></i>ঢাকা সিটির ভেতরে চার্জ</span><span id="dhakaDeliveryTag">৳৭০</span></div>
@@ -91,9 +89,6 @@ header{background:linear-gradient(110deg,var(--theme-primary),var(--theme-accent
     </div>
   </section>
 </main>
-<section id="productVideosSection" class="max-w-5xl mx-auto px-4 py-3 hidden">
-  <div class="card p-4 sm:p-5"><h2 class="text-xl sm:text-2xl font-black mb-3"><i class="fa-solid fa-circle-play text-rose-600 mr-2"></i>পণ্যের ভিডিও</h2><div id="productVideoList" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div></div>
-</section>
 <section class="max-w-5xl mx-auto px-4 py-2">
   <div class="card p-5"><h3 class="text-lg sm:text-xl font-black text-center mb-4">📦 বক্সের সাথে যা যা পাবেন</h3><div id="featuresListContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 text-sm font-bold text-slate-700"></div></div>
 </section>
@@ -109,10 +104,10 @@ header{background:linear-gradient(110deg,var(--theme-primary),var(--theme-accent
     <div class="text-center border-b border-slate-200 pb-4 mb-5"><span class="inline-flex bg-rose-600 text-white px-3 py-1 rounded-full text-xs font-extrabold">ক্যাশ অন ডেলিভারি</span><h2 class="text-2xl sm:text-4xl font-black mt-2">অর্ডার কনফার্ম করতে তথ্য দিন</h2><p class="text-sm text-slate-500 mb-0">সঠিক জেলা ও থানা নির্বাচন করুন। কোনো অগ্রিম পেমেন্ট লাগবে না।</p></div>
     <form id="orderForm" class="space-y-4">
       <div><label class="block font-extrabold mb-2">১. প্যাকেজ নির্বাচন করুন</label><div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <label class="package-option cursor-pointer bg-white border-2 border-rose-500 p-3.5 rounded-2xl flex items-center justify-between gap-2"><span class="flex items-center gap-2"><input type="radio" name="orderPackage" value="1" checked><span id="pkgSingleName" class="font-black">1 সেট অফার প্যাক</span></span><span id="pkgSinglePrice" class="text-lg font-black text-rose-600">৳৬০০</span></label>
-        <label class="package-option cursor-pointer bg-white border-2 border-slate-200 p-3.5 rounded-2xl flex items-center justify-between gap-2"><span class="flex items-center gap-2"><input type="radio" name="orderPackage" value="2"><span><b>২ সেট কম্বো প্যাক</b><small class="block text-xs text-amber-700">ফ্রি ডেলিভারি অফার!</small></span></span><span id="pkgComboPrice" class="text-lg font-black text-amber-700">৳১১৫০</span></label>
+        <label class="package-option cursor-pointer bg-white border-2 border-rose-500 p-3.5 rounded-2xl flex items-center justify-between gap-2"><span class="flex items-center gap-2"><input type="radio" name="orderPackage" value="1" checked><span id="pkgSingleName" class="font-black">1 সেট অফার প্যাক</span></span><span id="pkgSinglePrice" class="text-lg font-black text-rose-600">৳৭০০</span></label>
+        <label class="package-option cursor-pointer bg-white border-2 border-slate-200 p-3.5 rounded-2xl flex items-center justify-between gap-2"><span class="flex items-center gap-2"><input type="radio" name="orderPackage" value="2"><span><b>২ সেট কম্বো প্যাক</b></span></span><span id="pkgComboPrice" class="text-lg font-black text-amber-700">৳১৩০০</span></label>
       </div></div>
-      <div><label for="custName" class="block text-sm font-bold text-slate-700 mb-1">আপনার পূর্ণ নাম *</label><input id="custName" type="text" required autocomplete="name" placeholder="মো: রাকিবুল ইসলাম" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-3"></div>
+      <div><label for="custName" class="block text-sm font-bold text-slate-700 mb-1">আপনার পূর্ণ নাম *</label><input id="custName" type="text" required autocomplete="name" placeholder="নয়ন" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-3"></div>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div><label for="custPhone" class="block text-sm font-bold text-slate-700 mb-1">মোবাইল নম্বর (১১ ডিজিট) *</label><input id="custPhone" type="tel" inputmode="numeric" required maxlength="11" autocomplete="tel" placeholder="01XXXXXXXXX" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-3"><span id="phoneError" class="hidden text-xs text-rose-600 font-bold">সঠিক ১১ ডিজিটের মোবাইল নম্বর দিন</span></div>
         <div><label for="custAltPhone" class="block text-sm font-bold text-slate-700 mb-1">বিকল্প মোবাইল (ঐচ্ছিক)</label><input id="custAltPhone" type="tel" inputmode="numeric" maxlength="11" placeholder="01XXXXXXXXX" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-3"></div>
@@ -125,8 +120,8 @@ header{background:linear-gradient(110deg,var(--theme-primary),var(--theme-accent
       <div><label for="custAddress" class="block text-sm font-bold text-slate-700 mb-1">গ্রাম / পাড়া / রোড / বাসা / ল্যান্ডমার্ক *</label><input id="custAddress" required placeholder="যেমন: মসজিদের পাশে অথবা হাউজ #১০, রোড #২" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-3"></div>
       <div><label for="custNote" class="block text-sm font-bold text-slate-700 mb-1">ডেলিভারি নোট (ঐচ্ছিক)</label><input id="custNote" placeholder="যেমন: বিকেলে ডেলিভারি দিলে ভালো হয়" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5"></div>
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs font-bold"><div class="soft p-2.5 rounded-xl text-emerald-700"><i class="fa-solid fa-box-open mr-1"></i> খুলে দেখে মূল্য পরিশোধ</div><div class="soft p-2.5 rounded-xl text-emerald-700"><i class="fa-solid fa-handshake mr-1"></i> ১০০% ক্যাশ অন ডেলিভারি</div><div class="soft p-2.5 rounded-xl text-amber-700"><i class="fa-solid fa-shield-halved mr-1"></i> ৩ দিনের রিপ্লেসমেন্ট</div></div>
-      <div class="soft rounded-2xl p-4 space-y-1.5 font-bold"><div class="flex justify-between text-slate-600"><span>পণ্যের মূল্য</span><span id="billSubtotal" class="text-slate-900">৳৬০০</span></div><div class="flex justify-between text-slate-600"><span>ডেলিভারি (<span id="billLocationTag">সিলেক্ট করুন</span>)</span><span id="billDelivery" class="text-slate-900">৳৭০</span></div><div class="border-t border-slate-200 pt-2 flex justify-between gap-2 text-lg sm:text-xl font-black"><span>সর্বমোট পরিশোধযোগ্য</span><span id="billTotal" class="text-rose-600">৳৬৭০</span></div></div>
-      <button id="btnSubmitOrder" type="submit" class="pulse-btn w-full bg-gradient-to-r from-rose-700 via-rose-600 to-amber-500 text-white text-lg sm:text-2xl font-black py-4 px-4 rounded-2xl shadow-xl flex items-center justify-center gap-2"><i class="fa-solid fa-circle-check"></i> অর্ডার কনফার্ম করুন (৳<span id="btnSubmitPrice">৬৭০</span>)</button>
+      <div class="soft rounded-2xl p-4 space-y-1.5 font-bold"><div class="flex justify-between text-slate-600"><span>পণ্যের মূল্য</span><span id="billSubtotal" class="text-slate-900">৳৭০০</span></div><div class="flex justify-between text-slate-600"><span>ডেলিভারি (<span id="billLocationTag">সিলেক্ট করুন</span>)</span><span id="billDelivery" class="text-slate-900">৳৭০</span></div><div class="border-t border-slate-200 pt-2 flex justify-between gap-2 text-lg sm:text-xl font-black"><span>সর্বমোট পরিশোধযোগ্য</span><span id="billTotal" class="text-rose-600">৳৭৭০</span></div></div>
+      <button id="btnSubmitOrder" type="submit" class="pulse-btn w-full bg-gradient-to-r from-rose-700 via-rose-600 to-amber-500 text-white text-lg sm:text-2xl font-black py-4 px-4 rounded-2xl shadow-xl flex items-center justify-center gap-2"><i class="fa-solid fa-circle-check"></i> অর্ডার কনফার্ম করুন (৳<span id="btnSubmitPrice">৭৭০</span>)</button>
     </form>
   </div>
 </section>
@@ -167,9 +162,6 @@ header{background:linear-gradient(110deg,var(--theme-primary),var(--theme-accent
 
 <script>
 'use strict';
-const FIREBASE_CONFIG={apiKey:'AIzaSyA1sfQ_7u2VD3vDCYDAf4XJYsyt8Rszn9y',authDomain:'online-supper-shop.firebaseapp.com',databaseURL:'https://online-supper-shop-default-rtdb.asia-southeast1.firebasedatabase.app',projectId:'online-supper-shop',storageBucket:'online-supper-shop.firebasestorage.app',messagingSenderId:'104920777541',appId:'1:104920777541:web:b6ab2a696d0878b6bdb42c'};
-let firebaseDb=null;
-try{const app=firebase.apps.length?firebase.app():firebase.initializeApp(FIREBASE_CONFIG);firebaseDb=app.database()}catch(error){console.error('Firebase initialization failed',error)}
 const TELEGRAM_BOT_TOKEN="8831757967:AAGmvxoxzSwio4TTg4bndI0MPmklI9rtZTo";
 const TELEGRAM_CHAT_ID="5670423800";
 const EMAIL_ACCESS_KEY="e8b9b111-0235-4caf-9329-2d2ad95bd086";
@@ -182,8 +174,6 @@ const THEME_KEY='online_supper_shop_theme_data';
 const DEFAULT_CONTACT_EMAIL='onlinesuppershop24hours@gmail.com';
 const REVIEWS_KEY='online_supper_shop_reviews_data';
 const ORDERS_KEY='online_supper_shop_orders_data';
-const DEFAULT_PRODUCT_IMAGES=["https://zibongorun.github.io/my-project/f11.jpg","https://zibongorun.github.io/my-project/f12.jpg","https://zibongorun.github.io/my-project/f13.jpg"];
-const DEFAULT_PRODUCT_VIDEOS=["https://zibongorun.github.io/my-project/video.mp4","https://zibongorun.github.io/my-project/video2.mp4"];
 const DEFAULT_IMAGE='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="500" height="500"%3E%3Crect width="500" height="500" fill="%23f1f5f9"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" fill="%2364748b" font-size="24" font-family="sans-serif"%3EProduct Image%3C/text%3E%3C/svg%3E';
 const BD_DISTRICTS_DATA={
 "ঢাকা":["ধানমন্ডি","মিরপুর","উত্তরা","মোহাম্মদপুর","গুলশান","বনানী","মতিঝিল","পল্টন","যাত্রাবাড়ী","বাড্ডা","তেজগাঁও","খিলগাঁও","কাকরাইল","শ্যামপুর","লালবাগ","সাভার","ধামরাই","কেরানীগঞ্জ","নবাবগঞ্জ","দোহার"],
@@ -251,28 +241,17 @@ const BD_DISTRICTS_DATA={
 "নেত্রকোণা":["নেত্রকোণা সদর","কেন্দুয়া","পূর্বধলা","মোহনগঞ্জ","দুর্গাপুর","কলমাকান্দা","বারহাট্টা","মদন","খালিয়াজুড়ি","আটপাড়া"],
 "শেরপুর":["শেরপুর সদর","নকলা","নালিতাবাড়ী","ঝিনাইগাতী","শ্রীবরদী"]
 };
-let currentProduct={name:"F11-2 Dual Wireless Mic",model:"ক্লিয়ার ও নয়েজমুক্ত সাউন্ডে অরিজিনাল ওয়্যারলেস মাইক",price:600,regPrice:1200,comboPrice:1150,dhakaDelivery:70,outDelivery:130,images:["https://zibongorun.github.io/my-project/f11.jpg","https://zibongorun.github.io/my-project/f12.jpg","https://zibongorun.github.io/my-project/f13.jpg"],videos:["https://zibongorun.github.io/my-project/video.mp4","https://zibongorun.github.io/my-project/video2.mp4"],features:["২ টি ওয়্যারলেস মাইক","১ টি প্লাগইন রিসিভার","২ টি উইন্ডপ্রুফ ডেটক্যাট","১ টি ফাস্ট চার্জিং কেবল","ইউজার ম্যানুয়াল","অরিজিনাল প্যাকেজিং বক্স"]};
+let currentProduct={name:"F11-2 Dual Wireless Mic",model:"ক্লিয়ার ও নয়েজমুক্ত সাউন্ডে অরিজিনাল ওয়্যারলেস মাইক",price:700,regPrice:1200,comboPrice:1300,dhakaDelivery:70,outDelivery:130,images:["https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=800&auto=format&fit=crop&q=80","https://images.unsplash.com/photo-1546776310-eef45dd6d63c?w=800&auto=format&fit=crop&q=80"],features:["২ টি ওয়্যারলেস মাইক","১ টি প্লাগইন রিসিভার","২ টি উইন্ডপ্রুফ ডেটক্যাট","১ টি ফাস্ট চার্জিং কেবল","ইউজার ম্যানুয়াল","অরিজিনাল প্যাকেজিং বক্স"]};
 let lastLoadedActiveId=null;
 let productImages=[];
 let currentImageIndex=0;
 let slideTimer=null;
-let cloudProductList=null,cloudActiveProductId=null,cloudShopTheme=null,cloudContactEmail=null,cloudReviews=[],cloudReviewsLoaded=false,cloudSettingsLoaded={theme:false,email:false};
 function safeRead(key,fallback){try{return JSON.parse(localStorage.getItem(key))||fallback}catch(_){return fallback}}
-function cloudValues(value){if(!value)return[];return (Array.isArray(value)?value:Object.values(value)).filter(item=>item&&!item.__empty)}
-function startShopCloudSync(){
-  if(!firebaseDb)return;
-  const db=firebaseDb;
-  db.ref('shop/products').on('value',snapshot=>{const products=cloudValues(snapshot.val());if(products.length){cloudProductList=products;loadActiveProductData()}},error=>console.error('Product cloud read failed',error));
-  db.ref('shop/activeProductId').on('value',snapshot=>{cloudActiveProductId=snapshot.val()?String(snapshot.val()):null;if(cloudActiveProductId)loadActiveProductData()},error=>console.error('Active product cloud read failed',error));
-  db.ref('shop/theme').on('value',snapshot=>{cloudShopTheme=snapshot.val()||{};cloudSettingsLoaded.theme=true;applyShopTheme()},error=>console.error('Theme cloud read failed',error));
-  db.ref('shop/contactEmail').on('value',snapshot=>{cloudContactEmail=typeof snapshot.val()==='string'?snapshot.val():null;cloudSettingsLoaded.email=true;updateContactEmail()},error=>console.error('Contact cloud read failed',error));
-  db.ref('shop/reviews').on('value',snapshot=>{cloudReviews=cloudValues(snapshot.val());cloudReviewsLoaded=true;renderCustomerReviews()},error=>console.error('Reviews cloud read failed',error));
-}
 function handleImageError(img){if(img.src!==DEFAULT_IMAGE)img.src=DEFAULT_IMAGE}
 function setText(id,text){const el=document.getElementById(id);if(el)el.textContent=text}
 function updateContactEmail(){
   const savedEmail=localStorage.getItem(CONTACT_EMAIL_KEY);
-  const email=(cloudSettingsLoaded.email?(cloudContactEmail??DEFAULT_CONTACT_EMAIL):(savedEmail===null?DEFAULT_CONTACT_EMAIL:savedEmail)).trim();
+  const email=(savedEmail===null?DEFAULT_CONTACT_EMAIL:savedEmail).trim();
   const link=document.getElementById('shopEmailLink');
   const label=document.getElementById('shopEmailText');
   if(!link||!label)return;
@@ -289,15 +268,16 @@ function updateContactEmail(){
   }
 }
 function applyShopTheme(){
-  const theme=cloudSettingsLoaded.theme?cloudShopTheme:safeRead(THEME_KEY,{});
+  const theme=safeRead(THEME_KEY,{});
   const primary=/^#[0-9a-f]{6}$/i.test(theme.primary||'')?theme.primary:'#be123c';
   const accent=/^#[0-9a-f]{6}$/i.test(theme.accent||'')?theme.accent:'#f59e0b';
   document.documentElement.style.setProperty('--theme-primary',primary);
   document.documentElement.style.setProperty('--theme-accent',accent);
 }
 function loadActiveProductData(){
-  const products=Array.isArray(cloudProductList)&&cloudProductList.length?cloudProductList:safeRead(PRODUCT_KEY,[]),activeId=cloudActiveProductId||localStorage.getItem(ACTIVE_PRODUCT_KEY);
-  if(Array.isArray(products)&&products.length){const selectedProduct=products.find(p=>p.id===activeId)||products[0];const isF11Landing=/f11\s*[-–]?\s*2|wireless\s*mic/i.test(String(selectedProduct.name||''));currentProduct={...selectedProduct,images:isF11Landing?DEFAULT_PRODUCT_IMAGES:(Array.isArray(selectedProduct.images)&&selectedProduct.images.filter(Boolean).length?selectedProduct.images:DEFAULT_PRODUCT_IMAGES),videos:isF11Landing?DEFAULT_PRODUCT_VIDEOS:(Array.isArray(selectedProduct.videos)&&selectedProduct.videos.filter(Boolean).length?selectedProduct.videos:DEFAULT_PRODUCT_VIDEOS)};lastLoadedActiveId=currentProduct.id||null}
+  const products=safeRead(PRODUCT_KEY,[]),activeId=localStorage.getItem(ACTIVE_PRODUCT_KEY);
+  if(Array.isArray(products)&&products.length){currentProduct=products.find(p=>p.id===activeId)||products[0];lastLoadedActiveId=currentProduct.id||null}
+  if(/F11-2/i.test(String(currentProduct.name||""))){currentProduct={...currentProduct,price:700,comboPrice:1300}}
   document.title=(currentProduct.name||"Online supper shop")+" - Online supper shop";
   setText("topNoticeText","🔥 আজকের মেগা অফার: মাত্র "+currentProduct.price+" টাকায় অরিজিনাল "+currentProduct.name+"!");
   setText("prodNameDisplay",currentProduct.name);setText("prodSubModelDisplay",currentProduct.model);
@@ -316,14 +296,6 @@ function loadActiveProductData(){
     const dot=document.createElement("button");dot.type="button";dot.setAttribute("aria-label","ছবি "+(index+1));dot.addEventListener("click",()=>{showProductImage(index);restartSlideshow()});dots.appendChild(dot);
   });
   showProductImage(0);restartSlideshow();
-  const videoSection=document.getElementById("productVideosSection"),videoList=document.getElementById("productVideoList");
-  const productVideos=Array.isArray(currentProduct.videos)?currentProduct.videos.filter(src=>typeof src==="string"&&/^https:\/\/.+\.mp4(?:[?#].*)?$/i.test(src)):[];
-  videoList.innerHTML="";
-  productVideos.forEach((src,index)=>{
-    const video=document.createElement("video");video.controls=true;video.playsInline=true;video.preload="metadata";video.className="w-full rounded-xl bg-black border border-slate-200";video.setAttribute("aria-label","পণ্যের ভিডিও "+(index+1));
-    const source=document.createElement("source");source.src=src;source.type="video/mp4";video.appendChild(source);videoList.appendChild(video);
-  });
-  videoSection.classList.toggle("hidden",productVideos.length===0);
   const features=document.getElementById("featuresListContainer");features.innerHTML="";
   (Array.isArray(currentProduct.features)?currentProduct.features:[]).forEach(feature=>{
     const item=document.createElement("div");item.className="soft p-2.5 rounded-xl flex items-center gap-2";
@@ -347,7 +319,7 @@ function restartSlideshow(){
 }
 function renderCustomerReviews(){
   const container=document.getElementById("customerReviewsContainer");
-  let reviews=cloudReviewsLoaded?cloudReviews:safeRead(REVIEWS_KEY,null);
+  let reviews=safeRead(REVIEWS_KEY,null);
   if(reviews===null){
     reviews=[
       {id:"seed-review-1",type:"review",name:"তানভীর হোসাইন",location:"ঢাকা",text:"ডেলিভারি ম্যানের সামনে চেক করে নিয়েছি। সাউন্ড কোয়ালিটি অনেক পরিষ্কার।",rating:5,photo:""},
@@ -379,10 +351,10 @@ function calculateBill(){
   const packageType=selectedPackage(),district=document.getElementById("custDistrict").value;
   const subtotal=packageType==="1"?Number(currentProduct.price)||0:Number(currentProduct.comboPrice)||0;
   let delivery=0,location="সিলেক্ট করুন";
-  if(packageType==="2"){location="ফ্রি ডেলিভারি"}else if(district==="ঢাকা"){delivery=Number(currentProduct.dhakaDelivery)||0;location="ঢাকা সিটি"}else if(district){delivery=Number(currentProduct.outDelivery)||0;location="ঢাকার বাইরে"}else delivery=Number(currentProduct.dhakaDelivery)||0;
+  if(packageType==="2"){location="কম্বো প্যাক"}else if(district==="ঢাকা"){delivery=Number(currentProduct.dhakaDelivery)||0;location="ঢাকা সিটি"}else if(district){delivery=Number(currentProduct.outDelivery)||0;location="ঢাকার বাইরে"}else delivery=Number(currentProduct.dhakaDelivery)||0;
   const total=subtotal+delivery;
   setText("billSubtotal","৳"+subtotal.toLocaleString("bn-BD"));setText("billLocationTag",location);
-  setText("billDelivery",delivery===0?"ফ্রি (৳০)":"৳"+delivery.toLocaleString("bn-BD"));
+  setText("billDelivery","৳"+delivery.toLocaleString("bn-BD"));
   setText("billTotal","৳"+total.toLocaleString("bn-BD"));setText("btnSubmitPrice",total.toLocaleString("bn-BD"));
 }
 function escapeHtml(value){return String(value??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]))}
@@ -401,7 +373,7 @@ async function handleCustomerOrderSubmit(event){
   const district=document.getElementById("custDistrict").value,upazila=document.getElementById("custUpazila").value;
   const union=document.getElementById("custUnion").value.trim(),address=document.getElementById("custAddress").value.trim(),note=document.getElementById("custNote").value.trim();
   const isCombo=selectedPackage()==="2";
-  const packageType=isCombo?"২ সেট কম্বো (৳"+currentProduct.comboPrice+" - ফ্রি ডেলিভারি)":"1 সেট "+currentProduct.name+" (৳"+currentProduct.price+")";
+  const packageType=isCombo?"২ সেট কম্বো (৳"+currentProduct.comboPrice+")":"1 সেট "+currentProduct.name+" (৳"+currentProduct.price+")";
   const subtotal=isCombo?Number(currentProduct.comboPrice)||0:Number(currentProduct.price)||0;
   const delivery=isCombo?0:(district==="ঢাকা"?Number(currentProduct.dhakaDelivery)||0:Number(currentProduct.outDelivery)||0);
   const total=subtotal+delivery,totalText="৳"+total.toLocaleString("bn-BD");
@@ -439,7 +411,7 @@ document.getElementById("closeSuccess").addEventListener("click",()=>{const moda
 window.addEventListener("storage",event=>{if(!event.key||event.key===PRODUCT_KEY||event.key===ACTIVE_PRODUCT_KEY)loadActiveProductData();if(!event.key||event.key===CONTACT_EMAIL_KEY)updateContactEmail();if(!event.key||event.key===REVIEWS_KEY)renderCustomerReviews();if(!event.key||event.key===THEME_KEY)applyShopTheme()});
 window.addEventListener("focus",()=>{const active=localStorage.getItem(ACTIVE_PRODUCT_KEY);if(active&&active!==lastLoadedActiveId)loadActiveProductData();updateContactEmail()});
 setInterval(()=>{const active=localStorage.getItem(ACTIVE_PRODUCT_KEY);if(active&&active!==lastLoadedActiveId)loadActiveProductData();updateContactEmail();applyShopTheme()},1200);
-document.addEventListener("DOMContentLoaded",()=>{initDistricts();loadActiveProductData();updateContactEmail();applyShopTheme();renderCustomerReviews();startShopCloudSync();startTimer();setText("currentYear",new Date().getFullYear())});
+document.addEventListener("DOMContentLoaded",()=>{initDistricts();loadActiveProductData();updateContactEmail();applyShopTheme();renderCustomerReviews();startTimer();setText("currentYear",new Date().getFullYear())});
 </script>
 </body>
 </html>

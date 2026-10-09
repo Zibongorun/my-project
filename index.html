@@ -1,680 +1,123 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="bn">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#f5f7fb">
-<title>Admin Dashboard - Online Supper Shop</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
-<style>
-:root{--ink:#172033;--muted:#64748b;--line:#e3eaf2;--soft:#f5f7fb;--white:#fff;--brand:#d97706;--pink:#e11d48;--green:#059669;--blue:#4f46e5;--shadow:0 12px 32px rgba(15,23,42,.06)}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--soft);color:var(--ink);font-family:'Hind Siliguri',sans-serif}button,input,select{font:inherit}button,a{-webkit-tap-highlight-color:transparent}button{cursor:pointer}a{color:inherit;text-decoration:none}
-.topbar{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);box-shadow:0 8px 24px rgba(15,23,42,.06)}
-.top-inner{max-width:1280px;margin:auto;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
-.brand{display:flex;align-items:center;gap:12px}.brand-icon{width:44px;height:44px;border-radius:15px;background:#fff7e6;color:#b45309;border:1px solid #fde3a7;display:grid;place-items:center;font-size:20px}.brand h1{font-size:20px;line-height:1.1;margin:0;font-weight:900}.brand p{font-size:12px;color:#b45309;font-weight:700;margin:4px 0 0}
-.nav{display:flex;gap:8px;flex-wrap:wrap}.nav button,.shop-link{border:1px solid var(--line);border-radius:12px;background:#f1f5f9;color:#475569;padding:9px 13px;font-weight:800;font-size:14px;display:flex;align-items:center;gap:8px}.nav button.active{background:#f59e0b;color:#172033;border-color:#f59e0b;box-shadow:0 5px 14px #d977062d}.shop-link{background:#e11d48;color:white;border-color:#e11d48}
-main{max-width:1280px;margin:auto;padding:22px 18px 70px}.view{display:none}.view.active{display:block}.view-title{display:flex;align-items:end;justify-content:space-between;gap:12px;margin:4px 0 16px}.view-title h2{font-size:24px;margin:0;font-weight:900}.view-title p{color:var(--muted);font-size:14px;margin:4px 0 0}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin-bottom:16px}.stat,.panel,.order-card,.region-card,.product-card,.form-card{background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow)}.stat{padding:16px;display:flex;align-items:center;justify-content:space-between;gap:10px}.stat-label{font-size:13px;color:var(--muted);font-weight:700}.stat-num{font-size:30px;font-weight:900;line-height:1.2;margin-top:4px}.stat-icon{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;font-size:20px;background:#fff7e6;color:#b45309}.stat:nth-child(2) .stat-icon{background:#eef2ff;color:var(--blue)}.stat:nth-child(3) .stat-icon{background:#ecfdf5;color:var(--green)}.stat:nth-child(4) .stat-icon{background:#fff1f2;color:var(--pink)}
-.toolbar{background:#fff;border:1px solid var(--line);border-radius:18px;padding:13px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:15px;box-shadow:var(--shadow)}.filters{display:flex;gap:7px;flex-wrap:wrap}.filter-btn{border:0;border-radius:10px;padding:8px 11px;background:#f1f5f9;color:#475569;font-size:13px;font-weight:800}.filter-btn.active{background:#f59e0b;color:#172033}.search-row{display:flex;gap:8px;align-items:center;flex:1;justify-content:flex-end}.search-box{position:relative;max-width:340px;width:100%}.search-box i{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:#94a3b8}.search-box input,.field input,.field select,.field textarea{width:100%;border:1px solid #d6dfeb;border-radius:12px;background:#fff;color:var(--ink);padding:10px 12px;outline:none;transition:.18s}.search-box input{padding-left:38px}.search-box input:focus,.field input:focus,.field select:focus,.field textarea:focus{border-color:#d97706;box-shadow:0 0 0 4px #d977061f}.icon-btn{border:1px solid var(--line);background:#f1f5f9;color:#475569;border-radius:11px;padding:10px 12px}.panel{overflow:hidden}.panel-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 17px;background:#f8fafc;border-bottom:1px solid var(--line)}.panel-head h3{margin:0;font-size:17px;font-weight:900}.muted{color:var(--muted);font-size:13px}.orders-grid{padding:13px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.order-card{padding:14px;box-shadow:0 5px 18px rgba(15,23,42,.045);min-width:0}.order-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;padding-bottom:10px;border-bottom:1px solid var(--line)}.order-id{font-weight:900;color:#b45309}.order-date{font-size:12px;color:var(--muted);margin-top:2px}.badge{display:inline-flex;align-items:center;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:800;white-space:nowrap}.badge-new{background:#fffbeb;color:#b45309;border:1px solid #fde68a}.badge-confirmed{background:#eef2ff;color:#4f46e5;border:1px solid #c7d2fe}.badge-delivered{background:#ecfdf5;color:#059669;border:1px solid #a7f3d0}.badge-cancelled{background:#fff1f2;color:#e11d48;border:1px solid #fecdd3}.order-main{display:grid;grid-template-columns:1fr auto;gap:8px;padding:11px 0}.customer-name{font-size:17px;font-weight:900}.location-line{font-size:13px;color:#b45309;font-weight:800;margin-top:3px}.address{font-size:13px;color:#64748b;margin-top:4px;overflow-wrap:anywhere}.amount{text-align:right;color:#e11d48;font-weight:900;font-size:19px;white-space:nowrap}.package-line{background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:13px;color:#475569;font-weight:700;overflow-wrap:anywhere}.contact-row,.actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.small-link,.action-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:10px;padding:8px 10px;font-size:12px;font-weight:800}.call{background:#fff7e6;color:#a16207}.wa{background:#ecfdf5;color:#047857}.action-confirm{background:#4f46e5;color:#fff}.action-delivered{background:#059669;color:#fff}.action-cancel{background:#fff1f2;color:#be123c}.action-btn:disabled{opacity:.55;cursor:not-allowed}
-.empty{padding:42px 16px;text-align:center;color:var(--muted)}.empty i{font-size:35px;color:#cbd5e1;display:block;margin-bottom:8px}
-.area-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:0 0 13px}.area-hint{background:#fff7e6;border:1px solid #fde3a7;color:#92400e;border-radius:12px;padding:9px 12px;font-size:13px;font-weight:700}.region-list{display:grid;gap:14px}.region-card{overflow:hidden}.region-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:15px 17px;background:linear-gradient(100deg,#fff,#fffaf0);border-bottom:1px solid var(--line)}.region-head h3{margin:0;font-size:19px;font-weight:900;display:flex;align-items:center;gap:9px}.count-pill{background:#fff7e6;color:#a16207;border:1px solid #fde3a7;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:900;white-space:nowrap}.region-body{padding:12px}.thana-block{border:1px solid var(--line);border-radius:15px;overflow:hidden;margin-bottom:11px}.thana-block:last-child{margin-bottom:0}.thana-head{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left;border:0;background:#f8fafc;padding:11px 13px;color:var(--ink);font-weight:900}.thana-title{display:flex;align-items:center;gap:8px}.thana-title i{color:#d97706}.thana-content{padding:10px;background:#fbfcfe}.thana-content .orders-grid{padding:0;grid-template-columns:repeat(2,minmax(0,1fr))}.thana-content[hidden]{display:none}.chevron{transition:transform .2s}.thana-head[aria-expanded="true"] .chevron{transform:rotate(180deg)}
-.form-card{padding:18px;margin-bottom:16px}.form-card h3{font-size:20px;font-weight:900;margin:0 0 3px}.form-card>p{color:var(--muted);font-size:13px;margin:0 0 15px}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.form-grid.prices{grid-template-columns:repeat(4,minmax(0,1fr))}.field label{display:block;font-size:13px;font-weight:800;color:#334155;margin-bottom:5px}.field input,.field select{min-height:44px}.file-drop{display:block;border:2px dashed #cbd5e1;background:#f8fafc;border-radius:16px;padding:20px;text-align:center;cursor:pointer;color:#475569}.file-drop:hover{background:#fffbeb;border-color:#d97706}.file-drop i{display:block;color:#d97706;font-size:26px;margin-bottom:5px}.file-drop input{display:none}.preview-list{display:flex;gap:9px;flex-wrap:wrap;margin-top:10px}.preview{position:relative;width:78px;height:78px;border-radius:12px;border:2px solid #f59e0b;overflow:hidden;background:#f8fafc}.preview img{width:100%;height:100%;object-fit:contain}.preview button{position:absolute;right:3px;top:3px;border:0;width:22px;height:22px;border-radius:50%;background:#e11d48;color:white}.primary-btn,.secondary-btn{border:0;border-radius:12px;padding:10px 15px;font-weight:900;display:inline-flex;align-items:center;gap:8px}.primary-btn{background:#f59e0b;color:#172033;box-shadow:0 7px 16px #d9770628}.secondary-btn{background:#edf2f7;color:#475569}.product-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;padding:14px}.product-card{padding:13px;box-shadow:0 5px 18px rgba(15,23,42,.045)}.product-image{height:145px;background:#f8fafc;border:1px solid var(--line);border-radius:13px;overflow:hidden;display:grid;place-items:center;margin-bottom:10px}.product-image img{width:100%;height:100%;object-fit:contain}.product-card h4{font-size:16px;margin:0;font-weight:900;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.product-card p{font-size:12px;color:var(--muted);margin:2px 0 10px}.product-meta{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);padding-top:8px;font-weight:800}.product-price{color:#e11d48;font-size:18px}.live-chip{font-size:11px;background:#ecfdf5;color:#047857;padding:4px 8px;border-radius:99px;font-weight:900}.product-actions{display:grid;grid-template-columns:1fr auto auto;gap:6px;margin-top:10px}.product-actions button{border:0;border-radius:9px;padding:8px 9px;font-size:12px;font-weight:800}.go-live{background:#059669;color:#fff}.edit{background:#edf2f7;color:#475569}.delete{background:#fff1f2;color:#be123c}
-footer{text-align:center;color:#94a3b8;font-size:12px;padding:10px}
-#authGate{position:fixed;inset:0;z-index:1000;background:linear-gradient(145deg,#172033,#334155);display:grid;place-items:center;padding:18px}#authGate[hidden]{display:none}.auth-card{width:min(100%,420px);background:#fff;border-radius:22px;padding:24px;box-shadow:0 24px 80px #0005}.auth-card h2{margin:0 0 5px;font-size:24px}.auth-card p{margin:0 0 16px;color:#64748b}.auth-card label{display:block;font-weight:800;margin:11px 0 5px}.auth-card input{width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:11px}.auth-card button{width:100%;margin-top:15px;justify-content:center}.auth-error{color:#be123c;font-weight:700;margin-top:10px;min-height:22px;font-size:13px}.logout-btn{border:1px solid #fecdd3;background:#fff1f2;color:#be123c;border-radius:10px;padding:9px 12px;font-weight:800}
-.toast{position:fixed;left:50%;bottom:22px;z-index:50;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#172033;color:#fff;padding:10px 16px;border-radius:12px;box-shadow:0 10px 30px #0f172a33;transition:.2s;font-weight:700}.toast.show{opacity:1;transform:translate(-50%,0)}
-@media(max-width:900px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.orders-grid,.thana-content .orders-grid{grid-template-columns:1fr}.product-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.form-grid.prices{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:600px){.top-inner{padding:10px 12px}.brand h1{font-size:17px}.brand-icon{width:39px;height:39px}.nav{width:100%;display:grid;grid-template-columns:1fr 1fr 1fr}.nav button,.shop-link{justify-content:center;padding:9px 7px;font-size:12px}.nav button i{display:none}main{padding:16px 11px 50px}.view-title h2{font-size:21px}.view-title{align-items:flex-start;flex-direction:column}.stats{gap:8px}.stat{padding:12px;border-radius:16px}.stat-num{font-size:24px}.stat-icon{width:38px;height:38px;font-size:17px}.toolbar{padding:10px}.search-row{width:100%;justify-content:stretch}.search-box{max-width:none}.filters{width:100%}.filter-btn{flex:1 1 auto}.panel-head{padding:12px}.orders-grid{padding:9px}.order-card{padding:12px}.form-grid,.form-grid.prices{grid-template-columns:1fr}.product-grid{grid-template-columns:1fr 1fr;padding:9px;gap:8px}.product-card{padding:9px}.product-image{height:115px}.region-head{padding:12px}.region-head h3{font-size:17px}}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#f6f8f5">
+  <meta name="description" content="বাংলাদেশি ছোট ক্রিয়েটরদের জন্য শেখা, সহযোগিতা ও বৈধ আয়ের কাজের কমিউনিটি।">
+  <title>সহযোগী — Creator Community Bangladesh</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='13' fill='%231b684c'/%3E%3Cpath d='M12 21c0-5 3-8 8-8 3 0 5 1 7 3l-3 3c-1-1-2-2-4-2-2 0-4 2-4 4s2 4 4 4c2 0 3-1 4-2l3 3c-2 2-4 3-7 3-5 0-8-3-8-8z' fill='white'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--ink:#18231e;--muted:#718078;--green:#1b684c;--green2:#e5f2e9;--lime:#c8e87a;--line:#e6ebe6;--bg:#f6f8f5;--white:#fff;--gold:#d3922c;--shadow:0 12px 34px rgba(24,45,33,.07)}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font-family:'Hind Siliguri',system-ui,sans-serif;font-size:16px}button,input,textarea,select{font:inherit}button{cursor:pointer}a{color:inherit;text-decoration:none}.shell{max-width:1200px;margin:auto;padding:0 22px}.topbar{height:72px;background:rgba(255,255,255,.92);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5;backdrop-filter:blur(12px)}.topin{height:100%;display:flex;align-items:center;gap:30px}.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:24px;letter-spacing:-.5px}.logo{width:39px;height:39px;border-radius:13px;background:var(--green);display:grid;place-items:center;color:white;font-size:24px}.brand span{color:var(--green)}.search{flex:1;max-width:460px;position:relative}.search input{height:42px;width:100%;padding:0 15px 0 42px;border:1px solid var(--line);border-radius:14px;background:#f9fbf8;outline:none}.search input:focus{border-color:#9fc6ae;box-shadow:0 0 0 3px #e5f2e9}.search i{position:absolute;left:15px;top:11px;color:#809087}.top-actions{margin-left:auto;display:flex;align-items:center;gap:12px}.iconbtn{width:40px;height:40px;border:1px solid var(--line);border-radius:13px;background:white;color:#53635a;position:relative}.dot{position:absolute;top:7px;right:7px;width:7px;height:7px;background:#f27c5b;border:1px solid white;border-radius:50%}.avatar{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:#dceadd;color:#286344;font-weight:700}.btn{border:0;border-radius:12px;padding:10px 16px;font-weight:700;transition:.18s}.btn:hover{transform:translateY(-1px)}.btn-primary{background:var(--green);color:white;box-shadow:0 5px 13px #1b684c25}.btn-primary:hover{background:#15583f}.btn-light{background:white;color:var(--green);border:1px solid #d9e8dd}.btn-sm{padding:7px 12px;font-size:14px;border-radius:10px}.layout{display:grid;grid-template-columns:220px minmax(0,1fr) 285px;gap:24px;padding-top:26px;padding-bottom:50px}.sidebar{position:sticky;top:96px;align-self:start}.profile-mini,.sidebox,.card{background:var(--white);border:1px solid var(--line);border-radius:18px;box-shadow:0 2px 8px rgba(30,50,37,.025)}.profile-mini{padding:17px}.profile-row{display:flex;align-items:center;gap:11px}.avatar.big{height:46px;width:46px;font-size:19px;background:#d9ebdf}.tiny{font-size:13px;color:var(--muted)}.profile-name{font-weight:700}.profile-metrics{display:flex;border-top:1px solid var(--line);margin-top:15px;padding-top:12px;justify-content:space-between;text-align:center;font-size:13px;color:var(--muted)}.profile-metrics b{display:block;color:var(--ink);font-size:16px}.nav{display:grid;gap:5px;margin:16px 0}.nav a{padding:10px 13px;border-radius:12px;color:#5c6c63;display:flex;align-items:center;gap:12px;font-weight:600}.nav a.active,.nav a:hover{background:var(--green2);color:var(--green)}.navicon{width:22px;text-align:center;font-size:18px}.sidebox{padding:16px;margin-top:12px}.sidebox h4{margin:0 0 9px;font-size:15px}.sidebox p{color:var(--muted);font-size:13px;line-height:1.55;margin:0}.notice{background:#f4f8e9;border:1px solid #e5edcf;border-radius:14px;padding:13px;margin-top:13px;font-size:13px;line-height:1.55;color:#586743}.mobile-nav{display:none}.main{min-width:0}.welcome{padding:24px 25px;background:linear-gradient(115deg,#174f3d,#247552 70%,#3d8b61);color:white;border-radius:21px;position:relative;overflow:hidden;box-shadow:var(--shadow)}.welcome:after{content:'✳';position:absolute;right:18px;top:-58px;font-size:250px;line-height:1;color:#ffffff0d}.welcome-inner{position:relative;z-index:1;max-width:600px}.eyebrow{font-size:13px;color:#d6e9d8;font-weight:600}.welcome h1{font-size:29px;line-height:1.25;margin:5px 0 8px;letter-spacing:-.3px}.welcome p{margin:0;color:#dcebe0;font-size:15px;max-width:525px}.welcome .btn{margin-top:16px;background:var(--lime);color:#1b3325}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin:16px 0 20px}.stat{background:white;border:1px solid var(--line);border-radius:15px;padding:13px 15px}.stat label{font-size:13px;color:var(--muted)}.stat strong{display:block;font-size:21px;line-height:1.3}.stat small{color:var(--green);font-size:12px}.section-head{display:flex;align-items:center;gap:12px;justify-content:space-between;margin:23px 0 12px}.section-head h2{font-size:20px;margin:0}.section-head p{margin:1px 0 0;color:var(--muted);font-size:13px}.tabs{display:flex;gap:6px;background:#eaf0eb;padding:4px;border-radius:12px}.tab{border:0;background:transparent;color:#607066;border-radius:9px;padding:7px 11px;font-weight:600;font-size:14px}.tab.active{background:white;color:var(--green);box-shadow:0 2px 5px #253e2d13}.feed{display:grid;gap:12px}.post{padding:17px}.posttop{display:flex;align-items:center;gap:11px}.posttop .avatar{flex:none}.grow{flex:1;min-width:0}.postname{font-weight:700;line-height:1.2}.postmeta{font-size:12px;color:var(--muted)}.tag{font-size:12px;border-radius:99px;background:#f2f6ef;color:#4b7358;padding:4px 9px;font-weight:600;white-space:nowrap}.post h3{font-size:17px;margin:13px 0 5px}.post p{margin:0;color:#59685f;line-height:1.55;font-size:14px}.post-actions{display:flex;align-items:center;gap:9px;border-top:1px solid var(--line);margin-top:14px;padding-top:12px}.textbtn{background:transparent;border:0;color:#52655a;font-weight:600;font-size:14px;padding:5px 8px;border-radius:8px}.textbtn:hover{background:#f0f5f1;color:var(--green)}.rightcol{display:grid;align-content:start;gap:14px}.card{padding:17px}.cardtitle{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.cardtitle h3{margin:0;font-size:17px}.cardtitle button{background:none;border:0;color:var(--green);font-size:13px;font-weight:700}.campaign{padding:11px 0;border-top:1px solid var(--line)}.campaign:first-of-type{border-top:0;padding-top:0}.campaign-title{font-weight:700;font-size:14px;line-height:1.4}.campaign-meta{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;margin:4px 0 9px}.pay{color:var(--green);font-weight:700}.campaign .btn{width:100%}.creator{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line)}.creator:first-of-type{border:0;padding-top:0}.creator .avatar{width:37px;height:37px}.creatorinfo{flex:1;min-width:0}.creatorinfo b{display:block;font-size:14px}.creatorinfo small{color:var(--muted)}.outline{border:1px solid #dce9df;background:white;color:var(--green);border-radius:9px;padding:6px 9px;font-weight:700;font-size:12px}.trust{background:#eef5f0;border:1px solid #dfece2;border-radius:14px;padding:13px;color:#496552;font-size:13px;line-height:1.5}.trust strong{color:#294a34}.modal-backdrop{position:fixed;inset:0;z-index:20;background:#101a15a6;display:none;align-items:center;justify-content:center;padding:18px}.modal-backdrop.open{display:flex}.modal{width:min(510px,100%);background:white;border-radius:20px;padding:22px;box-shadow:0 25px 60px #1118;max-height:90vh;overflow:auto}.modalhead{display:flex;justify-content:space-between;align-items:center}.modalhead h2{font-size:21px;margin:0}.close{width:34px;height:34px;background:#f1f4f1;border:0;border-radius:10px;font-size:20px;color:#526157}.modal label{display:block;font-weight:600;margin:13px 0 5px;font-size:14px}.modal textarea,.modal input,.modal select{width:100%;border:1px solid #dce4dd;border-radius:11px;padding:11px 12px;outline:none}.modal textarea{min-height:105px;resize:vertical}.modal textarea:focus,.modal input:focus,.modal select:focus{border-color:#81b196;box-shadow:0 0 0 3px #e8f3eb}.modal .btn{width:100%;margin-top:15px}.modal-note{font-size:12px;color:var(--muted);line-height:1.5}.toast{position:fixed;bottom:22px;left:50%;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#183e2e;color:white;padding:11px 17px;border-radius:12px;z-index:30;transition:.22s;box-shadow:var(--shadow)}.toast.show{opacity:1;transform:translate(-50%,0)}.empty{padding:30px;text-align:center;color:var(--muted)}.footnote{text-align:center;color:#8a968d;font-size:12px;margin-top:15px}
+    @media(max-width:1000px){.layout{grid-template-columns:190px minmax(0,1fr);gap:17px}.rightcol{grid-column:2;grid-template-columns:1fr 1fr}.rightcol .trust{grid-column:1/-1}.topin{gap:18px}}
+    @media(max-width:680px){body{padding-bottom:76px}.shell{padding:0 14px}.topbar{height:62px}.topin{gap:10px}.brand{font-size:21px}.logo{width:35px;height:35px}.search{max-width:none}.search input{height:38px;border-radius:12px;padding-left:36px;font-size:13px}.search i{left:12px;top:9px}.top-actions .iconbtn{display:none}.top-actions .btn{display:none}.top-actions{margin-left:0}.avatar{width:34px;height:34px}.layout{display:block;padding-top:15px}.sidebar{display:none}.welcome{padding:21px 19px;border-radius:18px}.welcome h1{font-size:25px}.welcome p{font-size:14px;max-width:94%}.welcome:after{right:-25px;top:-24px;font-size:170px}.stats{gap:7px;margin:12px 0 18px}.stat{padding:10px 10px;border-radius:13px}.stat label{font-size:11px}.stat strong{font-size:18px}.stat small{font-size:10px}.section-head{align-items:flex-start;flex-direction:column;gap:9px;margin-top:20px}.section-head h2{font-size:19px}.tabs{max-width:100%;overflow:auto}.tab{white-space:nowrap;padding:6px 10px;font-size:13px}.post{padding:14px}.post h3{font-size:16px}.post p{font-size:13px}.post-actions{gap:4px}.rightcol{display:grid;grid-template-columns:1fr;margin-top:18px}.rightcol .trust{grid-column:auto}.mobile-nav{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:8;background:#fff;border-top:1px solid var(--line);padding:7px 8px max(7px,env(safe-area-inset-bottom));justify-content:space-around}.mobile-nav a{display:grid;justify-items:center;gap:0;color:#829087;font-size:10px;min-width:52px}.mobile-nav a span{font-size:20px;line-height:1.2}.mobile-nav a.active{color:var(--green);font-weight:700}.footnote{margin-bottom:10px}}
+    .auth-gate{position:fixed;inset:0;z-index:50;background:rgba(15,28,20,.72);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:16px;overflow:auto}.auth-card{width:min(500px,100%);max-height:95vh;overflow:auto;background:white;border-radius:23px;padding:26px;box-shadow:0 24px 80px #0004}.auth-card h1{font-size:25px;line-height:1.25;margin:18px 0 7px}.auth-card p{color:#617067;line-height:1.55}.auth-card ol{padding-left:22px;color:#344b3b;line-height:1.65}.auth-card code{background:#eef4ef;padding:2px 5px;border-radius:5px}.auth-card label{display:block;font-weight:600;margin:12px 0 5px}.auth-card input,.auth-card select{width:100%;height:44px;border:1px solid #dce4dd;border-radius:11px;padding:0 12px;background:white}.auth-card #authSubmit{width:100%;margin-top:17px}.auth-message{display:none;margin:12px 0;padding:10px 12px;border-radius:11px;background:#fff4e4;color:#785018;font-size:14px}.auth-message.show{display:block}.auth-link{display:block;border:0;background:none;color:var(--green);font-weight:700;margin:11px auto 0;padding:5px}.auth-foot{border-top:1px solid var(--line);padding-top:13px;margin-top:18px;color:#7c8c80;font-size:12px;text-align:center}.verify-icon{font-size:42px;color:var(--green);margin-top:15px}.auth-card #verifyPanel .btn{width:100%;margin-top:12px}.auth-card [hidden]{display:none!important}.creator-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line)}.creator-row:first-child{border:0}.creator-row .avatar{flex:none}.creator-row .creatorinfo{flex:1;min-width:0}.creator-row button{white-space:nowrap}.empty{background:#fff;border:1px solid var(--line);border-radius:14px}.post-controls{display:flex;gap:8px;flex-wrap:wrap}
+  </style>
 </head>
 <body>
-<div id="authGate">
-  <form class="auth-card" id="adminLoginForm">
-    <div class="brand-icon" style="margin-bottom:12px"><i class="fa-solid fa-lock"></i></div>
-    <h2>অ্যাডমিন লগইন</h2><p>শপের তথ্য আপডেট করতে অ্যাডমিন ইমেইল ও পাসওয়ার্ড দিন।</p>
-    <label for="adminEmail">ইমেইল</label><input id="adminEmail" type="email" autocomplete="username" required>
-    <label for="adminPassword">পাসওয়ার্ড</label><input id="adminPassword" type="password" autocomplete="current-password" required>
-    <button class="primary-btn" type="submit"><i class="fa-solid fa-right-to-bracket"></i> লগইন</button>
-    <div id="authError" class="auth-error" role="status"></div>
-  </form>
-</div>
-<header class="topbar">
-  <div class="top-inner">
-    <div class="brand">
-      <div class="brand-icon"><i class="fa-solid fa-gauge-high"></i></div>
-      <div><h1>Online supper shop</h1><p>অর্ডার ও প্রোডাক্ট ম্যানেজমেন্ট</p></div>
-    </div>
-    <nav class="nav" aria-label="ড্যাশবোর্ড মেনু">
-      <button class="active" data-view="orders"><i class="fa-solid fa-cart-flatbed"></i> অর্ডার</button>
-      <button data-view="areas"><i class="fa-solid fa-map-location-dot"></i> এলাকা অনুযায়ী</button>
-      <button data-view="products"><i class="fa-solid fa-boxes-packing"></i> প্রোডাক্ট</button>
-      <a class="shop-link" href="onlineshop.html" target="_blank" rel="noopener"><i class="fa-solid fa-store"></i> শপ</a>
-      <button class="logout-btn" id="adminLogout" type="button"><i class="fa-solid fa-arrow-right-from-bracket"></i> লগআউট</button>
-    </nav>
+  <header class="topbar"><div class="shell topin">
+    <a class="brand" href="#home" aria-label="সহযোগী হোম"><span class="logo">স</span>সহ<span>যোগী</span></a>
+    <label class="search"><i>⌕</i><input id="searchInput" placeholder="ক্রিয়েটর বা কনটেন্ট খুঁজুন" aria-label="খুঁজুন"></label>
+    <div class="top-actions"><button class="iconbtn" id="openInbox" aria-label="বার্তা">✉<span class="dot"></span></button><button class="btn btn-primary btn-sm" data-open="createModal">＋ পোস্ট দিন</button><button class="avatar" title="আপনার প্রোফাইল" data-open="profileModal" style="border:0">আ</button></div>
+  </div></header>
+  <div class="shell layout" id="home">
+    <aside class="sidebar">
+      <div class="profile-mini"><div class="profile-row"><div class="avatar big">আ</div><div><div class="profile-name">আপনার প্রোফাইল</div><div class="tiny">নতুন ক্রিয়েটর</div></div></div><div class="profile-metrics"><div><b>১২</b>সহযোগী</div><div><b>৪</b>পোস্ট</div><div><b>২</b>কাজ</div></div></div>
+      <nav class="nav"><a class="active" href="#feed"><span class="navicon">⌂</span>কমিউনিটি</a><a href="#discover"><span class="navicon">⌕</span>ক্রিয়েটর খুঁজুন</a><a href="#campaigns"><span class="navicon">▣</span>আয়ের কাজ</a><a href="#saved" data-open="savedModal"><span class="navicon">♡</span>সেভ করা পোস্ট</a><a href="#profile" data-open="profileModal"><span class="navicon">◉</span>আমার প্রোফাইল</a></nav>
+      <div class="sidebox"><h4>এই সপ্তাহের লক্ষ্য</h4><p>৩ জন ক্রিয়েটরকে গঠনমূলক মতামত দিন, আর নিজের কনটেন্টের জন্য ১টি পরামর্শ নিন।</p><div class="notice">🌱 এখানে সাপোর্ট মানে শেখা, feedback ও সহযোগিতা—লাইক-ফলো বিনিময় নয়।</div></div>
+    </aside>
+    <main class="main">
+      <section class="welcome"><div class="welcome-inner"><div class="eyebrow">বাংলাদেশি ক্রিয়েটর কমিউনিটি</div><h1>একসাথে শিখি, ভালো কনটেন্ট বানাই</h1><p>ছোট ক্রিয়েটরদের জন্য গঠনমূলক feedback, যৌথ কাজ এবং admin-প্রকাশিত campaign-এ আবেদনের সুযোগ।</p><button class="btn" data-open="createModal">＋ আপনার কনটেন্ট শেয়ার করুন</button></div></section>
+      <section class="stats" aria-label="সাপ্তাহিক অগ্রগতি"><div class="stat"><label>কমিউনিটি পোস্ট</label><strong id="postCount">০</strong><small>সাম্প্রতিক সক্রিয় পোস্ট</small></div><div class="stat"><label>উপলভ্য campaign</label><strong id="campaignCount">০</strong><small>ব্যবসা পোস্ট করলে এখানে দেখাবে</small></div><div class="stat"><label>আপনার আবেদন</label><strong id="applicationCount">০</strong><small>আপনার account-এর কাজ</small></div></section>
+      <section id="feed"><div class="section-head"><div><h2>ক্রিয়েটর কমিউনিটি</h2><p>কাজের মতামত দিন—সৎ, নির্দিষ্ট ও সহায়কভাবে।</p></div><div class="tabs" role="tablist"><button class="tab active" data-filter="all">সবার পোস্ট</button><button class="tab" data-filter="feedback">feedback চাই</button><button class="tab" data-filter="collab">সহযোগিতা</button></div></div>
+        <div class="feed" id="feedList"><div class="card empty">কমিউনিটি পোস্ট লোড হচ্ছে…</div></div>
+      </section>
+      <section id="adminPanel" class="card" hidden style="margin-top:18px"><div class="cardtitle"><h3>অ্যাডমিন কন্ট্রোল</h3><span class="tag">শুধু অনুমোদিত অ্যাডমিন</span></div><p class="modal-note">ব্যবসার campaign প্রকাশ করুন এবং creator-দের আবেদন দেখুন। পারিশ্রমিকের কথা campaign-এ স্পষ্ট করে লিখুন।</p><label for="campaignName">Campaign-এর নাম</label><input id="campaignName" maxlength="90" placeholder="যেমন: পণ্যের জন্য UGC ভিডিও"><label for="campaignDescription">কাজের বিবরণ ও শর্ত</label><textarea id="campaignDescription" maxlength="1200" placeholder="কাজ, জমাদান, কনটেন্টের ব্যবহার ও বাছাইয়ের শর্ত লিখুন"></textarea><div class="post-controls"><input id="campaignReward" maxlength="50" placeholder="পারিশ্রমিক/পুরস্কার"><input id="campaignDeadline" maxlength="40" placeholder="শেষ তারিখ"><select id="campaignType"><option>ভিডিও তৈরি</option><option>পণ্য review ও feedback</option><option>ছবি ও ক্যাপশন</option><option>user testing</option><option>অন্যান্য সৃজনশীল কাজ</option></select></div><button class="btn btn-primary" id="publishCampaign" style="margin-top:10px">Campaign প্রকাশ করুন</button><h3 style="margin:20px 0 8px">Creator আবেদন</h3><div id="adminApplications" class="empty">আবেদন লোড হচ্ছে…</div></section>
+      <p class="footnote">প্ল্যাটফর্মে campaign-এর শর্ত ও পারিশ্রমিক campaign প্রকাশকারী নির্ধারণ করেন; বাইরের social media monetization নিশ্চিত নয়।</p>
+    </main>
+    <aside class="rightcol">
+      <section class="card" id="campaigns"><div class="cardtitle"><h3>আয়ের কাজ</h3><button id="refreshCampaigns">↻ আপডেট</button></div>
+        <div id="campaignList"><div class="empty">প্রকাশিত campaign এখানে দেখাবে।</div></div>
+      </section>
+      <section class="card" id="discover"><div class="cardtitle"><h3>ক্রিয়েটর খুঁজুন</h3><button id="refreshCreators">↻ আপডেট</button></div>
+        <div id="creatorList"><div class="empty">ক্রিয়েটর প্রোফাইল লোড হচ্ছে…</div></div>
+      </section>
+      <div class="trust"><strong>কমিউনিটির নিয়ম</strong><br>এখানে feedback, সহযোগিতা ও সত্যিকারের paid কাজের সুযোগ। লাইক, ফলো, সাবস্ক্রাইব বা ভিউ বিনিময়ের কাজ অনুমোদিত নয়।</div>
+    </aside>
   </div>
-</header>
-
-<main>
-<section id="view-orders" class="view active">
-  <div class="view-title"><div><h2>অর্ডার ড্যাশবোর্ড</h2><p>নতুন অর্ডার দেখুন, খুঁজুন ও ডেলিভারির অবস্থা আপডেট করুন।</p></div></div>
-  <div class="stats">
-    <div class="stat"><div><div class="stat-label">মোট অর্ডার</div><div class="stat-num" id="statTotalOrders">০</div></div><div class="stat-icon"><i class="fa-solid fa-boxes-stacked"></i></div></div>
-    <div class="stat"><div><div class="stat-label">কনফার্মড</div><div class="stat-num" id="statConfirmedOrders">০</div></div><div class="stat-icon"><i class="fa-solid fa-clipboard-check"></i></div></div>
-    <div class="stat"><div><div class="stat-label">ডেলিভারি সম্পন্ন</div><div class="stat-num" id="statDeliveredOrders">০</div></div><div class="stat-icon"><i class="fa-solid fa-truck-fast"></i></div></div>
-    <div class="stat"><div><div class="stat-label">মোট বিক্রয়</div><div class="stat-num" id="statTotalRevenue">৳০</div></div><div class="stat-icon"><i class="fa-solid fa-bangladeshi-taka-sign"></i></div></div>
-  </div>
-  <div class="toolbar">
-    <div class="filters">
-      <button class="filter-btn active" data-filter="all">সব <span id="countAll">০</span></button>
-      <button class="filter-btn" data-filter="new">নতুন <span id="countNew">০</span></button>
-      <button class="filter-btn" data-filter="confirmed">কনফার্মড <span id="countConfirmed">০</span></button>
-      <button class="filter-btn" data-filter="delivered">ডেলিভার্ড <span id="countDelivered">০</span></button>
-      <button class="filter-btn" data-filter="cancelled">বাতিল <span id="countCancelled">০</span></button>
-    </div>
-    <div class="search-row">
-      <label class="search-box"><i class="fa-solid fa-magnifying-glass"></i><input id="searchInput" type="search" placeholder="নাম, ফোন, অর্ডার আইডি, জেলা বা থানা"></label>
-      <button class="icon-btn" id="refreshOrders" title="রিফ্রেশ" aria-label="রিফ্রেশ"><i id="refreshIcon" class="fa-solid fa-rotate"></i></button>
-    </div>
-  </div>
-  <div class="panel">
-    <div class="panel-head"><h3><i class="fa-solid fa-list-check" style="color:#d97706"></i> অর্ডারের তালিকা</h3><span class="muted" id="tableShowingText">প্রদর্শন হচ্ছে: ০ টি</span></div>
-    <div id="ordersContainer" class="orders-grid"></div>
-    <div id="emptyOrderMessage" class="empty" hidden><i class="fa-solid fa-box-open"></i><b>কোনো অর্ডার পাওয়া যায়নি</b><div class="muted">নতুন অর্ডার এলে এখানে দেখা যাবে।</div></div>
-  </div>
-</section>
-
-<section id="view-areas" class="view">
-  <div class="view-title"><div><h2>জেলা ও থানা অনুযায়ী অর্ডার</h2><p>একই জেলার এবং একই থানা/উপজেলার অর্ডার এক জায়গায় একসাথে সাজানো হয়েছে।</p></div></div>
-  <div class="area-toolbar">
-    <label class="search-box"><i class="fa-solid fa-magnifying-glass"></i><input id="areaSearch" type="search" placeholder="জেলা বা থানা খুঁজুন"></label>
-    <div class="area-hint"><i class="fa-solid fa-circle-info"></i> জেলা খুলে সংশ্লিষ্ট থানার অর্ডার দেখুন</div>
-  </div>
-  <div id="regionList" class="region-list"></div>
-  <div id="emptyRegionMessage" class="empty panel" hidden><i class="fa-solid fa-map"></i><b>এই নামে কোনো জেলা বা থানা পাওয়া যায়নি</b></div>
-</section>
-
-<section id="view-products" class="view">
-  <div class="view-title"><div><h2>প্রোডাক্ট ম্যানেজার</h2><p>পণ্য যোগ করুন, তথ্য বদলান এবং শপে কোন পণ্য দেখাবে সেটি বাছুন।</p></div></div>
-  <div class="form-card" id="contactSettingsCard">
-    <h3><i class="fa-solid fa-envelope" style="color:#d97706"></i> শপের ইমেইল ঠিকানা</h3>
-    <p>এখানে ইমেইল সেভ করলে একই ওয়েবসাইটে খোলা landing page-এর কাস্টমার সাপোর্ট অংশে দেখাবে।</p>
-    <div class="form-grid">
-      <div class="field"><label for="shopEmailInput">কাস্টমার সাপোর্ট ইমেইল</label><input id="shopEmailInput" type="email" autocomplete="email" placeholder="আপনার ইমেইল ঠিকানা লিখুন"></div>
-      <div style="display:flex;align-items:end"><button id="saveShopEmail" type="button" class="primary-btn"><i class="fa-solid fa-floppy-disk"></i> ইমেইল সেভ করুন</button></div>
-    </div>
-    <div id="shopEmailSaveStatus" class="muted" style="margin-top:8px">ইমেইল এখনো যোগ করা হয়নি।</div>
-  </div>
-  <div class="form-card" id="themeSettingsCard">
-    <h3><i class="fa-solid fa-palette" style="color:#d97706"></i> Landing page-এর থিম ও রং</h3>
-    <p>এখান থেকে মূল রং বেছে নিয়ে সেভ করলে একই ওয়েবসাইটে খোলা landing page-এ নতুন থিম দেখা যাবে।</p>
-    <div class="form-grid">
-      <div class="field"><label for="themePreset">থিমের ধরন</label><select id="themePreset"><option value="rose">রোজ ও অ্যাম্বার</option><option value="ocean">ওশান ব্লু</option><option value="forest">ফরেস্ট গ্রিন</option><option value="custom">নিজস্ব রং</option></select></div>
-      <div class="field"><label for="themePrimary">প্রধান রং</label><input id="themePrimary" type="color" value="#be123c" style="height:46px;padding:5px"></div>
-      <div class="field"><label for="themeAccent">সহযোগী রং</label><input id="themeAccent" type="color" value="#f59e0b" style="height:46px;padding:5px"></div>
-      <div style="display:flex;align-items:end"><button id="saveShopTheme" type="button" class="primary-btn"><i class="fa-solid fa-palette"></i> থিম সেভ করুন</button></div>
-    </div>
-    <div id="shopThemeSaveStatus" class="muted" style="margin-top:8px">বর্তমান থিম: রোজ ও অ্যাম্বার</div>
-  </div>
-  <div class="form-card" id="reviewSettingsCard">
-    <h3><i class="fa-solid fa-star" style="color:#d97706"></i> কাস্টমার রিভিউ / সেলস প্রমাণ</h3>
-    <p>বাস্তব রিভিউ লিখুন বা ডেলিভারির প্রমাণের ছবি যোগ করুন। সেভ করলে landing page-এ দেখাবে।</p>
-    <form id="reviewForm">
-      <input type="hidden" id="editReviewId">
-      <div class="form-grid">
-        <div class="field"><label for="reviewType">কনটেন্টের ধরন</label><select id="reviewType"><option value="review">কাস্টমার রিভিউ</option><option value="proof">সেলস / ডেলিভারি প্রমাণ</option></select></div>
-        <div class="field"><label for="reviewRating">রেটিং</label><select id="reviewRating"><option value="5">৫ স্টার</option><option value="4">৪ স্টার</option><option value="3">৩ স্টার</option><option value="2">২ স্টার</option><option value="1">১ স্টার</option></select></div>
-        <div class="field"><label for="reviewName">কাস্টমারের নাম / প্রমাণের শিরোনাম *</label><input id="reviewName" required placeholder="নাম অথবা ডেলিভারি প্রমাণ"></div>
-        <div class="field"><label for="reviewLocation">জেলা / এলাকা</label><input id="reviewLocation" placeholder="যেমন: ফেনী"></div>
-      </div>
-      <div class="field" style="margin-top:12px"><label for="reviewText">রিভিউ বা প্রমাণের বিবরণ *</label><textarea id="reviewText" rows="3" required placeholder="কাস্টমারের অনুমতি নিয়ে রিভিউ বা অর্ডার ডেলিভারির তথ্য লিখুন"></textarea></div>
-      <div class="field" style="margin-top:12px"><label for="reviewPhotoInput">প্রমাণের ছবি (ঐচ্ছিক)</label><input id="reviewPhotoInput" type="file" accept="image/*"><div id="reviewPhotoPreview" class="preview-list"></div></div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:13px"><button type="submit" class="primary-btn"><i class="fa-solid fa-floppy-disk"></i> রিভিউ / প্রমাণ সেভ করুন</button><button type="button" id="resetReviewForm" class="secondary-btn">ফর্ম পরিষ্কার</button></div>
-    </form>
-  </div>
-  <div class="panel" style="margin-bottom:16px">
-    <div class="panel-head"><h3><i class="fa-solid fa-comments" style="color:#d97706"></i> প্রকাশিত রিভিউ ও প্রমাণ</h3><span class="muted" id="reviewCount"></span></div>
-    <div id="savedReviewsList" class="product-grid"></div>
-  </div>
-  <div class="form-card">
-    <h3><i class="fa-solid fa-circle-plus" style="color:#d97706"></i> প্রোডাক্ট যোগ বা এডিট</h3>
-    <p>প্রোডাক্টের তথ্য ও কমপ্রেস করা ছবি Firebase-এ সেভ হবে; একই শপের user page-এ আপডেট পৌঁছাবে।</p>
-    <form id="productForm">
-      <input type="hidden" id="editProductId">
-      <div class="form-grid">
-        <div class="field"><label for="prodName">প্রোডাক্টের নাম *</label><input id="prodName" required placeholder="F11-2 Dual Wireless Mic"></div>
-        <div class="field"><label for="prodModel">মডেল বা সংক্ষিপ্ত বিবরণ *</label><input id="prodModel" required placeholder="পণ্যের বিবরণ"></div>
-      </div>
-      <div class="form-grid prices" style="margin-top:12px">
-        <div class="field"><label for="prodPrice">অফার মূল্য *</label><input type="number" id="prodPrice" min="0" required placeholder="600"></div>
-        <div class="field"><label for="prodRegPrice">আগের মূল্য *</label><input type="number" id="prodRegPrice" min="0" required placeholder="1200"></div>
-        <div class="field"><label for="prodComboPrice">২ পিস কম্বো মূল্য *</label><input type="number" id="prodComboPrice" min="0" required placeholder="1150"></div>
-        <div class="field"><label>ডেলিভারি চার্জ (ঢাকা / বাইরে)</label><div style="display:flex;gap:7px"><input type="number" id="prodDhakaDelivery" min="0" required placeholder="70" aria-label="ঢাকার ডেলিভারি"><input type="number" id="prodOutDelivery" min="0" required placeholder="130" aria-label="ঢাকার বাইরের ডেলিভারি"></div></div>
-      </div>
-      <div class="field" style="margin-top:13px"><label>প্রোডাক্টের ছবি (এক বা একাধিক) *</label>
-        <label class="file-drop"><i class="fa-solid fa-cloud-arrow-up"></i><b>ছবি বেছে নিতে চাপুন</b><div class="muted">ছবি কমপ্রেস করে সেভ হবে</div><input type="file" id="imageFileInput" multiple accept="image/*"></label>
-        <div id="imagePreviewContainer" class="preview-list"></div>
-      </div>
-      <div class="field" style="margin-top:13px"><label for="prodFeatures">বক্সের উপাদান/ফিচার (কমা দিয়ে আলাদা করুন)</label><input id="prodFeatures" placeholder="মাইক, রিসিভার, চার্জিং কেবল"></div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:15px"><button id="btnSaveProduct" class="primary-btn" type="submit"><i class="fa-solid fa-floppy-disk"></i> সংরক্ষণ ও লাইভ করুন</button><button type="button" id="resetProduct" class="secondary-btn">ফর্ম পরিষ্কার</button></div>
-    </form>
-  </div>
-  <div class="panel">
-    <div class="panel-head"><h3><i class="fa-solid fa-boxes-stacked" style="color:#d97706"></i> সংরক্ষিত প্রোডাক্ট</h3><span class="muted" id="productCount"></span></div>
-    <div id="savedProductsList" class="product-grid"></div>
-  </div>
-</section>
-</main>
-<footer>Online supper shop • অর্ডার ম্যানেজমেন্ট</footer>
-<div id="toast" class="toast" role="status" aria-live="polite"></div>
-
-<script>
-'use strict';
-// আগের অ্যাডমিন/শপ কোডের সঙ্গে সামঞ্জস্য রাখতে একই storage key রাখা হয়েছে।
-const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycby21WlzeoiJ4VFJS_lON1D7Nk-_L3ar4s5P5CxTe9W0ZY06TeKnG_yEx-YXDAj9iQ4q/exec";
-const ADMIN_WHATSAPP_NUMBER = "8801724417830";
-const STORAGE_KEY_ORDERS = 'online_supper_shop_orders_data';
-const STATUS_KEY_ORDERS = 'online_supper_shop_order_statuses';
-const STORAGE_KEY_PRODUCTS = 'online_supper_shop_products_data';
-const ACTIVE_PROD_KEY = 'online_supper_shop_active_product_id';
-const CONTACT_EMAIL_KEY = 'online_supper_shop_contact_email';
-const THEME_KEY = 'online_supper_shop_theme_data';
-const DEFAULT_CONTACT_EMAIL = 'onlinesuppershop24hours@gmail.com';
-const REVIEWS_KEY = 'online_supper_shop_reviews_data';
-const FIREBASE_CONFIG={apiKey:'AIzaSyA1sfQ_7u2VD3vDCYDAf4XJYsyt8Rszn9y',authDomain:'online-supper-shop.firebaseapp.com',databaseURL:'https://online-supper-shop-default-rtdb.asia-southeast1.firebasedatabase.app',projectId:'online-supper-shop',storageBucket:'online-supper-shop.firebasestorage.app',messagingSenderId:'104920777541',appId:'1:104920777541:web:b6ab2a696d0878b6bdb42c'};
-const ADMIN_UID='PASTE_ADMIN_UID_HERE';
-let firebaseDb=null,firebaseAuth=null,currentAdmin=null,adminCloudUnsub=null,adminCloudProducts=null,adminCloudReviews=null;
-try{const app=firebase.apps.length?firebase.app():firebase.initializeApp(FIREBASE_CONFIG);firebaseDb=app.database();firebaseAuth=app.auth()}catch(error){console.error('Firebase initialization failed',error)}
-let allOrders = [];
-let orderStatuses = readJSON(STATUS_KEY_ORDERS, {});
-let currentFilter = 'all';
-let currentUploadedImages = [];
-let currentReviewPhoto = '';
-let toastTimer;
-
-function productsToMap(products){return Object.fromEntries((Array.isArray(products)?products:[]).filter(p=>p&&p.id).map(p=>[String(p.id),p]))}
-function productsFromMap(value){if(!value)return[];return (Array.isArray(value)?value:Object.values(value)).filter(item=>item&&!item.__empty)}
-function reviewsToMap(reviews){return productsToMap(reviews.length?reviews:[{id:'__empty',__empty:true}])}
-function requireAdminCloud(){if(!firebaseDb||!currentAdmin||ADMIN_UID==='PASTE_ADMIN_UID_HERE'||currentAdmin.uid!==ADMIN_UID)throw new Error('Firebase admin UID সেট করা নেই বা অ্যাডমিন সাইন-ইন হয়নি।')}
-async function saveShopCloud(path,value){requireAdminCloud();await firebaseDb.ref('shop/'+path).set(value)}
-function applyAdminCloudShop(data){
-  if(!data)return;
-  if(data.products){adminCloudProducts=productsFromMap(data.products);try{localStorage.setItem(STORAGE_KEY_PRODUCTS,JSON.stringify(adminCloudProducts))}catch(_){}}
-  if(data.activeProductId)localStorage.setItem(ACTIVE_PROD_KEY,String(data.activeProductId));
-  if(data.theme){try{localStorage.setItem(THEME_KEY,JSON.stringify(data.theme))}catch(_){}}
-  if(data.reviews){adminCloudReviews=productsFromMap(data.reviews);try{localStorage.setItem(REVIEWS_KEY,JSON.stringify(adminCloudReviews))}catch(_){}}
-  if(typeof data.contactEmail==='string'){try{localStorage.setItem(CONTACT_EMAIL_KEY,data.contactEmail)}catch(_){}}
-  renderSavedProducts();renderReviewsAdmin();loadShopThemeSetting();loadShopEmailSetting();
-}
-async function initializeAdminCloud(){
-  requireAdminCloud();
-  const root=firebaseDb.ref('shop'),snapshot=await root.once('value'),data=snapshot.val();
-  if(!data||!data.products){
-    const products=getProductsList(),activeId=localStorage.getItem(ACTIVE_PROD_KEY)||products[0]?.id;
-    await root.set({products:productsToMap(products),activeProductId:activeId||'',theme:readJSON(THEME_KEY,{}),reviews:reviewsToMap(readJSON(REVIEWS_KEY,[])),contactEmail:localStorage.getItem(CONTACT_EMAIL_KEY)??DEFAULT_CONTACT_EMAIL});
-  }else applyAdminCloudShop(data);
-  if(adminCloudUnsub)adminCloudUnsub();
-  const listener=root.on('value',snap=>{const value=snap.val();if(value)applyAdminCloudShop(value)},error=>console.error('Admin realtime sync failed',error));
-  adminCloudUnsub=()=>root.off('value',listener);
-}
-function setAuthError(message){const el=document.getElementById('authError');if(el)el.textContent=message||''}
-document.getElementById('adminLoginForm').addEventListener('submit',async event=>{
-  event.preventDefault();setAuthError('');
-  if(!firebaseAuth){setAuthError('Firebase SDK লোড হয়নি। ইন্টারনেট চালু রেখে পেজ আবার খোলো।');return}
-  if(ADMIN_UID==='PASTE_ADMIN_UID_HERE'){setAuthError('প্রথমে Firebase Authentication থেকে অ্যাডমিনের UID নিয়ে ADMIN_UID জায়গায় বসাও।');return}
-  try{await firebaseAuth.signInWithEmailAndPassword(document.getElementById('adminEmail').value.trim(),document.getElementById('adminPassword').value)}
-  catch(error){setAuthError('লগইন হয়নি। ইমেইল/পাসওয়ার্ড ও Firebase Email/Password sign-in চালু আছে কি না দেখো।');console.error(error)}
-});
-document.getElementById('adminLogout').addEventListener('click',()=>firebaseAuth?.signOut());
-firebaseAuth?.onAuthStateChanged(async user=>{
-  currentAdmin=user||null;
-  const gate=document.getElementById('authGate');
-  if(!user){if(adminCloudUnsub){adminCloudUnsub();adminCloudUnsub=null}gate.hidden=false;return}
-  if(ADMIN_UID==='PASTE_ADMIN_UID_HERE'||user.uid!==ADMIN_UID){gate.hidden=false;setAuthError('এই account অ্যাডমিন হিসেবে অনুমোদিত নয়। সঠিক ADMIN_UID বসাও।');await firebaseAuth.signOut();return}
-  gate.hidden=true;setAuthError('');
-  try{await initializeAdminCloud();showToast('Firebase শপ ডাটা সিঙ্ক হয়েছে')}
-  catch(error){console.error(error);showToast('Firebase rules/UID ঠিক না থাকায় cloud sync হয়নি')}
-  allOrders=readJSON(STORAGE_KEY_ORDERS,[]);orderStatuses=readJSON(STATUS_KEY_ORDERS,{});
-  loadShopEmailSetting();loadShopThemeSetting();renderDashboard();renderRegions();getProductsList();renderSavedProducts();renderReviewsAdmin();loadOrders();
-});
-
-function readJSON(key, fallback) {
-  try { const value = JSON.parse(localStorage.getItem(key)); return value ?? fallback; }
-  catch (_) { return fallback; }
-}
-function esc(value) {
-  return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
-}
-const THEME_PRESETS={rose:{primary:'#be123c',accent:'#f59e0b',label:'রোজ ও অ্যাম্বার'},ocean:{primary:'#1d4ed8',accent:'#06b6d4',label:'ওশান ব্লু'},forest:{primary:'#047857',accent:'#84cc16',label:'ফরেস্ট গ্রিন'}};
-function loadShopThemeSetting(){
-  const saved=readJSON(THEME_KEY,{}),preset=Object.entries(THEME_PRESETS).find(([,v])=>v.primary===saved.primary&&v.accent===saved.accent);
-  document.getElementById('themePreset').value=preset?preset[0]:'custom';
-  document.getElementById('themePrimary').value=/^#[0-9a-f]{6}$/i.test(saved.primary||'')?saved.primary:'#be123c';
-  document.getElementById('themeAccent').value=/^#[0-9a-f]{6}$/i.test(saved.accent||'')?saved.accent:'#f59e0b';
-  document.getElementById('shopThemeSaveStatus').textContent='বর্তমান থিম: '+(preset?preset[1].label:'নিজস্ব রং');
-}
-document.getElementById('themePreset').addEventListener('change',event=>{
-  const preset=THEME_PRESETS[event.target.value];
-  if(preset){document.getElementById('themePrimary').value=preset.primary;document.getElementById('themeAccent').value=preset.accent;}
-});
-document.getElementById('saveShopTheme').addEventListener('click',async()=>{
-  const theme={primary:document.getElementById('themePrimary').value,accent:document.getElementById('themeAccent').value};
-  try{await saveShopCloud('theme',theme);localStorage.setItem(THEME_KEY,JSON.stringify(theme));localStorage.setItem('online_supper_shop_sync_trigger',Date.now().toString());
-    const preset=Object.entries(THEME_PRESETS).find(([,v])=>v.primary===theme.primary&&v.accent===theme.accent);
-    document.getElementById('shopThemeSaveStatus').textContent='থিম সেভ হয়েছে: '+(preset?preset[1].label:'নিজস্ব রং');showToast('Landing page-এর থিম আপডেট হয়েছে');
-  }catch(error){console.error(error);showToast('Firebase-এ থিম সেভ হয়নি—login ও database rules দেখো');}
-});
-function loadShopEmailSetting() {
-  const savedEmail = localStorage.getItem(CONTACT_EMAIL_KEY);
-  const email = savedEmail === null ? DEFAULT_CONTACT_EMAIL : savedEmail;
-  const input = document.getElementById('shopEmailInput');
-  const status = document.getElementById('shopEmailSaveStatus');
-  if (input) input.value = email;
-  if (status) status.textContent = email ? 'বর্তমান ইমেইল: ' + email : 'ইমেইল এখনো যোগ করা হয়নি।';
-}
-document.getElementById('saveShopEmail').addEventListener('click', async() => {
-  const input = document.getElementById('shopEmailInput');
-  const email = input.value.trim();
-  if (email && !input.checkValidity()) {
-    input.reportValidity();
-    return;
-  }
-  try{await saveShopCloud('contactEmail',email);
-  if (email) localStorage.setItem(CONTACT_EMAIL_KEY, email);
-  else localStorage.removeItem(CONTACT_EMAIL_KEY);
-  localStorage.setItem('online_supper_shop_sync_trigger', Date.now().toString());
-  loadShopEmailSetting();
-  showToast(email ? 'ইমেইল landing page-এ আপডেট হয়েছে' : 'ইমেইল সরানো হয়েছে');
-  }catch(error){console.error(error);showToast('Firebase-এ ইমেইল সেভ হয়নি—login ও database rules দেখো')}
-});
-
-function showToast(message) {
-  const el = document.getElementById('toast');
-  el.textContent = message;
-  el.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 2600);
-}
-function orderValue(order, english, bangla, fallback='') {
-  return order?.[english] ?? order?.[bangla] ?? fallback;
-}
-function getOrderId(order) {
-  return String(orderValue(order, 'orderId', 'অর্ডার আইডি', 'N/A'));
-}
-function getStatus(order) { return orderStatuses[getOrderId(order)] || 'নতুন অর্ডার'; }
-function getOrderDistrict(order) { return String(orderValue(order, 'district', 'জেলা', 'জেলা দেওয়া নেই')).trim() || 'জেলা দেওয়া নেই'; }
-function getOrderThana(order) { return String(orderValue(order, 'upazila', 'থানা / উপজেলা', 'থানা দেওয়া নেই')).trim() || 'থানা দেওয়া নেই'; }
-function getOrderName(order) { return orderValue(order, 'name', 'কাস্টমার নাম', 'নাম নেই'); }
-function getOrderPhone(order) { return String(orderValue(order, 'phone', 'মোবাইল নম্বর', '')).replace(/['"]/g, '').split('/')[0].trim(); }
-function getOrderAddress(order) { return orderValue(order, 'address', 'পূর্ণাঙ্গ ঠিকানা', ''); }
-function getOrderPackage(order) { return orderValue(order, 'packageType', 'প্যাকেজ', 'পণ্য অর্ডার'); }
-function getOrderTotal(order) { return orderValue(order, 'total', 'মোট প্রদেয় বিল', '৳০'); }
-function getOrderDate(order) { return orderValue(order, 'dateTime', 'তারিখ ও সময়', ''); }
-function normalizedSearch(value) { return String(value ?? '').toLocaleLowerCase('bn-BD').trim(); }
-
-function switchView(name) {
-  document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === 'view-' + name));
-  document.querySelectorAll('.nav [data-view]').forEach(b => b.classList.toggle('active', b.dataset.view === name));
-  if (name === 'areas') renderRegions();
-  if (name === 'products') renderSavedProducts();
-}
-document.querySelectorAll('.nav [data-view]').forEach(btn => btn.addEventListener('click', () => switchView(btn.dataset.view)));
-
-function setOrderStatus(orderId, status) {
-  orderStatuses[orderId] = status;
-  localStorage.setItem(STATUS_KEY_ORDERS, JSON.stringify(orderStatuses));
-  renderDashboard();
-  if (document.getElementById('view-areas').classList.contains('active')) renderRegions();
-  showToast('অর্ডারের অবস্থা আপডেট হয়েছে');
-}
-function statusMarkup(status) {
-  const map = {
-    'কনফার্মড':['badge-confirmed','কনফার্মড'],
-    'ডেলিভারি সম্পন্ন':['badge-delivered','ডেলিভারি সম্পন্ন'],
-    'বাতিল':['badge-cancelled','বাতিল'],
-    'নতুন অর্ডার':['badge-new','নতুন অর্ডার']
-  };
-  const item = map[status] || map['নতুন অর্ডার'];
-  return '<span class="badge '+item[0]+'">'+item[1]+'</span>';
-}
-function statusActionButtons(orderId, status) {
-  const safeId = esc(orderId);
-  return '<div class="actions">'+
-    '<button class="action-btn action-confirm" data-order-id="'+safeId+'" data-status="কনফার্মড" '+(status==='কনফার্মড'?'disabled':'')+'><i class="fa-solid fa-check"></i> কনফার্ম</button>'+
-    '<button class="action-btn action-delivered" data-order-id="'+safeId+'" data-status="ডেলিভারি সম্পন্ন" '+(status==='ডেলিভারি সম্পন্ন'?'disabled':'')+'><i class="fa-solid fa-truck"></i> ডেলিভারি</button>'+
-    '<button class="action-btn action-cancel" data-order-id="'+safeId+'" data-status="বাতিল" '+(status==='বাতিল'?'disabled':'')+'><i class="fa-solid fa-xmark"></i> বাতিল</button></div>';
-}
-function orderCard(order) {
-  const id = getOrderId(order), status = getStatus(order), name = getOrderName(order);
-  const phone = getOrderPhone(order), district = getOrderDistrict(order), thana = getOrderThana(order);
-  const address = getOrderAddress(order), pkg = getOrderPackage(order), total = getOrderTotal(order);
-  const tel = phone.replace(/[^0-9+]/g, '');
-  const waPhone = tel.startsWith('0') ? '88'+tel : tel;
-  const waText = encodeURIComponent('হ্যালো '+name+', Online supper shop থেকে আপনার অর্ডার নং '+id+' এর বিষয়ে যোগাযোগ করা হয়েছে।');
-  return '<article class="order-card">'+
-    '<div class="order-top"><div><div class="order-id">'+esc(id)+'</div><div class="order-date">'+esc(getOrderDate(order))+'</div></div>'+statusMarkup(status)+'</div>'+
-    '<div class="order-main"><div><div class="customer-name">'+esc(name)+'</div><div class="location-line"><i class="fa-solid fa-location-dot"></i> '+esc(district)+' · '+esc(thana)+'</div><div class="address">'+esc(address)+'</div></div><div class="amount">'+esc(total)+'</div></div>'+
-    '<div class="package-line"><i class="fa-solid fa-box"></i> '+esc(pkg)+'</div>'+
-    '<div class="contact-row">'+(phone?'<a class="small-link call" href="tel:'+esc(tel)+'"><i class="fa-solid fa-phone"></i> কল '+esc(phone)+'</a><a class="small-link wa" href="https://wa.me/'+esc(waPhone)+'?text='+waText+'" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>':'')+'</div>'+
-    statusActionButtons(id,status)+'</article>';
-}
-function getVisibleOrders() {
-  const term = normalizedSearch(document.getElementById('searchInput').value);
-  return allOrders.filter(order => {
-    const id = getOrderId(order), status = getStatus(order);
-    const searchable = [id,getOrderName(order),getOrderPhone(order),getOrderDistrict(order),getOrderThana(order),getOrderAddress(order)].map(normalizedSearch).join(' ');
-    const searchMatch = !term || searchable.includes(term);
-    const filterMatch = currentFilter==='all' ||
-      (currentFilter==='new' && status==='নতুন অর্ডার') ||
-      (currentFilter==='confirmed' && status==='কনফার্মড') ||
-      (currentFilter==='delivered' && status==='ডেলিভারি সম্পন্ন') ||
-      (currentFilter==='cancelled' && status==='বাতিল');
-    return searchMatch && filterMatch;
-  });
-}
-function renderDashboard() {
-  const counts = {'নতুন অর্ডার':0,'কনফার্মড':0,'ডেলিভারি সম্পন্ন':0,'বাতিল':0};
-  let revenue=0;
-  allOrders.forEach(order => {
-    const status=getStatus(order); counts[status]=(counts[status]||0)+1;
-    if(status==='কনফার্মড'||status==='ডেলিভারি সম্পন্ন') revenue += parseInt(String(getOrderTotal(order)).replace(/[^0-9]/g,''),10)||0;
-  });
-  document.getElementById('statTotalOrders').textContent=allOrders.length.toLocaleString('bn-BD');
-  document.getElementById('statConfirmedOrders').textContent=(counts['কনফার্মড']||0).toLocaleString('bn-BD');
-  document.getElementById('statDeliveredOrders').textContent=(counts['ডেলিভারি সম্পন্ন']||0).toLocaleString('bn-BD');
-  document.getElementById('statTotalRevenue').textContent='৳'+revenue.toLocaleString('bn-BD');
-  document.getElementById('countAll').textContent=allOrders.length.toLocaleString('bn-BD');
-  document.getElementById('countNew').textContent=(counts['নতুন অর্ডার']||0).toLocaleString('bn-BD');
-  document.getElementById('countConfirmed').textContent=(counts['কনফার্মড']||0).toLocaleString('bn-BD');
-  document.getElementById('countDelivered').textContent=(counts['ডেলিভারি সম্পন্ন']||0).toLocaleString('bn-BD');
-  document.getElementById('countCancelled').textContent=(counts['বাতিল']||0).toLocaleString('bn-BD');
-  const visible=getVisibleOrders(), container=document.getElementById('ordersContainer'), empty=document.getElementById('emptyOrderMessage');
-  document.getElementById('tableShowingText').textContent='দেখানো হচ্ছে: '+visible.length.toLocaleString('bn-BD')+' টি';
-  container.innerHTML=visible.map(orderCard).join('');
-  empty.hidden=visible.length!==0;
-}
-document.querySelector('.filters').addEventListener('click', e => {
-  const btn=e.target.closest('[data-filter]'); if(!btn)return;
-  currentFilter=btn.dataset.filter;
-  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.toggle('active',b===btn));
-  renderDashboard();
-});
-document.getElementById('searchInput').addEventListener('input',renderDashboard);
-document.getElementById('ordersContainer').addEventListener('click',e=>{
-  const btn=e.target.closest('[data-order-id][data-status]'); if(btn)setOrderStatus(btn.dataset.orderId,btn.dataset.status);
-});
-document.getElementById('regionList').addEventListener('click',e=>{
-  const btn=e.target.closest('[data-order-id][data-status]');
-  if(btn){setOrderStatus(btn.dataset.orderId,btn.dataset.status);return;}
-  const head=e.target.closest('.thana-head');
-  if(head){const content=document.getElementById(head.dataset.target);const open=head.getAttribute('aria-expanded')==='true';head.setAttribute('aria-expanded',String(!open));content.hidden=open;}
-});
-function renderRegions() {
-  const term=normalizedSearch(document.getElementById('areaSearch').value);
-  const grouped=new Map();
-  allOrders.forEach(order=>{
-    const district=getOrderDistrict(order), thana=getOrderThana(order);
-    const hay=normalizedSearch(district+' '+thana);
-    if(term&&!hay.includes(term))return;
-    if(!grouped.has(district))grouped.set(district,new Map());
-    const thanaMap=grouped.get(district);
-    if(!thanaMap.has(thana))thanaMap.set(thana,[]);
-    thanaMap.get(thana).push(order);
-  });
-  const sortedDistricts=[...grouped.keys()].sort((a,b)=>a.localeCompare(b,'bn'));
-  const html=sortedDistricts.map((district,di)=>{
-    const thanaMap=grouped.get(district);
-    const districtOrders=[...thanaMap.values()].flat();
-    const thanaHtml=[...thanaMap.keys()].sort((a,b)=>a.localeCompare(b,'bn')).map((thana,ti)=>{
-      const orders=thanaMap.get(thana), target='thana-'+di+'-'+ti;
-      return '<div class="thana-block"><button class="thana-head" type="button" data-target="'+target+'" aria-expanded="true"><span class="thana-title"><i class="fa-solid fa-map-pin"></i>'+esc(thana)+'</span><span style="display:flex;align-items:center;gap:9px"><span class="count-pill">'+orders.length.toLocaleString('bn-BD')+' অর্ডার</span><i class="fa-solid fa-chevron-down chevron"></i></span></button><div class="thana-content" id="'+target+'"><div class="orders-grid">'+orders.map(orderCard).join('')+'</div></div></div>';
-    }).join('');
-    return '<section class="region-card"><div class="region-head"><h3><i class="fa-solid fa-map-location-dot" style="color:#d97706"></i>'+esc(district)+'</h3><span class="count-pill">'+districtOrders.length.toLocaleString('bn-BD')+' অর্ডার · '+thanaMap.size.toLocaleString('bn-BD')+' থানা</span></div><div class="region-body">'+thanaHtml+'</div></section>';
-  }).join('');
-  document.getElementById('regionList').innerHTML=html;
-  document.getElementById('emptyRegionMessage').hidden=sortedDistricts.length!==0;
-}
-document.getElementById('areaSearch').addEventListener('input',renderRegions);
-
-async function loadOrders() {
-  const icon=document.getElementById('refreshIcon');icon.classList.add('fa-spin');
-  allOrders=readJSON(STORAGE_KEY_ORDERS,[]);
-  if(!Array.isArray(allOrders))allOrders=[];
-  try{
-    const response=await fetch(GOOGLE_SHEET_URL,{method:'GET',cache:'no-store'});
-    if(response.ok){
-      const cloudOrders=await response.json();
-      if(Array.isArray(cloudOrders)&&cloudOrders.length){
-        allOrders=cloudOrders;
-        localStorage.setItem(STORAGE_KEY_ORDERS,JSON.stringify(allOrders));
-      }
-    }
-  }catch(error){console.warn('Google Sheet fetch failed; showing saved orders.',error);}
-  icon.classList.remove('fa-spin');
-  renderDashboard();renderRegions();
-}
-document.getElementById('refreshOrders').addEventListener('click',loadOrders);
-
-// Product management — keeps the original product storage keys and fields.
-function getReviewsList() {
-  if(Array.isArray(adminCloudReviews))return adminCloudReviews;
-  const value = readJSON(REVIEWS_KEY, []);
-  return Array.isArray(value) ? value : [];
-}
-function resetReviewForm() {
-  document.getElementById('reviewForm').reset();
-  document.getElementById('editReviewId').value = '';
-  currentReviewPhoto = '';
-  document.getElementById('reviewPhotoPreview').innerHTML = '';
-}
-function renderReviewPhoto() {
-  const box = document.getElementById('reviewPhotoPreview');
-  box.innerHTML = currentReviewPhoto ? '<div class="preview"><img src="'+currentReviewPhoto+'" alt="রিভিউ প্রমাণ"><button type="button" id="removeReviewPhoto" aria-label="ছবি বাদ দিন">×</button></div>' : '';
-  const remove = document.getElementById('removeReviewPhoto');
-  if (remove) remove.addEventListener('click', () => { currentReviewPhoto=''; renderReviewPhoto(); });
-}
-function renderReviewsAdmin() {
-  const reviews = getReviewsList();
-  document.getElementById('reviewCount').textContent = reviews.length.toLocaleString('bn-BD') + 'টি';
-  const container = document.getElementById('savedReviewsList');
-  if (!reviews.length) {
-    container.innerHTML = '<div class="muted" style="padding:14px">এখনো কোনো রিভিউ বা সেলস প্রমাণ যোগ করা হয়নি।</div>';
-    return;
-  }
-  container.innerHTML = reviews.map(item =>
-    '<article class="product-card"><div class="product-image">'+(item.photo?'<img src="'+item.photo+'" alt="প্রমাণের ছবি">':'<i class="fa-solid fa-comment-dots" style="font-size:34px;color:#94a3b8"></i>')+'</div>'+
-    '<span class="live-chip">'+(item.type==='proof'?'সেলস প্রমাণ':'রিভিউ')+'</span><h4 style="margin-top:8px">'+esc(item.name)+'</h4><p>'+esc(item.location||'')+'</p><p style="white-space:normal;overflow-wrap:anywhere">'+esc(item.text)+'</p>'+
-    '<div class="product-actions"><button class="edit" data-review-action="edit" data-review-id="'+esc(item.id)+'">এডিট</button><button class="delete" data-review-action="delete" data-review-id="'+esc(item.id)+'">মুছুন</button></div></article>'
-  ).join('');
-}
-document.getElementById('reviewPhotoInput').addEventListener('change', async event => {
-  const file=event.target.files && event.target.files[0];
-  if(!file)return;
-  try { currentReviewPhoto=await compressImage(file,1000,.72); renderReviewPhoto(); }
-  catch(error) { showToast('ছবিটি প্রসেস করা যায়নি'); }
-  event.target.value='';
-});
-document.getElementById('resetReviewForm').addEventListener('click', resetReviewForm);
-document.getElementById('reviewForm').addEventListener('submit', async event => {
-  event.preventDefault();
-  const reviews=getReviewsList(), editId=document.getElementById('editReviewId').value;
-  const item={
-    id:editId||'REV-'+Date.now(),
-    type:document.getElementById('reviewType').value,
-    rating:Number(document.getElementById('reviewRating').value)||5,
-    name:document.getElementById('reviewName').value.trim(),
-    location:document.getElementById('reviewLocation').value.trim(),
-    text:document.getElementById('reviewText').value.trim(),
-    photo:currentReviewPhoto
-  };
-  if(editId){const index=reviews.findIndex(x=>x.id===editId);if(index>=0)reviews[index]=item;}
-  else reviews.unshift(item);
-  try {
-    await saveShopCloud('reviews',reviewsToMap(reviews));adminCloudReviews=reviews;
-    try{localStorage.setItem(REVIEWS_KEY,JSON.stringify(reviews))}catch(_){}
-    localStorage.setItem('online_supper_shop_sync_trigger',Date.now().toString());
-    resetReviewForm();renderReviewsAdmin();showToast('রিভিউ / প্রমাণ landing page-এ আপডেট হয়েছে');
-  } catch(error) { console.error(error);showToast('Firebase-এ রিভিউ সেভ হয়নি—login ও rules দেখো'); }
-});
-document.getElementById('savedReviewsList').addEventListener('click', async event => {
-  const button=event.target.closest('[data-review-action]');
-  if(!button)return;
-  const reviews=getReviewsList(),item=reviews.find(x=>x.id===button.dataset.reviewId);
-  if(!item)return;
-  if(button.dataset.reviewAction==='delete'){
-    if(!confirm('এই রিভিউ / প্রমাণ মুছবেন?'))return;
-    const updated=reviews.filter(x=>x.id!==item.id);
-    try{await saveShopCloud('reviews',reviewsToMap(updated));adminCloudReviews=updated;try{localStorage.setItem(REVIEWS_KEY,JSON.stringify(updated))}catch(_){}}
-    catch(error){console.error(error);showToast('Firebase থেকে রিভিউ মোছা যায়নি');return}
-    renderReviewsAdmin();showToast('রিভিউ / প্রমাণ মুছে ফেলা হয়েছে');
-    return;
-  }
-  document.getElementById('editReviewId').value=item.id;
-  document.getElementById('reviewType').value=item.type||'review';
-  document.getElementById('reviewRating').value=String(item.rating||5);
-  document.getElementById('reviewName').value=item.name||'';
-  document.getElementById('reviewLocation').value=item.location||'';
-  document.getElementById('reviewText').value=item.text||'';
-  currentReviewPhoto=item.photo||'';renderReviewPhoto();
-  document.getElementById('reviewSettingsCard').scrollIntoView({behavior:'smooth',block:'start'});
-});
-
-function getProductsList() {
-  if(Array.isArray(adminCloudProducts))return adminCloudProducts;
-  let products=readJSON(STORAGE_KEY_PRODUCTS,[]);
-  if(!Array.isArray(products)||products.length===0){
-    products=[{
-      id:'PROD-DEFAULT-1',name:'F11-2 Dual Wireless Mic',
-      model:'ক্লিয়ার ও নয়েজমুক্ত সাউন্ডে অরিজিনাল ওয়্যারলেস মাইক',
-      price:600,regPrice:1200,comboPrice:1150,dhakaDelivery:70,outDelivery:130,
-      images:['https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=600&auto=format&fit=crop&q=80','https://images.unsplash.com/photo-1546776310-eef45dd6d63c?w=600&auto=format&fit=crop&q=80'],
-      features:['২ টি ওয়্যারলেস মাইক','১ টি প্লাগইন রিসিভার','২ টি উইন্ডপ্রুফ ডেটক্যাট','১ টি ফাস্ট চার্জিং কেবল','ইউজার ম্যানুয়াল','অরিজিনাল প্যাকেজিং বক্স']
-    }];
-    localStorage.setItem(STORAGE_KEY_PRODUCTS,JSON.stringify(products));
-  }
-  return products;
-}
-function compressImage(file,maxWidth=800,quality=.75){
-  return new Promise((resolve,reject)=>{
-    const reader=new FileReader();
-    reader.onerror=()=>reject(new Error('ছবি পড়া যায়নি'));
-    reader.onload=e=>{
-      const img=new Image();img.onerror=()=>reject(new Error('ছবিটি খোলা যায়নি'));
-      img.onload=()=>{
-        const scale=Math.min(1,maxWidth/img.width),w=Math.round(img.width*scale),h=Math.round(img.height*scale);
-        const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
-        const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0,w,h);
-        resolve(canvas.toDataURL('image/jpeg',quality));
-      };
-      img.src=e.target.result;
-    };
-    reader.readAsDataURL(file);
-  });
-}
-function renderImagePreviews(){
-  document.getElementById('imagePreviewContainer').innerHTML=currentUploadedImages.map((src,i)=>'<div class="preview"><img src="'+src+'" alt="ছবি '+(i+1)+'"><button type="button" data-remove-image="'+i+'" aria-label="ছবি বাদ দিন">×</button></div>').join('');
-}
-document.getElementById('imageFileInput').addEventListener('change',async e=>{
-  const files=[...e.target.files];if(!files.length)return;
-  const input=e.target;
-  try{for(const file of files)currentUploadedImages.push(await compressImage(file));renderImagePreviews();showToast(files.length+'টি ছবি যোগ হয়েছে');}
-  catch(error){showToast('একটি ছবি প্রসেস করা যায়নি');}
-  input.value='';
-});
-document.getElementById('imagePreviewContainer').addEventListener('click',e=>{
-  const btn=e.target.closest('[data-remove-image]');if(!btn)return;
-  currentUploadedImages.splice(Number(btn.dataset.removeImage),1);renderImagePreviews();
-});
-function resetProductForm(){
-  document.getElementById('productForm').reset();
-  document.getElementById('editProductId').value='';
-  currentUploadedImages=[];
-  renderImagePreviews();
-  document.getElementById('btnSaveProduct').innerHTML='<i class="fa-solid fa-floppy-disk"></i> সংরক্ষণ ও লাইভ করুন';
-}
-document.getElementById('resetProduct').addEventListener('click',resetProductForm);
-document.getElementById('productForm').addEventListener('submit',async e=>{
-  e.preventDefault();
-  if(!currentUploadedImages.length){showToast('প্রোডাক্টের অন্তত একটি ছবি যোগ করুন');return;}
-  const editId=document.getElementById('editProductId').value;
-  const products=getProductsList();
-  const product={
-    id:editId||'PROD-'+Date.now(),
-    name:document.getElementById('prodName').value.trim(),
-    model:document.getElementById('prodModel').value.trim(),
-    price:Number(document.getElementById('prodPrice').value)||0,
-    regPrice:Number(document.getElementById('prodRegPrice').value)||0,
-    comboPrice:Number(document.getElementById('prodComboPrice').value)||0,
-    dhakaDelivery:Number(document.getElementById('prodDhakaDelivery').value)||0,
-    outDelivery:Number(document.getElementById('prodOutDelivery').value)||0,
-    images:[...currentUploadedImages],
-    features:document.getElementById('prodFeatures').value.trim().split(',').map(x=>x.trim()).filter(Boolean)
-  };
-  if(!product.features.length)product.features=['অরিজিনাল প্যাকেজিং বক্স'];
-  if(editId){const index=products.findIndex(p=>p.id===editId);if(index>=0)products[index]=product;}
-  else products.unshift(product);
-  try{
-    await saveShopCloud('products',productsToMap(products));
-    await saveShopCloud('activeProductId',product.id);
-    adminCloudProducts=products;try{localStorage.setItem(STORAGE_KEY_PRODUCTS,JSON.stringify(products))}catch(_){}
-    localStorage.setItem(ACTIVE_PROD_KEY,product.id);
-    localStorage.setItem('online_supper_shop_sync_trigger',Date.now().toString());
-    resetProductForm();renderSavedProducts();showToast('প্রোডাক্ট সেভ করে শপে লাইভ করা হয়েছে');
-  }catch(error){console.error(error);showToast('Firebase-এ সেভ হয়নি—login/rules বা ছবির সাইজ দেখো');}
-});
-function renderSavedProducts(){
-  const products=getProductsList(),activeId=localStorage.getItem(ACTIVE_PROD_KEY)||products[0]?.id;
-  document.getElementById('productCount').textContent=products.length.toLocaleString('bn-BD')+'টি';
-  document.getElementById('savedProductsList').innerHTML=products.map(p=>{
-    const isActive=p.id===activeId;
-    return '<article class="product-card" data-product-card="'+esc(p.id)+'"><div class="product-image"><img src="'+esc(p.images?.[0]||'')+'" alt="'+esc(p.name)+'" onerror="this.style.display=\'none\'"></div><h4 title="'+esc(p.name)+'">'+esc(p.name)+'</h4><p>'+esc(p.model)+'</p><div class="product-meta"><span class="product-price">৳'+Number(p.price||0).toLocaleString('bn-BD')+'</span><span>'+(isActive?'<span class="live-chip"><i class="fa-solid fa-check"></i> লাইভ</span>':'')+'</span></div><div class="product-actions">'+(isActive?'<button class="secondary-btn" disabled>সক্রিয়</button>':'<button class="go-live" data-product-action="live" data-product-id="'+esc(p.id)+'">লাইভ করুন</button>')+'<button class="edit" data-product-action="edit" data-product-id="'+esc(p.id)+'" title="এডিট"><i class="fa-solid fa-pen"></i></button><button class="delete" data-product-action="delete" data-product-id="'+esc(p.id)+'" title="ডিলিট"><i class="fa-solid fa-trash"></i></button></div></article>';
-  }).join('');
-}
-document.getElementById('savedProductsList').addEventListener('click',async e=>{
-  const btn=e.target.closest('[data-product-action]');if(!btn)return;
-  const id=btn.dataset.productId, action=btn.dataset.productAction;
-  let products=getProductsList(),product=products.find(p=>p.id===id);
-  if(!product)return;
-  if(action==='live'){
-    try{await saveShopCloud('activeProductId',id)}catch(error){console.error(error);showToast('Firebase-এ active product বদলায়নি');return}
-    localStorage.setItem(ACTIVE_PROD_KEY,id);localStorage.setItem('online_supper_shop_sync_trigger',Date.now().toString());
-    renderSavedProducts();showToast('নির্বাচিত পণ্যটি শপে লাইভ হয়েছে');
-  }else if(action==='edit'){
-    document.getElementById('editProductId').value=product.id;
-    document.getElementById('prodName').value=product.name||'';
-    document.getElementById('prodModel').value=product.model||'';
-    document.getElementById('prodPrice').value=product.price??'';
-    document.getElementById('prodRegPrice').value=product.regPrice??'';
-    document.getElementById('prodComboPrice').value=product.comboPrice??'';
-    document.getElementById('prodDhakaDelivery').value=product.dhakaDelivery??'';
-    document.getElementById('prodOutDelivery').value=product.outDelivery??'';
-    document.getElementById('prodFeatures').value=(product.features||[]).join(', ');
-    currentUploadedImages=[...(product.images||[])];renderImagePreviews();
-    document.getElementById('btnSaveProduct').innerHTML='<i class="fa-solid fa-pen-to-square"></i> পরিবর্তন সেভ করুন';
-    window.scrollTo({top:0,behavior:'smooth'});
-  }else if(action==='delete'){
-    if(!confirm('“'+product.name+'” মুছে ফেলবেন?'))return;
-    products=products.filter(p=>p.id!==id);
-    if(!products.length){showToast('অন্তত একটি পণ্য রাখতে হবে');return;}
-    const nextActive=localStorage.getItem(ACTIVE_PROD_KEY)===id?products[0].id:localStorage.getItem(ACTIVE_PROD_KEY);
-    try{await saveShopCloud('products',productsToMap(products));if(nextActive!==localStorage.getItem(ACTIVE_PROD_KEY))await saveShopCloud('activeProductId',nextActive)}
-    catch(error){console.error(error);showToast('Firebase থেকে পণ্য মোছা যায়নি');return}
-    adminCloudProducts=products;try{localStorage.setItem(STORAGE_KEY_PRODUCTS,JSON.stringify(products))}catch(_){}
-    if(localStorage.getItem(ACTIVE_PROD_KEY)===id)localStorage.setItem(ACTIVE_PROD_KEY,products[0].id);
-    localStorage.setItem('online_supper_shop_sync_trigger',Date.now().toString());
-    renderSavedProducts();showToast('প্রোডাক্ট মুছে ফেলা হয়েছে');
-  }
-});
-window.addEventListener('storage',e=>{
-  if([STORAGE_KEY_ORDERS,STATUS_KEY_ORDERS,STORAGE_KEY_PRODUCTS,ACTIVE_PROD_KEY,CONTACT_EMAIL_KEY,REVIEWS_KEY,THEME_KEY].includes(e.key)){
-    allOrders=readJSON(STORAGE_KEY_ORDERS,[]);orderStatuses=readJSON(STATUS_KEY_ORDERS,{});
-    renderDashboard();renderRegions();renderSavedProducts();renderReviewsAdmin();
-  }
-});
+  <nav class="mobile-nav" aria-label="প্রধান নেভিগেশন"><a href="#home" class="active"><span>⌂</span>হোম</a><a href="#discover"><span>⌕</span>খুঁজুন</a><a href="#feed" data-open="createModal"><span>＋</span>পোস্ট</a><a href="#campaigns"><span>▣</span>কাজ</a><a href="#profile" data-open="profileModal"><span>◉</span>আমি</a></nav>
+  <div class="modal-backdrop" id="createModal"><div class="modal"><div class="modalhead"><h2>কমিউনিটিতে পোস্ট দিন</h2><button class="close" data-close aria-label="বন্ধ করুন">×</button></div><label for="postType">পোস্টের ধরন</label><select id="postType"><option>কনটেন্টে feedback চাই</option><option>সহযোগী খুঁজছি</option><option>কাজের অভিজ্ঞতা শেয়ার</option></select><label for="postTitle">শিরোনাম</label><input id="postTitle" maxlength="90" placeholder="আপনি কী নিয়ে সাহায্য চান?"><label for="postBody">বিস্তারিত</label><textarea id="postBody" placeholder="কনটেন্ট, লক্ষ্য এবং কী ধরনের মতামত বা সহযোগিতা চান লিখুন"></textarea><p class="modal-note">ব্যক্তিগত লগইন তথ্য বা সামাজিক মাধ্যমের পাসওয়ার্ড কখনো শেয়ার করবেন না।</p><button class="btn btn-primary" id="publishPost">পোস্ট প্রকাশ করুন</button></div></div>
+  <div class="modal-backdrop" id="campaignModal"><div class="modal"><div class="modalhead"><h2 id="campaignTitle">কাজের বিবরণ</h2><button class="close" data-close aria-label="বন্ধ করুন">×</button></div><p id="campaignInfo"></p><div class="notice">কোনো campaign-এ লাইক/ফলো/সাবস্ক্রাইব/ভিউ বাড়ানোর শর্ত রাখা যাবে না। বাইরের প্ল্যাটফর্মে monetization নিশ্চিত করা হয় না।</div><button class="btn btn-primary" id="applyCampaign" style="margin-top:15px;width:100%">এই কাজে আবেদন করুন</button></div></div>
+  <div class="modal-backdrop" id="profileModal"><div class="modal"><div class="modalhead"><h2>আপনার প্রোফাইল</h2><button class="close" data-close aria-label="বন্ধ করুন">×</button></div><p class="modal-note">আপনার পাবলিক পরিচিতি অন্যান্য signed-in সদস্য দেখতে পারবেন।</p><label for="profileName">নাম</label><input id="profileName" maxlength="40" placeholder="আপনার নাম"><label for="profileCity">শহর</label><input id="profileCity" maxlength="40" placeholder="যেমন: ঢাকা"><label for="profileNiche">কনটেন্টের ধরন</label><select id="profileNiche"><option>নতুন ক্রিয়েটর</option><option>শিক্ষা</option><option>ফুড ও রান্না</option><option>ভ্লগ</option><option>ফ্যাশন ও লাইফস্টাইল</option><option>টেক</option><option>বই ও গল্প</option><option>অন্যান্য</option></select><button class="btn btn-primary" id="saveProfile">প্রোফাইল সেভ করুন</button><button class="auth-link" id="logoutButton" type="button">লগ আউট</button></div></div>
+  <div class="modal-backdrop" id="inboxModal"><div class="modal"><div class="modalhead"><h2>বার্তা</h2><button class="close" data-close aria-label="বন্ধ করুন">×</button></div><div id="inboxList"></div><label for="messageTo">কাকে লিখবেন</label><input id="messageTo" placeholder="ক্রিয়েটরের নাম"><label for="messageText">বার্তা</label><textarea id="messageText" placeholder="সহযোগিতার প্রস্তাব বা প্রশ্ন লিখুন"></textarea><button class="btn btn-primary" id="sendMessage">বার্তা পাঠান</button></div></div>
+  <div class="modal-backdrop" id="commentsModal"><div class="modal"><div class="modalhead"><h2 id="commentsTitle">মতামত</h2><button class="close" data-close aria-label="বন্ধ করুন">×</button></div><div id="commentsList"></div><label for="commentText">আপনার গঠনমূলক মতামত</label><textarea id="commentText" placeholder="কোন অংশ ভালো লেগেছে, কী উন্নত করা যায় লিখুন"></textarea><button class="btn btn-primary" id="sendComment">মতামত জমা দিন</button></div></div>
+  <div class="modal-backdrop" id="savedModal"><div class="modal"><div class="modalhead"><h2>সেভ করা পোস্ট</h2><button class="close" data-close aria-label="বন্ধ করুন">×</button></div><div id="savedList"></div></div></div>
+  <div class="auth-gate" id="authGate" aria-modal="true" role="dialog"><section class="auth-card"><div class="brand"><span class="logo">স</span>সহ<span>যোগী</span></div><div id="configPanel"><h1>অনলাইন সংযোগ সেটআপ বাকি</h1><p>এই সংস্করণ Firebase Realtime Database-এ চলে। Firebase config বসিয়ে Security Rules প্রকাশ করলে account তৈরি করে ব্যবহার শুরু করা যাবে।</p><ol><li>নিজের নতুন Firebase project তৈরি করুন।</li><li>Authentication-এ Email/Password চালু করুন।</li><li>Realtime Database তৈরি করে দেওয়া <b>database.rules.json</b> rules বসান।</li><li>HTML-এর <code>firebaseConfig</code> জায়গায় নিজের Web app config বসান।</li></ol><p class="modal-note">এখানে অন্য project-এর গোপন key প্রয়োজন নেই। Firebase web config browser-এ থাকে; database নিরাপত্তা Security Rules দিয়ে নিয়ন্ত্রিত হবে।</p><a class="btn btn-primary" href="SETUP-BN.md" target="_blank">বাংলা সেটআপ গাইড</a></div><div id="authPanel" hidden><div class="eyebrow" style="color:#5c8068">বাংলাদেশি creator community</div><h1 id="authTitle">আপনার account-এ প্রবেশ করুন</h1><p id="authCopy">পোস্ট, মতামত ও সহযোগিতার জন্য account দিয়ে sign in করুন।</p><div id="authTabs" class="tabs"><button class="tab active" data-auth-mode="login">লগইন</button><button class="tab" data-auth-mode="register">নতুন account</button></div><div id="authMessage" class="auth-message" role="status"></div><div id="registerFields" hidden><label for="authName">আপনার নাম</label><input id="authName" maxlength="40" autocomplete="name" placeholder="নাম লিখুন"><label for="authCity">শহর</label><input id="authCity" maxlength="40" placeholder="যেমন: ঢাকা"><label for="authNiche">কনটেন্টের ধরন</label><select id="authNiche"><option>নতুন ক্রিয়েটর</option><option>শিক্ষা</option><option>ফুড ও রান্না</option><option>ভ্লগ</option><option>ফ্যাশন ও লাইফস্টাইল</option><option>টেক</option><option>বই ও গল্প</option><option>অন্যান্য</option></select></div><label for="authEmail">ইমেইল</label><input id="authEmail" type="email" autocomplete="email" placeholder="name@example.com"><label for="authPassword">পাসওয়ার্ড</label><input id="authPassword" type="password" autocomplete="current-password" minlength="8" placeholder="কমপক্ষে ৮ অক্ষর"><button id="authSubmit" class="btn btn-primary">লগইন</button><button id="resetPassword" class="auth-link" type="button">পাসওয়ার্ড ভুলে গেছেন?</button></div><div id="verifyPanel" hidden><div class="verify-icon">✉</div><h1>ইমেইল যাচাই করুন</h1><p id="verifyCopy">আপনার ইমেইলে যাচাইয়ের লিংক পাঠানো হয়েছে। লিংকে চাপার পর নিচের বোতামে চাপুন।</p><button id="checkVerified" class="btn btn-primary">আমি যাচাই করেছি</button><button id="resendVerify" class="auth-link">আবার যাচাইয়ের ইমেইল পাঠান</button><button id="logoutFromVerify" class="auth-link">অন্য account ব্যবহার করুন</button></div><div class="auth-foot">লাইক/ফলো বিনিময় নয়—সৎ feedback, সহযোগিতা ও বাস্তব কাজ।</div></section></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script>
+window.__fbBootWatch=setTimeout(()=>{if(!window.__firebaseBooted){const p=document.getElementById("configPanel");if(p){p.querySelector("h1").textContent="Firebase স্ক্রিপ্ট লোড হয়নি";p.querySelector("p").textContent="ইন্টারনেট সংযোগ পরীক্ষা করে Chrome-এ পেজটি আবার খুলুন। ১৫ সেকেন্ডেও চালু না হলে GitHub-এ সঠিক HTML ফাইলটি আপলোড হয়েছে কি না যাচাই করুন।";} }},15000);
 </script>
+  <script type="module">
+import {initializeApp} from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js';
+import {getAuth,onAuthStateChanged,createUserWithEmailAndPassword,signInWithEmailAndPassword,sendEmailVerification,sendPasswordResetEmail,signOut,reload,updateProfile,getIdToken} from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js';
+import {getDatabase,ref,set,update,push,onValue,query,orderByChild,limitToLast,serverTimestamp} from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js';
+
+// Firebase Console > Project settings > Your apps > Web app config থেকে নিজের values বসান।
+window.__firebaseBooted=true;clearTimeout(window.__fbBootWatch);
+const firebaseConfig={apiKey:'AIzaSyDGO2qX-rXZBk4pbCc1A-hJReNCnl6-EWI',authDomain:'creator-support-bd.firebaseapp.com',databaseURL:'https://creator-support-bd-default-rtdb.asia-southeast1.firebasedatabase.app',projectId:'creator-support-bd',appId:'1:7549746416:web:3cb519daf24167d6639635'};
+const configured=Object.values(firebaseConfig).every(v=>v&&!/PASTE_|YOUR_/.test(v));
+const $=id=>document.getElementById(id),gate=$('authGate'),configPanel=$('configPanel'),authPanel=$('authPanel'),verifyPanel=$('verifyPanel'),authMessage=$('authMessage'),toastEl=$('toast');
+let auth,db,user=null,profile={},posts=[],profiles={},campaigns={},applications={},saved={},incoming={},outgoing={},adminApplications={},isAdmin=false,adminLoaded=false,activeMode='login',activeFilter='all',searchTerm='',activePost='',activeCampaign='',toastTimer,stops=[],commentStop=null;
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const initials=s=>String(s||'স').trim().split(/\s+/).slice(0,2).map(x=>x[0]).join('')||'স';
+const say=m=>{toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>toastEl.classList.remove('show'),2800)};
+const show=id=>$(id).classList.add('open');
+const close=el=>el.closest('.modal-backdrop').classList.remove('open');
+function authError(e){const m={'auth/email-already-in-use':'এই ইমেইলে account আছে। লগইন করুন।','auth/invalid-email':'সঠিক ইমেইল লিখুন।','auth/weak-password':'পাসওয়ার্ড কমপক্ষে ৮ অক্ষরের দিন।','auth/invalid-credential':'ইমেইল বা পাসওয়ার্ড মিলছে না।','auth/network-request-failed':'ইন্টারনেট সংযোগ পরীক্ষা করুন।','auth/too-many-requests':'অনেকবার চেষ্টা হয়েছে। কিছুক্ষণ পর আবার চেষ্টা করুন।','PERMISSION_DENIED':'Database Security Rules পরীক্ষা করুন।'};return m[e.code]||'কাজটি হয়নি। Firebase setup, internet ও Security Rules পরীক্ষা করুন।'}
+function mode(m){activeMode=m;document.querySelectorAll('[data-auth-mode]').forEach(b=>b.classList.toggle('active',b.dataset.authMode===m));$('registerFields').hidden=m!=='register';$('authTitle').textContent=m==='login'?'আপনার account-এ প্রবেশ করুন':'নতুন creator account খুলুন';$('authCopy').textContent=m==='login'?'পোস্ট, মতামত ও সহযোগিতার জন্য sign in করুন।':'ইমেইল যাচাইয়ের পর কমিউনিটিতে যোগ দিতে পারবেন।';$('authSubmit').textContent=m==='login'?'লগইন':'account তৈরি করুন';authMessage.classList.remove('show')}
+function messageAuth(m){authMessage.textContent=m;authMessage.classList.add('show')}
+document.querySelectorAll('[data-auth-mode]').forEach(b=>b.addEventListener('click',()=>mode(b.dataset.authMode)));
+async function submitAuth(){const email=$('authEmail').value.trim().toLowerCase(),password=$('authPassword').value,button=$('authSubmit');if(!email||password.length<8)return messageAuth('সঠিক ইমেইল ও কমপক্ষে ৮ অক্ষরের পাসওয়ার্ড দিন।');button.disabled=true;try{if(activeMode==='register'){const name=$('authName').value.trim(),city=$('authCity').value.trim()||'বাংলাদেশ',niche=$('authNiche').value;if(name.length<2)return messageAuth('নাম কমপক্ষে ২ অক্ষরের লিখুন।');const c=await createUserWithEmailAndPassword(auth,email,password);await updateProfile(c.user,{displayName:name});localStorage.setItem('creatorSupportPendingProfile:'+c.user.uid,JSON.stringify({name,city,niche}));await sendEmailVerification(c.user);$('verifyCopy').textContent=`${email} ঠিকানায় যাচাইয়ের লিংক পাঠানো হয়েছে। লিংকে চাপুন, তারপর নিচের বোতাম চাপুন।`;showVerify()}else await signInWithEmailAndPassword(auth,email,password)}catch(e){messageAuth(authError(e))}finally{button.disabled=false}}
+$('authSubmit').addEventListener('click',submitAuth);$('authPassword').addEventListener('keydown',e=>{if(e.key==='Enter')submitAuth()});
+$('resetPassword').addEventListener('click',async()=>{const e=$('authEmail').value.trim();if(!e)return messageAuth('আগে আপনার ইমেইল লিখুন।');try{await sendPasswordResetEmail(auth,e);messageAuth('পাসওয়ার্ড reset করার ইমেইল পাঠানো হয়েছে।')}catch(x){messageAuth(authError(x))}});
+function showVerify(){configPanel.hidden=true;authPanel.hidden=true;verifyPanel.hidden=false;gate.style.display='flex'}
+$('resendVerify').addEventListener('click',async()=>{try{await sendEmailVerification(auth.currentUser);say('যাচাইয়ের ইমেইল আবার পাঠানো হয়েছে')}catch(e){say(authError(e))}});
+$('checkVerified').addEventListener('click',async()=>{try{await reload(auth.currentUser);if(auth.currentUser.emailVerified){await getIdToken(auth.currentUser,true);const uid=auth.currentUser.uid,key='creatorSupportPendingProfile:'+uid,raw=localStorage.getItem(key);if(raw){const pending=JSON.parse(raw);await set(ref(db,'profiles/'+uid),{...pending,createdAt:serverTimestamp(),updatedAt:serverTimestamp()});localStorage.removeItem(key)}await activate(auth.currentUser)}else say('ইমেইলের যাচাই লিংকে আগে চাপুন')}catch(e){say(authError(e))}});
+$('logoutFromVerify').addEventListener('click',()=>signOut(auth));
+function stopAll(){stops.forEach(f=>f());stops=[];if(commentStop){commentStop();commentStop=null}adminLoaded=false;isAdmin=false;$('adminPanel').hidden=true}
+function listen(path,fn,q=null){const stop=onValue(q||ref(db,path),s=>fn(s.val()||{}),e=>say(authError(e)));stops.push(stop)}
+async function activate(u){user=u;gate.style.display='none';stopAll();listen('profiles/'+u.uid,v=>{profile=v||{name:u.displayName||'Creator',city:'বাংলাদেশ',niche:'নতুন ক্রিয়েটর'};renderProfile()});listen('profiles',v=>{profiles=v||{};renderCreators()},query(ref(db,'profiles'),orderByChild('createdAt'),limitToLast(30)));listen('posts',v=>{posts=Object.entries(v||{}).map(([id,p])=>({id,...p})).filter(p=>p.status==='active').sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));renderPosts()},query(ref(db,'posts'),orderByChild('createdAt'),limitToLast(50)));listen('campaigns',v=>{campaigns=v||{};renderCampaigns()},query(ref(db,'campaigns'),orderByChild('createdAt'),limitToLast(30)));listen('applications/'+u.uid,v=>{applications=v||{};$('applicationCount').textContent=Object.keys(applications).length;renderCampaigns()});listen('savedPosts/'+u.uid,v=>{saved=v||{};renderPosts()});listen('inbox/'+u.uid,v=>{incoming=v||{};renderInbox()});listen('sentMessages/'+u.uid,v=>{outgoing=v||{};renderInbox()});listen('admins/'+u.uid,v=>{isAdmin=v===true||v?.enabled===true;$('adminPanel').hidden=!isAdmin;renderPosts();if(isAdmin&&!adminLoaded){adminLoaded=true;listen('applications',all=>{adminApplications=all||{};renderAdminApplications()})}})}
+onAuthStateChanged(auth,async u=>{if(!u){stopAll();user=null;configPanel.hidden=true;verifyPanel.hidden=true;authPanel.hidden=false;gate.style.display='flex';mode('login');return}if(!u.emailVerified){showVerify();return}await activate(u)});
+function renderProfile(){const name=profile.name||user?.displayName||'Creator';document.querySelectorAll('.avatar[title="আপনার প্রোফাইল"],.profile-mini .avatar.big').forEach(x=>x.textContent=initials(name));document.querySelector('.profile-name').textContent=name;document.querySelector('.profile-mini .tiny').textContent=profile.niche||'নতুন ক্রিয়েটর';$('profileName').value=profile.name||'';$('profileCity').value=profile.city||'';$('profileNiche').value=profile.niche||'নতুন ক্রিয়েটর'}
+function getFiltered(){return posts.filter(p=>(activeFilter==='all'||p.kind===activeFilter)&&(`${p.name} ${p.city} ${p.title} ${p.body}`).toLowerCase().includes(searchTerm))}
+function renderPosts(){const feed=$('feedList'),rows=getFiltered();$('postCount').textContent=posts.length;feed.innerHTML=rows.length?rows.map(p=>`<article class="card post"><div class="posttop"><div class="avatar">${esc(initials(p.name))}</div><div class="grow"><div class="postname">${esc(p.name||'Creator')} <span class="tiny">· ${esc(p.city||'বাংলাদেশ')}</span></div><div class="postmeta">${esc(p.niche||'Creator')} · ${p.createdAt?new Date(p.createdAt).toLocaleString('bn-BD'):'এখনই'}</div></div><span class="tag">${p.kind==='collab'?'সহযোগিতা':'feedback চাই'}</span></div><h3>${esc(p.title)}</h3><p>${esc(p.body)}</p><div class="post-actions"><button class="textbtn" data-comment="${esc(p.id)}">✎ মতামত দিন</button><button class="textbtn" data-save="${esc(p.id)}">${saved[p.id]?'♥ সেভ করা':'♡ সংরক্ষণ'}</button><button class="textbtn" data-contact="${esc(p.uid)}" data-name="${esc(p.name||'Creator')}">✉ বার্তা</button>${p.uid===user?.uid?`<button class="textbtn" data-delete="${esc(p.id)}">সরান</button>`:''}${isAdmin?`<button class="textbtn" data-hide="${esc(p.id)}">লুকান</button>`:''}</div></article>`).join(''):'<div class="card empty">এখনো কোনো পোস্ট নেই। প্রথম পোস্টটি আপনি দিন।</div>';feed.querySelectorAll('[data-comment]').forEach(b=>b.onclick=()=>showComments(b.dataset.comment));feed.querySelectorAll('[data-save]').forEach(b=>b.onclick=()=>toggleSave(b.dataset.save));feed.querySelectorAll('[data-contact]').forEach(b=>b.onclick=()=>openInbox(b.dataset.contact,b.dataset.name));feed.querySelectorAll('[data-delete]').forEach(b=>b.onclick=()=>deletePost(b.dataset.delete));feed.querySelectorAll('[data-hide]').forEach(b=>b.onclick=()=>hidePost(b.dataset.hide))}
+function renderCreators(){const box=$('creatorList'),rows=Object.entries(profiles).filter(([id,p])=>id!==user?.uid&&(`${p.name||''} ${p.city||''} ${p.niche||''}`).toLowerCase().includes(searchTerm)).slice(0,12);box.innerHTML=rows.length?rows.map(([id,p])=>`<div class="creator-row"><div class="avatar">${esc(initials(p.name))}</div><div class="creatorinfo"><b>${esc(p.name||'Creator')}</b><small>${esc(p.niche||'Creator')} · ${esc(p.city||'বাংলাদেশ')}</small></div><button class="outline" data-to="${esc(id)}" data-name="${esc(p.name||'Creator')}">বার্তা</button></div>`).join(''):'<div class="empty">এখনো অন্য creator profile নেই।</div>';box.querySelectorAll('[data-to]').forEach(b=>b.onclick=()=>openInbox(b.dataset.to,b.dataset.name))}
+function renderCampaigns(){const box=$('campaignList'),rows=Object.entries(campaigns).filter(([,c])=>c.status==='active');$('campaignCount').textContent=rows.length;box.innerHTML=rows.length?rows.slice(0,10).map(([id,c])=>`<div class="campaign"><div class="campaign-title">${esc(c.title)}</div><div class="campaign-meta"><span>${esc(c.type||'কনটেন্ট কাজ')} · ${esc(c.deadline||'সময় নির্ধারিত নয়')}</span><span class="pay">${esc(c.reward||'বিবরণ দেখুন')}</span></div><button class="btn btn-light btn-sm" data-camp="${esc(id)}">কাজের বিবরণ</button></div>`).join(''):'<div class="empty">এখনো active campaign প্রকাশিত হয়নি।</div>';box.querySelectorAll('[data-camp]').forEach(b=>b.onclick=()=>showCampaign(b.dataset.camp))}
+function showCampaign(id){activeCampaign=id;const c=campaigns[id];if(!c)return;$('campaignTitle').textContent=c.title;$('campaignInfo').textContent=`${c.description||''}\n\nপারিশ্রমিক: ${c.reward||'বিবরণে উল্লেখ নেই'}\nসময়: ${c.deadline||'নির্ধারিত নয়'}\n\nশুধু বাস্তব কনটেন্ট বা কাজের জন্য আবেদন করুন।`;const done=!!applications[id];$('applyCampaign').textContent=done?'আবেদন জমা হয়েছে':'এই কাজে আবেদন করুন';$('applyCampaign').disabled=done;show('campaignModal')}
+function showComments(id){activePost=id;$('commentsTitle').textContent=posts.find(p=>p.id===id)?.title||'মতামত';$('commentsList').innerHTML='<p class="modal-note">মতামত লোড হচ্ছে…</p>';$('commentText').value='';show('commentsModal');if(commentStop)commentStop();commentStop=onValue(query(ref(db,'comments/'+id),orderByChild('createdAt'),limitToLast(30)),snap=>{const rows=Object.values(snap.val()||{});$('commentsList').innerHTML=rows.length?rows.map(c=>`<div class="notice" style="margin:8px 0"><b>${esc(c.name)}</b><div>${esc(c.text)}</div></div>`).join(''):'<p class="modal-note">এখনো মতামত নেই। প্রথম সহায়ক মতামতটি দিন।</p>'},e=>say(authError(e)))}
+async function toggleSave(id){try{await set(ref(db,'savedPosts/'+user.uid+'/'+id),saved[id]?null:{savedAt:serverTimestamp()});say(saved[id]?'সেভ তালিকা থেকে সরানো হয়েছে':'পোস্ট সেভ হয়েছে')}catch(e){say(authError(e))}}
+function renderSaved(){const box=$('savedList'),ids=Object.keys(saved),rows=posts.filter(p=>ids.includes(p.id));box.innerHTML=rows.length?rows.map(p=>`<div class="campaign"><div class="campaign-title">${esc(p.title)}</div><div class="campaign-meta"><span>${esc(p.name)}</span><button class="outline" data-unsave="${esc(p.id)}">সরান</button></div></div>`).join(''):'<div class="empty">সেভ করা পোস্ট নেই।</div>';box.querySelectorAll('[data-unsave]').forEach(b=>b.onclick=()=>toggleSave(b.dataset.unsave))}
+function renderInbox(){const box=$('inboxList'),all=[...Object.values(incoming).map(m=>({...m,folder:'ইনবক্স'})),...Object.values(outgoing).map(m=>({...m,folder:'পাঠানো'}))].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));box.innerHTML=all.length?all.slice(0,20).map(m=>`<div class="notice" style="margin:8px 0"><b>${esc(m.folder)} · ${esc(m.fromName||'Creator')} → ${esc(m.toName||'Creator')}</b><div>${esc(m.text)}</div></div>`).join(''):'<p class="modal-note">এখনো কোনো বার্তা নেই। creator profile থেকে যোগাযোগ করুন।</p>'}
+function openInbox(uid='',name=''){$('messageTo').value=name;$('messageTo').dataset.uid=uid;renderInbox();show('inboxModal')}
+async function deletePost(id){if(!confirm('আপনার পোস্ট মুছে ফেলবেন?'))return;try{await set(ref(db,'posts/'+id),null);say('পোস্ট মুছে ফেলা হয়েছে')}catch(e){say(authError(e))}}
+async function hidePost(id){if(!isAdmin||!confirm('এই পোস্টটি কমিউনিটি থেকে লুকাবেন?'))return;try{await update(ref(db,'posts/'+id),{status:'hidden'});say('পোস্ট লুকানো হয়েছে')}catch(e){say(authError(e))}}
+function renderAdminApplications(){const box=$('adminApplications'),rows=[];Object.entries(adminApplications).forEach(([uid,items])=>Object.entries(items||{}).forEach(([cid,a])=>rows.push({uid,cid,...a})));box.innerHTML=rows.length?rows.map(a=>`<div class="campaign"><div class="campaign-title">${esc(a.campaignTitle||'Campaign')} · ${esc(a.name||'Creator')}</div><div class="campaign-meta"><span>${esc(a.status||'pending')}</span><span>${a.createdAt?new Date(a.createdAt).toLocaleString('bn-BD'):''}</span></div><div class="post-controls"><button class="outline" data-app-status="${esc(a.uid)}|${esc(a.cid)}|accepted">গ্রহণ</button><button class="outline" data-app-status="${esc(a.uid)}|${esc(a.cid)}|declined">বাতিল</button></div></div>`).join(''):'<div class="empty">এখনো কোনো আবেদন আসেনি।</div>';box.querySelectorAll('[data-app-status]').forEach(b=>b.onclick=()=>setApplicationStatus(b.dataset.appStatus))}
+async function setApplicationStatus(raw){const [uid,cid,status]=raw.split('|');try{await update(ref(db,'applications/'+uid+'/'+cid),{status});say(status==='accepted'?'আবেদন গ্রহণ করা হয়েছে':'আবেদন বাতিল করা হয়েছে')}catch(e){say(authError(e))}}
+
+document.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',e=>{e.preventDefault();if(b.dataset.open==='savedModal')renderSaved();show(b.dataset.open)}));document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>close(b));document.querySelectorAll('.modal-backdrop').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}));
+$('openInbox').onclick=()=>openInbox();document.querySelectorAll('.tab[data-filter]').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab[data-filter]').forEach(t=>t.classList.toggle('active',t===b));activeFilter=b.dataset.filter;renderPosts()});$('searchInput').addEventListener('input',e=>{searchTerm=e.target.value.trim().toLowerCase();renderPosts();renderCreators()});
+$('publishPost').onclick=async()=>{const title=$('postTitle').value.trim(),body=$('postBody').value.trim(),kind=$('postType').value.includes('সহযোগী')?'collab':'feedback';if(title.length<5||body.length<15)return say('শিরোনাম ৫ ও বিবরণ ১৫ অক্ষরের বেশি লিখুন');try{await push(ref(db,'posts'),{uid:user.uid,name:profile.name||user.displayName||'Creator',city:profile.city||'বাংলাদেশ',niche:profile.niche||'Creator',kind,title,body,status:'active',createdAt:serverTimestamp()});$('postTitle').value='';$('postBody').value='';$('createModal').classList.remove('open');say('পোস্ট কমিউনিটিতে প্রকাশিত হয়েছে')}catch(e){say(authError(e))}};
+$('saveProfile').onclick=async()=>{const name=$('profileName').value.trim(),city=$('profileCity').value.trim()||'বাংলাদেশ',niche=$('profileNiche').value;if(name.length<2)return say('নাম কমপক্ষে ২ অক্ষরের লিখুন');try{await update(ref(db,'profiles/'+user.uid),{name,city,niche,updatedAt:serverTimestamp()});await updateProfile(user,{displayName:name});$('profileModal').classList.remove('open');say('প্রোফাইল আপডেট হয়েছে')}catch(e){say(authError(e))}};
+$('sendComment').onclick=async()=>{const text=$('commentText').value.trim();if(text.length<10)return say('কমপক্ষে ১০ অক্ষরের মতামত লিখুন');try{await push(ref(db,'comments/'+activePost),{uid:user.uid,name:profile.name||'Creator',text,createdAt:serverTimestamp()});$('commentText').value='';say('মতামত প্রকাশিত হয়েছে')}catch(e){say(authError(e))}};
+$('sendMessage').onclick=async()=>{const to=$('messageTo'),text=$('messageText').value.trim(),target=to.dataset.uid;if(!target||target===user.uid)return say('creator তালিকা থেকে একজনকে বেছে নিন');if(text.length<5)return say('কমপক্ষে ৫ অক্ষরের বার্তা লিখুন');const id=push(ref(db,'sentMessages/'+user.uid)).key,msg={fromUid:user.uid,fromName:profile.name||'Creator',toUid:target,toName:to.value,text,createdAt:serverTimestamp()};try{const paths={};paths['inbox/'+target+'/'+id]=msg;paths['sentMessages/'+user.uid+'/'+id]=msg;await update(ref(db),paths);$('messageText').value='';say('বার্তা পাঠানো হয়েছে')}catch(e){say(authError(e))}};
+$('applyCampaign').onclick=async()=>{const c=campaigns[activeCampaign];if(!c||applications[activeCampaign])return;try{await set(ref(db,'applications/'+user.uid+'/'+activeCampaign),{uid:user.uid,name:profile.name||'Creator',campaignId:activeCampaign,campaignTitle:c.title,status:'pending',createdAt:serverTimestamp()});$('campaignModal').classList.remove('open');say('আবেদন জমা হয়েছে')}catch(e){say(authError(e))}};
+$('refreshCampaigns').onclick=()=>say('Campaign তালিকা live আপডেট হয়');$('refreshCreators').onclick=()=>say('Creator তালিকা live আপডেট হয়');$('logoutButton').onclick=()=>signOut(auth);$('publishCampaign').onclick=async()=>{const title=$('campaignName').value.trim(),description=$('campaignDescription').value.trim(),reward=$('campaignReward').value.trim(),deadline=$('campaignDeadline').value.trim();if(!isAdmin)return say('এই কাজের অনুমতি নেই');if(title.length<5||description.length<20||!reward)return say('শিরোনাম, কাজের বিস্তারিত এবং পারিশ্রমিক লিখুন');try{await push(ref(db,'campaigns'),{title,description,reward,deadline,type:$('campaignType').value,status:'active',ownerUid:user.uid,createdAt:serverTimestamp()});$('campaignName').value='';$('campaignDescription').value='';$('campaignReward').value='';$('campaignDeadline').value='';say('Campaign প্রকাশিত হয়েছে')}catch(e){say(authError(e))}};document.querySelectorAll('.nav a,.mobile-nav a').forEach(a=>a.addEventListener('click',()=>{document.querySelectorAll('.nav a,.mobile-nav a').forEach(x=>x.classList.remove('active'));a.classList.add('active')}));
+
+if(!configured){configPanel.hidden=false;authPanel.hidden=true;verifyPanel.hidden=true;gate.style.display='flex'}else{try{const app=initializeApp(firebaseConfig);auth=getAuth(app);db=getDatabase(app);configPanel.hidden=true;authPanel.hidden=false;verifyPanel.hidden=true;gate.style.display='flex'}catch(e){configPanel.hidden=false;authPanel.hidden=true;gate.style.display='flex';console.error(e)}}
+  </script>
 </body>
 </html>

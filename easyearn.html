@@ -6422,11 +6422,11 @@ window.openWifiPage = function () {
 };
 
 window.openIslamicPage = function () {
-    window.location.href = "islamic.html";
+    window.location.href = "../islamic.html";
 };
 
 window.openEmergencyPage = function () {
-    window.location.href = "emergency.html";
+    window.location.href = "../emergency.html";
 };
 
 
@@ -6466,17 +6466,6 @@ async function eePreparePush() {
     return api;
 }
 
-async function eeRegisterPushDevice(token) {
- for (const name of ['auth','functions']) {
-  if (typeof firebase[name] !== 'function') await new Promise((resolve,reject)=>{
-   const s=document.createElement('script');s.src='https://www.gstatic.com/firebasejs/12.2.1/firebase-'+name+'-compat.js';s.onload=resolve;s.onerror=()=>reject(new Error('Firebase '+name+' লোড হয়নি'));document.head.appendChild(s);
-  });
- }
- const deviceApp=firebase.apps.find(a=>a.name==='ee-push-device')||firebase.initializeApp(app.options,'ee-push-device');
- const auth=deviceApp.auth();if(!auth.currentUser)await auth.signInAnonymously();
- await deviceApp.functions('us-central1').httpsCallable('eeRegisterDevice')({token});
-}
-
 window.enableEasyEarnPush = async function() {
     const status = document.getElementById("ee-push-status");
     try {
@@ -6489,9 +6478,7 @@ window.enableEasyEarnPush = async function() {
         const token = await api.getToken(eeMessaging,{vapidKey:window.EASY_EARN_VAPID_KEY,serviceWorkerRegistration:eeRegistration});
         if (!token) throw new Error("Notification token পাওয়া যায়নি।");
         document.getElementById("ee-token").value = token;
-        status.textContent = "ফোনের অনুমতি প্রস্তুত। অ্যাডমিন তালিকায় যুক্ত করা হচ্ছে…";
-        try { await eeRegisterPushDevice(token); status.textContent="এই ফোন নিবন্ধিত। অ্যাডমিনের নোটিশ পাবেন।"; }
-        catch(e) {status.textContent="ফোনে টেস্ট পাওয়া যাবে। অ্যাডমিন নিবন্ধন হয়নি: "+e.message;}
+        status.textContent = "ফোনে Firebase টেস্ট নোটিফিকেশনের অনুমতি প্রস্তুত। এই সংস্করণের অ্যাডমিন থেকে শুধু অ্যাপের ভেতরে নোটিশ প্রকাশ হয়।";
     } catch(error) { status.textContent = error.message; }
 };
 window.copyEasyEarnToken = async function() {
@@ -6506,7 +6493,7 @@ window.openNotification = window.openNotifications = function() {
 if (isSecureContext && "serviceWorker" in navigator) {
     navigator.serviceWorker.register("./firebase-messaging-sw.js").catch(error => console.warn("Push worker:",error.message));
 }
-if ("Notification" in window && Notification.permission === "granted") eePreparePush().then(async api=>{const token=await api.getToken(eeMessaging,{vapidKey:window.EASY_EARN_VAPID_KEY,serviceWorkerRegistration:eeRegistration});if(token)await eeRegisterPushDevice(token);}).catch(console.warn);
+
 window.openTaskPage = window.openTaskPopup;
 window.openVip = window.openVipPopup;
 window.openTasks = window.openTaskPopup;

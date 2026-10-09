@@ -1,0 +1,25 @@
+{
+  "id": "./easyearn.html",
+  "name": "EasyEarn",
+  "short_name": "EasyEarn",
+  "lang": "bn",
+  "start_url": "./easyearn.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#07111f",
+  "theme_color": "#07111f",
+  "icons": [
+    {
+      "src": "./icons/easyearn-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/easyearn-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

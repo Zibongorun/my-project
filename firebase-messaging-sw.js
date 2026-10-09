@@ -29,6 +29,7 @@ messaging.onBackgroundMessage(payload => {
     if (payload.notification) return; // FCM displays notification payloads automatically.
     return self.registration.showNotification(payload.data?.title || 'EasyEarn', {
         body:payload.data?.body || 'নতুন নোটিস এসেছে', icon:'./icons/easyearn-icon-192.png',
+        image:payload.data?.image || undefined,
         tag:payload.data?.noticeId || undefined
     });
 });

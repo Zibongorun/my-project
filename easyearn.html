@@ -5423,6 +5423,13 @@ onValue(
 
                 box.appendChild(description);
 
+                description.style.whiteSpace="pre-wrap";
+                for(const field of ['image','link']){
+                    try { const url=new URL(item?.[field]);if(url.protocol!=='https:')continue;
+                      if(field==='image'){const img=document.createElement('img');img.src=url.href;img.alt=item.title||'নোটিশ';img.loading='lazy';img.style.cssText='width:100%;border-radius:12px;margin-top:12px';box.appendChild(img);}
+                      else {const a=document.createElement('a');a.href=url.href;a.target='_blank';a.rel='noopener noreferrer';a.textContent=item.button||'বিস্তারিত দেখুন';a.style.cssText='display:block;color:#00e5ff;margin-top:12px';box.appendChild(a);}
+                    }catch{}
+                }
                 list.appendChild(box);
 
             }
@@ -6458,6 +6465,18 @@ async function eePreparePush() {
     }
     return api;
 }
+
+async function eeRegisterPushDevice(token) {
+ for (const name of ['auth','functions']) {
+  if (typeof firebase[name] !== 'function') await new Promise((resolve,reject)=>{
+   const s=document.createElement('script');s.src='https://www.gstatic.com/firebasejs/12.2.1/firebase-'+name+'-compat.js';s.onload=resolve;s.onerror=()=>reject(new Error('Firebase '+name+' লোড হয়নি'));document.head.appendChild(s);
+  });
+ }
+ const deviceApp=firebase.apps.find(a=>a.name==='ee-push-device')||firebase.initializeApp(app.options,'ee-push-device');
+ const auth=deviceApp.auth();if(!auth.currentUser)await auth.signInAnonymously();
+ await deviceApp.functions('us-central1').httpsCallable('eeRegisterDevice')({token});
+}
+
 window.enableEasyEarnPush = async function() {
     const status = document.getElementById("ee-push-status");
     try {
@@ -6470,7 +6489,9 @@ window.enableEasyEarnPush = async function() {
         const token = await api.getToken(eeMessaging,{vapidKey:window.EASY_EARN_VAPID_KEY,serviceWorkerRegistration:eeRegistration});
         if (!token) throw new Error("Notification token পাওয়া যায়নি।");
         document.getElementById("ee-token").value = token;
-        status.textContent = "এই ফোন প্রস্তুত। টেস্ট পাঠাতে নিচের token Firebase Console-এ দিন।";
+        status.textContent = "ফোনের অনুমতি প্রস্তুত। অ্যাডমিন তালিকায় যুক্ত করা হচ্ছে…";
+        try { await eeRegisterPushDevice(token); status.textContent="এই ফোন নিবন্ধিত। অ্যাডমিনের নোটিশ পাবেন।"; }
+        catch(e) {status.textContent="ফোনে টেস্ট পাওয়া যাবে। অ্যাডমিন নিবন্ধন হয়নি: "+e.message;}
     } catch(error) { status.textContent = error.message; }
 };
 window.copyEasyEarnToken = async function() {
@@ -6485,7 +6506,7 @@ window.openNotification = window.openNotifications = function() {
 if (isSecureContext && "serviceWorker" in navigator) {
     navigator.serviceWorker.register("./firebase-messaging-sw.js").catch(error => console.warn("Push worker:",error.message));
 }
-if ("Notification" in window && Notification.permission === "granted" && !window.EASY_EARN_VAPID_KEY.includes("PASTE_")) eePreparePush().catch(console.warn);
+if ("Notification" in window && Notification.permission === "granted") eePreparePush().then(async api=>{const token=await api.getToken(eeMessaging,{vapidKey:window.EASY_EARN_VAPID_KEY,serviceWorkerRegistration:eeRegistration});if(token)await eeRegisterPushDevice(token);}).catch(console.warn);
 window.openTaskPage = window.openTaskPopup;
 window.openVip = window.openVipPopup;
 window.openTasks = window.openTaskPopup;

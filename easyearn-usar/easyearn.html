@@ -6432,6 +6432,7 @@ window.openEmergencyPage = function () {
 
 // Push setup uses a separate service worker; no private server credential belongs here.
 window.EASY_EARN_VAPID_KEY = "BFBhAO48JiLI6HGyooUGYE_vxX6WRI2f1p0sNUwTsqL0qmk7P-u2FunOi97wAIPKuifviZdnB8PDPMSHjpJOqYo";
+const EE_NATIVE_PUSH = new URLSearchParams(location.search).get("nativePush")==="1";
 const EE_PUSH_SERVER = "https://easyearn-push.mdrkibhossain7.workers.dev";
 let eeMessaging, eeRegistration, eeMessagingLoader, eePushApp, eeAuthLoader, eePushBusy = false;
 async function eePushIdentity() {
@@ -6485,6 +6486,7 @@ async function eePreparePush() {
     if (!eeMessaging) {
         eeMessaging = api.getMessaging(app);
         api.onMessage(eeMessaging, payload => {
+            if (EE_NATIVE_PUSH) return;
             const title = payload.notification?.title || payload.data?.title || "EasyEarn";
             const body = payload.notification?.body || payload.data?.body || "নতুন নোটিস এসেছে";
             if (window.Swal) Swal.fire({title, text:body, toast:true, position:"top", timer:6000, showConfirmButton:false});
@@ -6499,6 +6501,7 @@ async function eePreparePush() {
 
 window.enableEasyEarnPush = async function() {
     const status = document.getElementById("ee-push-status");
+    if (EE_NATIVE_PUSH) { status.textContent="এই Android অ্যাপে নোটিফিকেশন পরিচালনা হয়।"; return true; }
     if (eePushBusy) return;
     eePushBusy=true;
     try {
@@ -6520,15 +6523,30 @@ window.enableEasyEarnPush = async function() {
 window.openNotification = window.openNotifications = function() {
     document.getElementById("ee-push-settings").style.display = "block";
 };
-if (isSecureContext && "serviceWorker" in navigator) {
+if (!EE_NATIVE_PUSH && isSecureContext && "serviceWorker" in navigator) {
     navigator.serviceWorker.register("./firebase-messaging-sw.js").catch(error => console.warn("Push worker:",error.message));
 }
 
-if ("Notification" in window && Notification.permission === "granted" && localStorage.getItem("eePushEnabled") === "1") {
+if (!EE_NATIVE_PUSH && "Notification" in window && Notification.permission === "granted" && localStorage.getItem("eePushEnabled") === "1") {
     window.addEventListener("load",async()=>{
         try { const api=await eePreparePush(); const token=await api.getToken(eeMessaging,{vapidKey:window.EASY_EARN_VAPID_KEY,serviceWorkerRegistration:eeRegistration}); if(token)await eeConnectDevice(token); }
         catch { document.getElementById("ee-push-status").textContent="ফোনের সংযোগ নবায়ন হয়নি। নোটিফিকেশন চালু করুন বাটন চাপুন।"; }
     },{once:true});
+}
+// Retire this browser's earlier subscription when moving to native Android push.
+if (EE_NATIVE_PUSH && localStorage.getItem("eePushEnabled")==="1") {
+ window.addEventListener("load",async()=>{
+  try {
+   const api=await eePreparePush();
+   const token=await api.getToken(eeMessaging,{vapidKey:window.EASY_EARN_VAPID_KEY,serviceWorkerRegistration:eeRegistration});
+   if(token){
+    const response=await fetch(EE_PUSH_SERVER+"/unregister",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+await eePushIdentity()},body:JSON.stringify({token})});
+    if(!response.ok)throw new Error("Migration retry needed");
+    await eeMessaging.deleteToken();
+   }
+   localStorage.removeItem("eePushEnabled");
+  }catch{} // Retry on next launch; do not interrupt app usage.
+ },{once:true});
 }
 window.openTaskPage = window.openTaskPopup;
 window.openVip = window.openVipPopup;
@@ -6654,6 +6672,7 @@ window.addEventListener("ee-home", () => {
  const read=k=>{try{return localStorage.getItem(k);}catch{return null;}};
  const remember=()=>{try{localStorage.setItem(key(),'1');}catch{}};
  function show(){
+  if(new URLSearchParams(location.search).get("nativePush")==="1")return;
   if(!('Notification' in window)||!isSecureContext||!dialog.showModal)return;
   if(Notification.permission==='granted' && read('eePushEnabled')==='1')return;
   if(read(key())==='1'||dialog.open)return;

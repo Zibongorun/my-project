@@ -1473,7 +1473,7 @@ body.ee-notice-open{overflow:hidden}
 .ee-auth-card .ee-eye{position:absolute;right:5px;top:5px;width:42px;height:42px;padding:0;margin:0;background:transparent;color:#7185a1;border:0;display:grid;place-items:center;border-radius:9px;font-size:16px}.ee-auth-card .ee-eye:focus-visible{outline:2px solid #2966df}
 .ee-auth-card .ee-auth-submit{width:100%;margin-top:26px;min-height:54px;padding:15px;background:linear-gradient(120deg,#1c58d8,#173ca4);border:0;border-radius:13px;color:white;font-family:inherit;font-size:16px;font-weight:700;box-shadow:0 8px 20px #2156ca25;display:flex;align-items:center;justify-content:center;gap:14px}.ee-auth-submit:disabled{opacity:.6}.ee-auth-card .register-text{color:#7d8ba0!important;font-size:13px!important;margin:23px 0 0!important;text-align:center!important}.ee-auth-card .register-text a{color:#215bd0;font-weight:700;text-decoration:none}
 @media(max-width:360px){#login-page,#register-page{padding-left:14px;padding-right:14px}.ee-auth-card{padding:24px 20px!important}.ee-auth-card h2{font-size:23px!important}}
-</style><style>.ee-auth-card [data-auth-status]{color:#b52840!important;background:#fff0f3;padding:12px;border-radius:10px;font-size:13px}</style></head>
+</style><style>.ee-auth-card [data-auth-status]{color:#b52840!important;background:#fff0f3;padding:12px;border-radius:10px;font-size:13px}</style><style>.ee-history-header{position:sticky;top:-24px;background:#071426;display:flex;align-items:center;gap:14px;padding:18px 0;z-index:2}.ee-history-header button{width:44px;margin:0;padding:8px;background:#152a43}.ee-history-header h2{font-size:22px;margin:0}</style></head>
 
 <body>
 <!-- Login Page -->
@@ -3619,7 +3619,7 @@ function() {
 
 
     window.eeUnlinkAccount?.();
-    eeUserAuth.signOut();
+    eeHistoryUnsubscribe?.();eeHistoryUserUnsubscribe?.();eeUserAuth.signOut();
     showLoginPage();
 
 };
@@ -4757,16 +4757,12 @@ function() {
 };
 
 
-window.openHistory=async function(){
- eeRenderPersonalHistory(true);
- const uid=eeAccount();if(!uid)return eeAuthMessage('আগে লগইন করুন।');
- const panel=getEl('eeHistoryPopup');panel.style.display='flex';eeRenderPersonalHistory(true);const list=getEl('eeHistoryList');list.textContent='লোড হচ্ছে…';
- try{const result=await eeAccountApi('/history',{account:uid});if(!result.ok)throw Error(result.error);const rows=result.rows||[];
- rows.sort((a,b)=>(b.time||0)-(a.time||0));list.replaceChildren();if(!rows.length)list.textContent='এখনও কোনো হিস্ট্রি নেই।';
- for(const n of rows){const card=document.createElement('article');card.className='ee-notice-card';const h=document.createElement('h3');h.textContent=n.label+(n.amount?' • ৳'+n.amount:'');const p=document.createElement('p');p.textContent=(n.status||'')+' • '+n.id;const t=document.createElement('time');t.textContent=n.time?new Date(n.time).toLocaleString('bn-BD'):'';card.append(h,p,t);list.append(card);}
- }catch{list.textContent='হিস্ট্রি পড়া যায়নি। একবার লগআউট করে আবার লগইন করুন।';}
-};
-
+let eeHistoryUnsubscribe,eeHistoryUserUnsubscribe,eeLiveRows=[],eeLiveUser={};
+function eeDrawLiveHistory(){const list=getEl('eeHistoryList');if(!list)return;const rows=[...eeLiveRows];for(const [id,n] of Object.entries(eeLiveUser.quizOperations||{}))rows.push({id,label:'কুইজ',amount:n.reward,status:n.correct?'পুরস্কার যোগ হয়েছে':'উত্তর ভুল',time:n.time});rows.sort((a,b)=>(b.time||0)-(a.time||0));list.replaceChildren();if(!rows.length)list.textContent='এখনও কোনো লেনদেন বা কার্যক্রম নেই।';for(const n of rows){const card=document.createElement('article');card.className='ee-notice-card';const h=document.createElement('h3');h.textContent=n.label+(n.amount?' • ৳'+Number(n.amount).toFixed(2):'');const status=document.createElement('p');status.textContent=({Pending:'অপেক্ষমাণ',Processing:'প্রক্রিয়াধীন',Approved:'সফল',Rejected:'বাতিল'}[n.status]||n.status||'')+' • '+n.id;const t=document.createElement('time');t.textContent='অনুরোধ: '+new Date(n.time||0).toLocaleString('bn-BD');card.append(h,status,t);if(n.processedAt){const done=document.createElement('p');done.textContent='সিদ্ধান্ত: '+new Date(n.processedAt).toLocaleString('bn-BD');card.append(done);}if(n.reason){const reason=document.createElement('p');reason.textContent=n.reason;card.append(reason);}list.append(card);}}
+function eeWatchLiveHistory(){eeHistoryUnsubscribe?.();eeHistoryUserUnsubscribe?.();eeLiveRows=[];eeLiveUser={};const phone=getCurrentUserId();if(!phone)return;eeHistoryUnsubscribe=onValue(ref(db,'history/'+phone),snap=>{eeLiveRows=Object.entries(snap.val()||{}).map(([id,n])=>({...n,id}));eeDrawLiveHistory();},e=>{getEl('eeHistoryList').textContent='হিস্ট্রির অনুমতি মেলেনি। নতুন database.rules.json Publish করুন।';});eeHistoryUserUnsubscribe=onValue(ref(db,'users/'+phone),snap=>{eeLiveUser=snap.val()||{};eeDrawLiveHistory();});}
+async function eeSyncHistory(){let offset=0;do{const r=await eeSecureApi('/sync-history',{offset});offset=r.next;}while(offset!==null);}
+window.openHistory=async function(){if(!getCurrentUserId())return eeAuthMessage('আগে লগইন করুন।');getEl('eeHistoryPopup').style.display='flex';eeRenderPersonalHistory(true);eeWatchLiveHistory();try{await eeSyncHistory();}catch(e){console.warn('History sync:',e.message);}};
+window.addEventListener('ee-home',()=>{eeWatchLiveHistory();if(new URL(location.href).searchParams.get('history')==='1'){setTimeout(()=>window.openHistory(),0);const url=new URL(location.href);url.searchParams.delete('history');history.replaceState(history.state,'',url);}});
 
 window.openRefer =
 function() {
@@ -5738,7 +5734,7 @@ window.addEventListener("ee-home", () => {
 </script>
 
 
-<div id="eeHistoryPopup" class="popup" style="display:none"><div class="popup-box"><button onclick="EasyEarnNav.back()">← ফিরে যান</button><h2>আপনার হিস্ট্রি</h2><div id="eePersonalNoticeList"></div><h3>লেনদেন ও কার্যক্রম</h3><div id="eeHistoryList"></div></div></div>
+<div id="eeHistoryPopup" class="popup" style="display:none"><div class="popup-box"><header class="ee-history-header"><button onclick="EasyEarnNav.back()" aria-label="ফিরে যান">←</button><h2>আপনার হিস্ট্রি</h2></header><h3>লেনদেন ও কার্যক্রম</h3><div id="eeHistoryList"></div><h3>ব্যক্তিগত নোটিশ</h3><div id="eePersonalNoticeList"></div></div></div>
 <div id="ee-push-settings" style="display:none">
 <button onclick="EasyEarnNav.back()">← ফিরে যান</button><h2>নোটিফিকেশন</h2>
 <p style="margin:18px 0">অ্যাপ বন্ধ থাকলেও নোটিস পেতে এই ফোনে অনুমতি দিন।</p>
@@ -5881,7 +5877,7 @@ window.addEventListener("ee-home", () => {
 const eePendingNative=new Map();
 window.eeNativeReply=(id,json)=>{const p=eePendingNative.get(id);if(p){eePendingNative.delete(id);try{p.resolve(JSON.parse(json));}catch{p.reject(Error('সংযোগ হয়নি'));}}};
 async function eeAccountApi(path,data={}){if(window.EasyEarnNative){return new Promise((resolve,reject)=>{const id=String(Date.now())+Math.random();const timer=setTimeout(()=>{eePendingNative.delete(id);reject(Error('সংযোগ হয়নি'));},45000);eePendingNative.set(id,{resolve:v=>{clearTimeout(timer);resolve(v);},reject});EasyEarnNative.request(id,path,JSON.stringify(data));});}
- const r=await fetch(EE_PUSH_SERVER+path,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+await eePushIdentity()},body:JSON.stringify(data)});return r.json();}
+ const r=await fetch(EE_PUSH_SERVER+path,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+await eePushIdentity()},body:JSON.stringify(data)});const result=await r.json();if(!r.ok)throw Error(result.error||'সংযোগ হয়নি');return result;}
 window.eeLinkAccount=async(phone)=>{try{const userToken=await eeUserAuth.currentUser.getIdToken();const r=await eeAccountApi('/link',{phone,userToken});if(r.ok)await window.eeRefreshPrivate();else console.warn('ব্যক্তিগত নোটিশ সংযোগ হয়নি');}catch{}};
 window.eeUnlinkAccount=()=>{eePrivateNotices=[];eeRenderNotices();eeAccountApi('/unlink').catch(()=>{});};
 window.eeRefreshPrivate=async()=>{const account=eeAccount();if(!account){eePrivateNotices=[];eeRenderNotices();return;}try{const r=await eeAccountApi('/inbox',{account});if(account!==eeAccount())return;eePrivateNotices=(r.notices||[]).map(n=>({...n,id:'private:'+n.id}));eeRenderNotices();}catch{}};

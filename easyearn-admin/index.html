@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="bn"><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>EasyEarn Admin</title><meta name="theme-color" content="#081424"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icons/icon-192.png"><link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet"><style>*{box-sizing:border-box}body{margin:0;background:#081424;color:#edf5ff;font-family:'Hind Siliguri',sans-serif}main{max-width:980px;margin:auto;padding:24px}h1{margin:0}header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}.card{background:#14263d;border:1px solid #2c415a;border-radius:20px;padding:24px;margin:18px 0}input,textarea,button{font:inherit;border-radius:10px;padding:12px;width:100%;margin:6px 0 14px}input,textarea{background:#091a2d;border:1px solid #37516f;color:white}button{background:#22d3ee;color:#062033;border:0;font-weight:700;cursor:pointer}button:disabled{opacity:.5}label{display:block}small{color:#aebed1}#logout{width:auto}.grid{display:grid;grid-template-columns:1.2fr 1fr;gap:20px}img{width:100%;border-radius:12px}p{white-space:pre-wrap;overflow-wrap:anywhere}.entry{border-bottom:1px solid #37516f;padding:12px 0}@media(max-width:700px){.grid{grid-template-columns:1fr}main{padding:16px}}[hidden]{display:none!important}</style><main><header><div><small>EasyEarn • অ্যাডমিন</small><h1>নোটিশ পাঠান</h1></div><button id="logout" hidden>লগআউট</button></header><p id="status" role="status">অ্যাডমিন অ্যাকাউন্ট দিয়ে লগইন করুন।</p><form id="login" class="card"><label>ইমেইল<input id="email" type="email" autocomplete="username" required></label><label>পাসওয়ার্ড<input id="password" type="password" autocomplete="current-password" required></label><button>লগইন</button></form><section id="panel" hidden><div class="grid"><form id="compose" class="card"><label>শিরোনাম<input id="title" maxlength="100" required></label><label>বিস্তারিত লেখা<textarea id="description" rows="6" maxlength="5000" required></textarea></label><label>ছবির HTTPS লিংক<input id="image" type="url" placeholder="https://…"></label><small>ছবি GitHub/আপনার হোস্টিংয়ে আপলোড করে লিংক দিন।</small><label>ভিডিও / PDF / ওয়েবসাইট লিংক<input id="link" type="url" placeholder="https://…"></label><label>লিংক বোতামের লেখা<input id="button" maxlength="60" value="বিস্তারিত দেখুন"></label><button id="send">অ্যাপের নোটিশে প্রকাশ করুন</button><small>এই সংস্করণে নোটিশ অ্যাপের ভেতরে দেখাবে। ফোনে পুশ পাঠানো হবে না।</small></form><aside class="card"><small>প্রিভিউ</small><h2 id="pt">নোটিশের শিরোনাম</h2><img id="pi" alt="নোটিশের ছবি" hidden><p id="pd">আপনার লেখা এখানে দেখাবে।</p><button type="button" id="pb" hidden>বিস্তারিত দেখুন</button></aside></div><section class="card"><h2>সাম্প্রতিক নোটিশ</h2><button id="refresh" type="button">রিফ্রেশ</button><div id="history"></div></section></section></main><script src="https://www.gstatic.com/firebasejs/12.2.1/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/12.2.1/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/12.2.1/firebase-database-compat.js"></script><script>
+<!DOCTYPE html><html lang="bn"><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>EasyEarn Admin</title><meta name="theme-color" content="#081424"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icons/icon-192.png"><link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet"><style>*{box-sizing:border-box}body{margin:0;background:#081424;color:#edf5ff;font-family:'Hind Siliguri',sans-serif}main{max-width:980px;margin:auto;padding:24px}h1{margin:0}header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}.card{background:#14263d;border:1px solid #2c415a;border-radius:20px;padding:24px;margin:18px 0}input,textarea,button{font:inherit;border-radius:10px;padding:12px;width:100%;margin:6px 0 14px}input,textarea{background:#091a2d;border:1px solid #37516f;color:white}button{background:#22d3ee;color:#062033;border:0;font-weight:700;cursor:pointer}button:disabled{opacity:.5}label{display:block}small{color:#aebed1}#logout{width:auto}.grid{display:grid;grid-template-columns:1.2fr 1fr;gap:20px}img{width:100%;border-radius:12px}p{white-space:pre-wrap;overflow-wrap:anywhere}.entry{border-bottom:1px solid #37516f;padding:12px 0}@media(max-width:700px){.grid{grid-template-columns:1fr}main{padding:16px}}[hidden]{display:none!important}</style><main><header><div><small>EasyEarn • অ্যাডমিন</small><h1>নোটিশ পাঠান</h1></div><button id="logout" hidden>লগআউট</button></header><p id="status" role="status">অ্যাডমিন অ্যাকাউন্ট দিয়ে লগইন করুন।</p><form id="login" class="card"><label>ইমেইল<input id="email" type="email" autocomplete="username" required></label><label>পাসওয়ার্ড<input id="password" type="password" autocomplete="current-password" required></label><button>লগইন</button></form><section id="panel" hidden><div class="grid"><form id="compose" class="card"><label>শিরোনাম<input id="title" maxlength="100" required></label><label>বিস্তারিত লেখা<textarea id="description" rows="6" maxlength="5000" required></textarea></label><label>ছবির HTTPS লিংক<input id="image" type="url" placeholder="https://…"></label><small>ছবি GitHub/আপনার হোস্টিংয়ে আপলোড করে লিংক দিন।</small><label>ভিডিও / PDF / ওয়েবসাইট লিংক<input id="link" type="url" placeholder="https://…"></label><label>লিংক বোতামের লেখা<input id="button" maxlength="60" value="বিস্তারিত দেখুন"></label><button id="send">নোটিশ ও ফোনে নোটিফিকেশন পাঠান</button><small>নোটিফিকেশন চালু করা ফোনগুলোতে পাঠানো হবে। পাঠানো শেষ না হওয়া পর্যন্ত এই পেজ খোলা রাখুন।</small></form><aside class="card"><small>প্রিভিউ</small><h2 id="pt">নোটিশের শিরোনাম</h2><img id="pi" alt="নোটিশের ছবি" hidden><p id="pd">আপনার লেখা এখানে দেখাবে।</p><button type="button" id="pb" hidden>বিস্তারিত দেখুন</button></aside></div><section class="card"><h2>সাম্প্রতিক নোটিশ</h2><button id="refresh" type="button">রিফ্রেশ</button><div id="history"></div></section></section></main><script src="https://www.gstatic.com/firebasejs/12.2.1/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/12.2.1/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/12.2.1/firebase-database-compat.js"></script><script>
 const config={
     apiKey: "AIzaSyCpwfTWOsU6Gb3rLvMjcKnewLMnlkq5plg",
     authDomain: "amar-bazar-d99b4.firebaseapp.com",
@@ -9,6 +9,7 @@ const config={
     appId: "1:1000008221916:web:6bd19561f4b64e2002e019",
     measurementId: "G-NHCVXFW0E4"
 };firebase.initializeApp(config);const auth=firebase.auth(),db=firebase.database();const $=id=>document.getElementById(id);let requestId=null,busy=false;
+const PUSH_SERVER="https://easyearn-push.mdrkibhossain7.workers.dev";
 const msg=t=>$('status').textContent=t;
 $('login').onsubmit=async e=>{e.preventDefault();const b=e.target.querySelector('button');b.disabled=true;try{await auth.signInWithEmailAndPassword($('email').value.trim(),$('password').value);}catch(x){msg('লগইন হয়নি: '+x.message);}finally{b.disabled=false;}};
 $('logout').onclick=()=>auth.signOut();
@@ -25,28 +26,46 @@ $('compose').onsubmit=async e=>{
  e.preventDefault();if(busy)return;
  if(!auth.currentUser){msg('আগে লগইন করুন।');return;}
  let data;try{data=noticeData();}catch(x){msg(x.message);return;}
- if(!confirm('এই নোটিশ অ্যাপের ভেতরে প্রকাশ করবেন?'))return;
+ if(!confirm('এই নোটিশ প্রকাশ করে ফোনে নোটিফিকেশন পাঠাবেন?'))return;
  busy=true;$('send').disabled=true;
  const fields=[...$('compose').querySelectorAll('input,textarea')];fields.forEach(el=>el.disabled=true);
  requestId=requestId||db.ref('notices').push().key;
  msg('নোটিশ সেভ হচ্ছে…');
  try{
   const result=await db.ref('notices/'+requestId).transaction(current=>current===null?data:undefined,undefined,false);
-  msg(result.committed?'নোটিশ প্রকাশ হয়েছে। অ্যাপের ঘণ্টা আইকনে দেখুন।':'এই নোটিশ আগেই সেভ হয়েছে।');
+  const savedId=requestId;
   requestId=null;
+  msg('নোটিশ প্রকাশ হয়েছে। ফোনে পাঠানো হচ্ছে…');
+  try{await sendPush(savedId);}catch(x){msg('নোটিশ প্রকাশ হয়েছে, কিন্তু ফোনে পাঠানো শেষ হয়নি: '+x.message+'। তালিকার ফোনে পাঠান বাটন দিয়ে আবার চেষ্টা করুন।');}
   try{await historyLoad();}catch(x){msg('নোটিশ সেভ হয়েছে, কিন্তু তালিকা পড়া যায়নি: '+x.message);}
  }catch(x){msg('সেভ হয়নি: '+x.message+'। Rules প্রকাশ করা আছে কি না দেখুন। একই লেখা রেখে আবার চেষ্টা করতে পারবেন।');}
  finally{busy=false;$('send').disabled=false;fields.forEach(el=>el.disabled=false);}
 };
+async function sendPush(noticeId){
+ let cursor=null,sent=0,failed=0,skipped=0,removed=0;
+ do {
+  const token=await auth.currentUser.getIdToken();
+  const response=await fetch(PUSH_SERVER+'/send',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({noticeId,cursor}),signal:AbortSignal.timeout(180000)});
+  const result=await response.json().catch(()=>({}));
+  if(!response.ok || !result.ok)throw new Error(result.error||'সংযোগ হয়নি।');
+  sent+=result.sent||0;failed+=result.failed||0;skipped+=result.skipped||0;removed+=result.removed||0;
+  msg('ফোনে পাঠানো হচ্ছে… FCM গ্রহণ করেছে: '+sent+'। ব্যর্থ: '+failed+'।');
+  cursor=result.done?null:result.cursor;
+  if(!result.done&&!cursor)throw new Error('পরের ফোনগুলোর তালিকা পাওয়া যায়নি।');
+ }while(cursor);
+ msg(sent+skipped===0&&failed===0?'নোটিশ প্রকাশ হয়েছে। এখনো কোনো ফোন নিবন্ধিত নেই। আগে ইউজার অ্যাপে নোটিফিকেশন চালু করুন।':'নোটিশ প্রকাশ হয়েছে। FCM গ্রহণ করেছে: '+sent+'। আগে পাঠানো: '+skipped+'। ব্যর্থ: '+failed+'। ফোনে পৌঁছেছে কি না পরীক্ষা করুন।');
+}
 async function historyLoad(){
  const snapshot=await db.ref('notices').orderByChild('time').limitToLast(50).once('value');
  $('history').replaceChildren();
- for(const n of Object.values(snapshot.val()||{}).sort((a,b)=>(b.time||0)-(a.time||0))){
+ for(const [id,n] of Object.entries(snapshot.val()||{}).sort((a,b)=>(b[1].time||0)-(a[1].time||0))){
   const d=document.createElement('div');d.className='entry';
   const h=document.createElement('strong');h.textContent=n.title||'নোটিশ';
   const p=document.createElement('p');p.textContent=n.description||'';
   const t=document.createElement('small');t.textContent=new Date(n.time||0).toLocaleString('bn-BD');
-  d.append(h,p,t);$('history').append(d);
+  const pushButton=document.createElement('button');pushButton.type='button';pushButton.textContent='ফোনে পাঠান / অসম্পূর্ণ পাঠানো চালিয়ে যান';
+  pushButton.onclick=async()=>{if(busy)return;if(!confirm('এই নোটিশ ফোনে পাঠাবেন?'))return;busy=true;pushButton.disabled=true;$('send').disabled=true;try{await sendPush(id);}catch(x){msg('ফোনে পাঠানো শেষ হয়নি: '+x.message+'। আবার চেষ্টা করতে পারবেন।');}finally{busy=false;pushButton.disabled=false;$('send').disabled=false;}};
+  d.append(h,p,t,pushButton);$('history').append(d);
  }
  if(!$('history').children.length)$('history').textContent='এখনও কোনো নোটিশ নেই।';
 }

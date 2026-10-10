@@ -6504,7 +6504,8 @@ window.enableEasyEarnPush = async function() {
     try {
         if (window.EASY_EARN_VAPID_KEY.includes("PASTE_")) throw new Error("Firebase Console-এর Web Push public key আগে HTML-এ বসাতে হবে।");
         if (!("Notification" in window)) throw new Error("Chrome-এ এই লিংক খুলে আবার চেষ্টা করুন।");
-        const permission = await Notification.requestPermission();
+        if (Notification.permission === "denied") throw new Error("নোটিফিকেশন আগে ব্লক করা হয়েছে। Chrome → সাইট সেটিংস → Notifications → Allow করুন, তারপর ফিরে এসে আবার চেষ্টা করুন।");
+        const permission = Notification.permission === "granted" ? "granted" : await Notification.requestPermission();
         if (permission !== "granted") throw new Error("ফোনের ব্রাউজার সেটিংস থেকে Notification অনুমতি দিন।");
         status.textContent = "সংযোগ করা হচ্ছে…";
         const api = await eePreparePush();
@@ -6512,7 +6513,8 @@ window.enableEasyEarnPush = async function() {
         if (!token) throw new Error("Notification token পাওয়া যায়নি।");
         await eeConnectDevice(token);
         status.textContent = "নোটিফিকেশন চালু হয়েছে। এখন অ্যাডমিনের নতুন নোটিশ এই ফোনে পাঠানো যাবে।";
-    } catch(error) { status.textContent = error.message; }
+        return true;
+    } catch(error) { status.textContent = error.message; return false; }
     finally { eePushBusy=false; }
 };
 window.openNotification = window.openNotifications = function() {
@@ -6617,6 +6619,68 @@ window.addEventListener("ee-home", () => {
             event.preventDefault();event.stopImmediatePropagation();history.back();
         }
     },true);
+})();
+</script>
+
+
+<style>
+#ee-first-notice{position:fixed;inset:0;margin:auto;width:calc(100% - 36px);max-width:400px;height:fit-content;max-height:90dvh;overflow:auto;border:0;border-radius:24px;background:#fff;color:#15233b;padding:30px 24px;text-align:center;font-family:inherit;box-shadow:0 20px 70px #0005}
+#ee-first-notice::backdrop{background:rgba(3,12,27,.72)}
+#ee-first-notice .ee-brand{font-size:14px;font-weight:700;color:#526481;margin:0 0 16px}
+#ee-first-notice .ee-bell{width:64px;height:64px;border-radius:20px;background:#eaf2ff;display:grid;place-items:center;margin:0 auto 18px;font-size:32px}
+#ee-first-notice h2{font-size:23px;line-height:1.4;margin:0 0 12px;color:#15233b}
+#ee-first-notice p{font-size:16px;line-height:1.65;margin:0 0 18px;color:#526481;white-space:normal}
+#ee-first-notice button{display:block;width:100%;font:inherit;font-size:17px;font-weight:700;padding:14px;border:0;border-radius:12px;margin:10px 0 0;background:#2563eb;color:#fff;cursor:pointer}
+#ee-first-notice button.ee-later{background:#eef2f7;color:#42536d}
+#ee-first-notice button:disabled{opacity:.55;cursor:wait}
+#ee-first-notice #ee-first-status{font-size:14px;margin:14px 0 0;color:#334a68}
+</style>
+<dialog id="ee-first-notice" aria-labelledby="ee-first-title" aria-describedby="ee-first-description">
+<div class="ee-brand">EasyEarn</div><div class="ee-bell" aria-hidden="true">🔔</div>
+<h2 id="ee-first-title">নতুন নোটিশের খবর পেতে চান?</h2>
+<p id="ee-first-description">নোটিফিকেশন চালু করলে অ্যাপ বন্ধ থাকলেও নতুন নোটিশের খবর এই ফোনে পেতে পারবেন। পরের অনুমতির বক্সে Allow চাপুন।</p>
+<button id="ee-first-enable" type="button">নোটিফিকেশন চালু করুন</button>
+<button id="ee-first-later" type="button" class="ee-later">এখন নয়</button>
+<p id="ee-first-status" role="status" aria-live="polite"></p>
+</dialog>
+<script>
+(()=>{
+ const dialog=document.getElementById('ee-first-notice');
+ const enable=document.getElementById('ee-first-enable');
+ const later=document.getElementById('ee-first-later');
+ const status=document.getElementById('ee-first-status');
+ const installed=()=>matchMedia('(display-mode: standalone)').matches || navigator.standalone===true;
+ const key=()=>installed()?'eeNoticeWelcomeInstalledV1':'eeNoticeWelcomeBrowserV1';
+ const read=k=>{try{return localStorage.getItem(k);}catch{return null;}};
+ const remember=()=>{try{localStorage.setItem(key(),'1');}catch{}};
+ function show(){
+  if(!('Notification' in window)||!isSecureContext||!dialog.showModal)return;
+  if(Notification.permission==='granted' && read('eePushEnabled')==='1')return;
+  if(read(key())==='1'||dialog.open)return;
+  if(Notification.permission==='denied'){
+   document.getElementById('ee-first-description').textContent='এই সাইটের নোটিফিকেশন ব্লক করা আছে। Chrome-এর সাইট সেটিংসে Notifications → Allow করুন। পরে মেনুর Notifications থেকেও চালু করতে পারবেন।';
+   enable.textContent='কীভাবে চালু করব?';
+  }
+  dialog.showModal();
+ }
+ enable.addEventListener('click',async()=>{
+  if(Notification.permission==='denied'){
+   status.textContent='Chrome-এ অ্যাপের লিংক খুলুন → ঠিকানার পাশের সাইট সেটিংস → Permissions → Notifications → Allow। ফোনের Settings → Apps → Chrome → Notifications-ও চালু রাখুন।';
+   return;
+  }
+  enable.disabled=true;later.disabled=true;status.textContent='অনুমতি ও ফোনের সংযোগ তৈরি হচ্ছে…';
+  try{
+   // Direct call from the tap keeps browser permission tied to user activation.
+   const ok=await window.enableEasyEarnPush();
+   status.textContent=document.getElementById('ee-push-status').textContent;
+   if(ok){remember();enable.hidden=true;later.textContent='শুরু করুন';}
+  }finally{enable.disabled=false;later.disabled=false;}
+ });
+ later.addEventListener('click',()=>{remember();dialog.close();});
+ dialog.addEventListener('cancel',()=>remember());
+ if(document.readyState==='complete')setTimeout(show,3500);
+ else window.addEventListener('load',()=>setTimeout(show,3500),{once:true});
+ window.addEventListener('appinstalled',()=>setTimeout(show,500));
 })();
 </script>
 

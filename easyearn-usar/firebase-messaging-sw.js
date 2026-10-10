@@ -2,7 +2,7 @@
 self.addEventListener('notificationclick', event => {
     event.notification.close();
     event.waitUntil((async () => {
-        const target = new URL('./easyearn.html?notice=1',self.location.href);
+        const target = new URL(event.notification.data?.route==='history'?'./easyearn.html?history=1':'./easyearn.html?notice=1',self.location.href);
         const windows = await clients.matchAll({type:'window',includeUncontrolled:true});
         for (const client of windows) {
             if (client.url.split('?')[0] === target.href.split('?')[0]) {
@@ -28,8 +28,8 @@ const messaging = firebase.messaging();
 messaging.onBackgroundMessage(payload => {
     if (payload.notification) return; // FCM displays notification payloads automatically.
     return self.registration.showNotification(payload.data?.title || 'EasyEarn', {
-        body:payload.data?.body || 'নতুন নোটিস এসেছে', icon:'./icons/icon-192.png',
+        body:payload.data?.body || 'নতুন নোটিস এসেছে', icon:'./icons/easyearn-icon-192.png',
         image:payload.data?.image || undefined,
-        tag:payload.data?.noticeId || undefined
+        tag:payload.data?.noticeId || undefined,data:{route:payload.data?.route||'notice'}
     });
 });

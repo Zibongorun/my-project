@@ -1913,15 +1913,15 @@ Start
     <div style="padding:20px;">
 
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:25px;">
-            <h3 style="margin:0;font-size:22px;color:#fff;">💳 Deposit</h3>
+            <h3 style="margin:0;font-size:22px;color:#fff;">💳 Add Balance</h3>
 
             <span onclick="closeAllPopups()" style="cursor:pointer;font-size:28px;font-weight:bold;color:#fff;">×</span>
         </div>
 
         <div style="background:linear-gradient(135deg,#00c853,#009688);padding:25px;border-radius:20px;margin-bottom:25px;color:#fff;box-shadow:0 10px 20px rgba(0,0,0,.3);">
-            <div style="font-size:16px;opacity:.9;">🎁 New User</div>
-            <div style="font-weight:bold;font-size:24px;margin-top:5px;">Get 100% Bonus</div>
-            <div style="font-size:14px;margin-top:5px;">Up To ৳12,000 Deposit Bonus</div>
+            <div style="font-size:16px;opacity:.9;">🎁 Refer & Earn</div>
+            <div style="font-weight:bold;font-size:24px;margin-top:5px;">Refer the App & Earn Bonus</div>
+            <div style="font-size:14px;margin-top:5px;">Share EasyEarn with your friends</div>
         </div>
 
         <div style="font-weight:bold;margin-bottom:15px;color:#fff;">
@@ -1951,7 +1951,7 @@ Start
             </div>
 
             <h3 id="payment-title" style="margin-top:12px;color:#222;">
-                Deposit
+                Add Balance
             </h3>
         </div>
 
@@ -1960,8 +1960,8 @@ Start
                 এই নাম্বারে Send Money করুন
             </p>
 
-            <h2 style="color:#16a34a;">
-                01877059049
+            <h2 id="eePaymentNumber" style="color:#16a34a;overflow-wrap:anywhere;">
+                Loading…
             </h2>
         </div>
 
@@ -1972,7 +1972,7 @@ Start
         <input type="text" id="trx-id" placeholder="Transaction ID" style="width:100%;padding:14px;margin-bottom:18px;border:1px solid #ddd;border-radius:10px;outline:none;">
 
         <button onclick="confirmDeposit()" style="width:100%;padding:15px;border:none;border-radius:12px;background:#16a34a;color:#fff;font-size:16px;font-weight:bold;cursor:pointer;">
-            CONFIRM DEPOSIT
+            CONFIRM ADD BALANCE
         </button>
 
     </div>
@@ -3880,7 +3880,7 @@ function(name, icon) {
 
         title.innerHTML =
             escapeHTML(name) +
-            " Deposit";
+            " Add Balance";
 
     }
 
@@ -3926,6 +3926,7 @@ function() {
 
 window.confirmDeposit =
 async function() {
+    if (!window.eePaymentReady) { Swal.fire({icon:"warning",title:"Payment details unavailable",text:"Please reopen the payment method and wait for the account number."}); return; }
 
     const amount =
         getEl("amount")?.value.trim();
@@ -4055,7 +4056,7 @@ async function() {
                 "success",
 
             title:
-                "Deposit Submitted",
+                "Add Balance Request Submitted",
 
             text:
                 "Your request has been sent to admin."
@@ -4106,7 +4107,7 @@ async function() {
                 "error",
 
             title:
-                "Deposit Failed",
+                "Add Balance Request Failed",
 
             text:
                 error.message
@@ -5891,5 +5892,19 @@ window.eeRefreshPrivate=async()=>{const account=eeAccount();if(!account){eePriva
 window.addEventListener('ee-home',()=>{eeRenderNotices();window.eeRefreshPrivate();});setInterval(()=>{if(!document.hidden)window.eeRefreshPrivate();},30000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)window.eeRefreshPrivate();});window.addEventListener('load',()=>window.eeRefreshPrivate());
 </script><script>
 (()=>{const panel=document.getElementById('noticePopup');const sync=()=>document.body.classList.toggle('ee-notice-open',panel.style.display!=='none');new MutationObserver(sync).observe(panel,{attributes:true,attributeFilter:['style']});sync();})();
-</script><script>window.eeTogglePassword=(id,button)=>{const field=document.getElementById(id);const reveal=field.type==='password';field.type=reveal?'text':'password';button.setAttribute('aria-label',reveal?'পাসওয়ার্ড লুকান':'পাসওয়ার্ড দেখুন');button.innerHTML=reveal?'<i class="fa-regular fa-eye-slash" aria-hidden="true"></i>':'<i class="fa-regular fa-eye" aria-hidden="true"></i>';};</script></body>
+</script><script>window.eeTogglePassword=(id,button)=>{const field=document.getElementById(id);const reveal=field.type==='password';field.type=reveal?'text':'password';button.setAttribute('aria-label',reveal?'পাসওয়ার্ড লুকান':'পাসওয়ার্ড দেখুন');button.innerHTML=reveal?'<i class="fa-regular fa-eye-slash" aria-hidden="true"></i>':'<i class="fa-regular fa-eye" aria-hidden="true"></i>';};</script><style>#eePrivacyPopup,#eeDeletePopup,#eePasswordPopup{position:fixed!important;inset:0!important;left:0!important;right:0!important;top:0!important;bottom:0!important;width:100%!important;height:100%!important;height:100dvh!important;z-index:2147483646!important;background:#081424!important;transform:none!important;opacity:1!important;visibility:visible!important;overflow-y:auto!important;overscroll-behavior:contain;isolation:isolate;box-sizing:border-box}#eePasswordPopup section,#eeDeletePopup section{margin:0 auto!important}#eePrivacyPopup .policy{padding-bottom:60px}</style><script>
+window.addEventListener('DOMContentLoaded',()=>{
+const routes={openPrivacy:'eePrivacyPopup',eeOpenDeletion:'eeDeletePopup',openPassword:'eePasswordPopup'};
+for(const [name,id] of Object.entries(routes)){const panel=document.getElementById(id);document.body.appendChild(panel);const original=window[name];window[name]=function(){original?.();const profile=document.getElementById('profilePopup');if(profile)profile.style.display='none';panel.style.display='flex';panel.scrollTop=0;};}
+});
+</script></body>
 </html>
+
+<script>
+(()=>{
+ const server='https://easyearn-push.mdrkibhossain7.workers.dev';let method='',version=0;
+ window.eePaymentReady=false;
+ async function refresh(){const stamp=++version;window.eePaymentReady=false;const label=document.getElementById('eePaymentNumber');label.textContent='Loading…';try{const r=await fetch(server+'/payment-settings',{cache:'no-store',signal:AbortSignal.timeout(15000)}),data=await r.json();if(!r.ok||!data.ok)throw Error();if(stamp!==version)return;const number=data.methods?.[method];label.textContent=number||'Currently unavailable';window.eePaymentReady=!!number;}catch{if(stamp===version)label.textContent='Unable to load. Reopen to retry.';}}
+ document.addEventListener('DOMContentLoaded',()=>{const original=window.openPaymentForm;window.openPaymentForm=function(name,icon){method=name;original(name,icon);refresh();};setInterval(()=>{if(document.getElementById('payment-form-popup')?.style.display==='flex')refresh();},30000);});
+})();
+</script>

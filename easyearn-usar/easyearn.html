@@ -1473,7 +1473,7 @@ body.ee-notice-open{overflow:hidden}
 .ee-auth-card .ee-eye{position:absolute;right:5px;top:5px;width:42px;height:42px;padding:0;margin:0;background:transparent;color:#7185a1;border:0;display:grid;place-items:center;border-radius:9px;font-size:16px}.ee-auth-card .ee-eye:focus-visible{outline:2px solid #2966df}
 .ee-auth-card .ee-auth-submit{width:100%;margin-top:26px;min-height:54px;padding:15px;background:linear-gradient(120deg,#1c58d8,#173ca4);border:0;border-radius:13px;color:white;font-family:inherit;font-size:16px;font-weight:700;box-shadow:0 8px 20px #2156ca25;display:flex;align-items:center;justify-content:center;gap:14px}.ee-auth-submit:disabled{opacity:.6}.ee-auth-card .register-text{color:#7d8ba0!important;font-size:13px!important;margin:23px 0 0!important;text-align:center!important}.ee-auth-card .register-text a{color:#215bd0;font-weight:700;text-decoration:none}
 @media(max-width:360px){#login-page,#register-page{padding-left:14px;padding-right:14px}.ee-auth-card{padding:24px 20px!important}.ee-auth-card h2{font-size:23px!important}}
-</style><style>.ee-auth-card [data-auth-status]{color:#b52840!important;background:#fff0f3;padding:12px;border-radius:10px;font-size:13px}</style><style>.ee-history-header{position:sticky;top:-24px;background:#071426;display:flex;align-items:center;gap:14px;padding:18px 0;z-index:2}.ee-history-header button{width:44px;margin:0;padding:8px;background:#152a43}.ee-history-header h2{font-size:22px;margin:0}</style><style>.ee-history-row{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.ee-history-row h3{margin:0!important;min-width:0}.ee-history-status{flex-shrink:0;padding:6px 10px;border-radius:20px;font-size:12px;font-weight:700}.ee-history-status.pending{color:#ff7c85;background:rgba(239,68,68,.16)}.ee-history-status.success{color:#36e69b;background:rgba(16,185,129,.16)}.ee-history-id{overflow-wrap:anywhere;font-size:13px!important}</style></head>
+</style><style>.ee-auth-card [data-auth-status]{color:#b52840!important;background:#fff0f3;padding:12px;border-radius:10px;font-size:13px}</style><style>.ee-history-header{position:sticky;top:-24px;background:#071426;display:flex;align-items:center;gap:14px;padding:18px 0;z-index:2}.ee-history-header button{width:44px;margin:0;padding:8px;background:#152a43}.ee-history-header h2{font-size:22px;margin:0}</style><style>.ee-history-row{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.ee-history-row h3{margin:0!important;min-width:0}.ee-history-status{flex-shrink:0;padding:6px 10px;border-radius:20px;font-size:12px;font-weight:700}.ee-history-status.pending{color:#ff7c85;background:rgba(239,68,68,.16)}.ee-history-status.success{color:#36e69b;background:rgba(16,185,129,.16)}.ee-history-id{overflow-wrap:anywhere;font-size:13px!important}</style><style>.policy{max-width:760px;margin:auto;padding:28px 22px 64px;font-family:system-ui,sans-serif;line-height:1.75;color:#c9d9e8;overflow-wrap:anywhere}.policy h1{color:white;font-size:34px;line-height:1.2}.policy h2{color:white;font-size:20px;margin-top:30px}.policy a{color:#42d4ee}.policy li{margin:12px 0}.policy .eyebrow{color:#42d4ee;font-size:12px;letter-spacing:2px}.policy strong{color:#fff}</style></head>
 
 <body>
 <!-- Login Page -->
@@ -1529,7 +1529,7 @@ Available Balance
 <div class="action">
 
 <button class="deposit" onclick="openDepositPopup()">
-Deposit
+Add Balance
 </button>
 
 <button class="withdraw" onclick="openWithdrawPopup()">
@@ -2930,7 +2930,7 @@ onValue(ref(db, "homeBanners"), (snapshot) => {
             </div>
             <div class="action">
                 <button class="deposit" onclick="openDepositPopup()">
-                    Deposit
+                    Add Balance
                 </button>
                 <button class="withdraw" onclick="openWithdrawPopup()">
                     Withdraw
@@ -4778,14 +4778,18 @@ function() {
 };
 
 
-window.openPassword =
-function() {
-
-    Swal.fire(
-        "Change Password",
-        "Coming Soon"
-    );
-
+window.openPassword=function(){const form=getEl('eePasswordForm');form.reset();getEl('eePasswordMessage').textContent='';getEl('eePasswordSubmit').disabled=false;getEl('eePasswordPopup').style.display='flex';};
+let eePasswordBusy=false;
+window.eeSavePassword=async function(event){event.preventDefault();if(eePasswordBusy)return;const message=getEl('eePasswordMessage'),button=getEl('eePasswordSubmit');message.textContent='';message.style.color='#ff8992';const current=getEl('eeCurrentPassword').value,next=getEl('eeNewPassword').value,confirm=getEl('eeConfirmPassword').value;
+if(!current){message.textContent='Enter your current password.';return;}
+if(next.length<8){message.textContent='Use at least 8 characters for your new password.';return;}
+if(next!==confirm){message.textContent='The new passwords do not match.';return;}
+if(current===next){message.textContent='Choose a different new password.';return;}
+const user=eeUserAuth.currentUser;if(!user?.email){message.textContent='Please log in again.';return;}
+eePasswordBusy=true;button.disabled=true;button.textContent='Updating…';
+try{const credential=firebase.auth.EmailAuthProvider.credential(user.email,current);await user.reauthenticateWithCredential(credential);await user.updatePassword(next);getEl('eePasswordForm').reset();message.style.color='#36e69b';message.textContent='Password changed successfully. Use your new password the next time you log in.';}
+catch(error){const messages={'auth/wrong-password':'Your current password is incorrect.','auth/invalid-credential':'Your current password is incorrect.','auth/invalid-login-credentials':'Your current password is incorrect.','auth/weak-password':'Choose a stronger password.','auth/password-does-not-meet-requirements':'Your password does not meet the security requirements.','auth/too-many-requests':'Too many attempts. Please try again later.','auth/network-request-failed':'Check your internet connection and try again.','auth/requires-recent-login':'Please log in again and retry.','auth/user-disabled':'Your account is disabled.'};message.textContent=messages[error.code]||'Password could not be changed. Please try again.';}
+finally{eePasswordBusy=false;button.disabled=false;button.textContent='Update Password';}
 };
 
 
@@ -4844,15 +4848,7 @@ function() {
 };
 
 
-window.openPrivacy =
-function() {
-
-    Swal.fire(
-        "Privacy Policy",
-        "Coming Soon"
-    );
-
-};
+window.openPrivacy=function(){getEl('eePrivacyPopup').style.display='flex';};
 
 
 window.openHelp =
@@ -5737,6 +5733,8 @@ window.addEventListener("ee-home", () => {
 </script>
 
 
+<div id="eePrivacyPopup" class="popup" style="display:none;position:fixed;inset:0;z-index:10060;background:#081424;overflow:auto;align-items:flex-start"><div style="width:100%"><header style="position:sticky;top:0;background:#081424;padding:16px 22px;z-index:1"><button onclick="EasyEarnNav.back()" aria-label="Back" style="border:0;border-radius:12px;background:#2563eb;color:white;padding:12px 18px;font-size:18px">← Back</button></header><div class="policy"><p class="eyebrow">EASYEARN · PRIVACY</p><h1>Privacy Policy</h1><p>Last updated: 11 October 2026</p><p>EasyEarn is operated by <strong>MD RACHEL SHK NOYON</strong>. This policy explains how we handle information when you use the EasyEarn app and its connected services.</p><h2>1. Information we collect</h2><ul><li><strong>Account information:</strong> your name, phone number, account identifier, and optional profile picture or referral code.</li><li><strong>Authentication:</strong> the password you enter is processed by Firebase Authentication. The application database does not store your password as plain text. An internal phone-based email alias is used for sign-in; it is not your contact email.</li><li><strong>Transactions:</strong> add-balance and withdrawal amounts, selected payment method, sender or receiving account number, transaction reference, request status, balance, and request/decision dates.</li><li><strong>Activity:</strong> quiz answers and progress, rewards, transaction history, last-active time, and notification read status.</li><li><strong>Device identifiers:</strong> Firebase installation/authentication identifiers and notification registration tokens, linked to your account to deliver your own updates.</li><li><strong>Technical information:</strong> our hosting and infrastructure providers may process IP addresses, request metadata, and security/operational logs when your device connects.</li><li><strong>Support:</strong> information you choose to send by email.</li></ul><h2>2. Why we use this information</h2><p>We use it to create and secure accounts, display balances and history, review payment requests, calculate quiz rewards, prevent duplicate or fraudulent transactions, provide support, and deliver general announcements or account-specific notifications.</p><h2>3. Notifications and your choices</h2><p>Notifications are optional. You can allow or disable them in your phone's app settings. Notification tokens are managed automatically and are not displayed in the user interface. Transaction notifications can contain financial amounts and may appear on your lock screen; you can hide sensitive notification content in your phone settings.</p><h2>4. Who processes or receives information</h2><p>Authorized EasyEarn administrators can access account and transaction information needed to run the service. We use Google Firebase for authentication, database storage and messaging; Cloudflare for backend processing and notification delivery records; and GitHub Pages for hosting the app's web content. Content resources may be loaded from Google Fonts and public asset/CDN providers, which receive normal network request information. Support emails are handled through Gmail.</p><p>Payment account details are used by authorized administrators to verify or arrange payments through the selected payment service. External websites opened from the app have their own privacy policies. We may disclose information when required by law or to investigate abuse. We do not sell personal information.</p><h2>5. Storage and security</h2><p>Connections use HTTPS. Authentication and database access controls restrict users to their own private records. Service providers may process data outside Bangladesh. No online service can guarantee complete security.</p><h2>6. Retention and deletion</h2><p>We keep account and activity records while your account is active and needed to provide the service. To request account and associated data deletion, email <a href="mailto:onlinesuppershop24hours@gmail.com?subject=EasyEarn%20Account%20Deletion">onlinesuppershop24hours@gmail.com</a> with the subject <strong>EasyEarn Account Deletion</strong> and your registered phone number. Do not send your password. We verify ownership before deleting an account.</p><p>Deletion requests cover your authentication account, profile, profile picture, account activity and linked notification records. Transaction or security records may be retained only where needed to resolve pending transactions/disputes, prevent fraud, or meet applicable legal obligations; we will explain any such retention when handling your request. Uninstalling the app does not delete your account.</p><h2>7. Access, corrections and account control</h2><p>You can view your profile and history and change your password in the app. Contact us to request corrections, access to your information, or deletion. Notification preferences can be changed in Android settings.</p><h2>8. Children</h2><p>EasyEarn's money-related account service is intended for adults aged 18 or older. If you believe a child has supplied personal information, contact us so we can investigate and remove it.</p><h2>9. Policy changes</h2><p>We may update this policy when our service or data practices change. The updated date will appear on this page. Material changes will be communicated through the app where appropriate.</p><h2>10. Contact</h2><p><strong>App:</strong> EasyEarn<br><strong>Developer:</strong> MD RACHEL SHK NOYON<br><strong>Email:</strong> <a href="mailto:onlinesuppershop24hours@gmail.com">onlinesuppershop24hours@gmail.com</a></p></div></div></div>
+<div id="eePasswordPopup" class="popup" style="display:none;position:fixed;inset:0;z-index:10050;background:#081424;overflow:auto;align-items:flex-start;padding:24px;box-sizing:border-box"><section style="width:100%;max-width:480px;margin:0 auto;color:white"><header style="display:flex;align-items:center;gap:16px;margin-bottom:28px"><button type="button" onclick="EasyEarnNav.back()" aria-label="Back" style="width:44px;height:44px;background:#2563eb;border:0;border-radius:14px;color:white;font-size:24px">←</button><h2>Change Password</h2></header><p style="color:#a9bfd3;line-height:1.6">Confirm your current password to keep your account secure.</p><form id="eePasswordForm" onsubmit="eeSavePassword(event)"><label class="ee-auth-label" for="eeCurrentPassword">Current Password</label><div class="ee-input-wrap"><input id="eeCurrentPassword" type="password" autocomplete="current-password" required><button type="button" class="ee-eye" onclick="eeTogglePassword('eeCurrentPassword',this)" aria-label="Show password">◉</button></div><label class="ee-auth-label" for="eeNewPassword">New Password</label><div class="ee-input-wrap"><input id="eeNewPassword" type="password" autocomplete="new-password" minlength="8" required><button type="button" class="ee-eye" onclick="eeTogglePassword('eeNewPassword',this)" aria-label="Show password">◉</button></div><label class="ee-auth-label" for="eeConfirmPassword">Confirm New Password</label><div class="ee-input-wrap"><input id="eeConfirmPassword" type="password" autocomplete="new-password" minlength="8" required><button type="button" class="ee-eye" onclick="eeTogglePassword('eeConfirmPassword',this)" aria-label="Show password">◉</button></div><p style="color:#a9bfd3;font-size:13px">Use at least 8 characters.</p><p id="eePasswordMessage" role="status" aria-live="polite" style="line-height:1.6"></p><button id="eePasswordSubmit" class="ee-auth-submit" type="submit">Update Password</button></form></section></div>
 <div id="eeHistoryPopup" class="popup" style="display:none"><div class="popup-box"><header class="ee-history-header"><button onclick="EasyEarnNav.back()" aria-label="ফিরে যান">←</button><h2>Your History</h2></header><h3>Transactions &amp; Activity</h3><div id="eeHistoryList"></div><h3>Personal Notifications</h3><div id="eePersonalNoticeList"></div></div></div>
 <div id="ee-push-settings" style="display:none">
 <button onclick="EasyEarnNav.back()">← ফিরে যান</button><h2>নোটিফিকেশন</h2>

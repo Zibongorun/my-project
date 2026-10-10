@@ -6432,7 +6432,34 @@ window.openEmergencyPage = function () {
 
 // Push setup uses a separate service worker; no private server credential belongs here.
 window.EASY_EARN_VAPID_KEY = "BFBhAO48JiLI6HGyooUGYE_vxX6WRI2f1p0sNUwTsqL0qmk7P-u2FunOi97wAIPKuifviZdnB8PDPMSHjpJOqYo";
-let eeMessaging, eeRegistration, eeMessagingLoader;
+const EE_PUSH_SERVER = "https://easyearn-push.mdrkibhossain7.workers.dev";
+let eeMessaging, eeRegistration, eeMessagingLoader, eePushApp, eeAuthLoader, eePushBusy = false;
+async function eePushIdentity() {
+    if (typeof firebase.auth !== "function") {
+        if (!eeAuthLoader) eeAuthLoader = new Promise((resolve,reject) => {
+            const script=document.createElement("script");
+            script.src="https://www.gstatic.com/firebasejs/12.2.1/firebase-auth-compat.js";
+            script.onload=resolve; script.onerror=()=>reject(new Error("নোটিফিকেশন সংযোগ লোড হয়নি। আবার চেষ্টা করুন।"));
+            document.head.appendChild(script);
+        }).catch(error=>{eeAuthLoader=null;throw error;});
+        await eeAuthLoader;
+    }
+    if (!eePushApp) eePushApp=firebase.apps.find(a=>a.name==="easyearnPushClient") || firebase.initializeApp(firebaseConfig,"easyearnPushClient");
+    const pushAuth=eePushApp.auth();
+    await new Promise(resolve=>{const off=pushAuth.onAuthStateChanged(()=>{off();resolve();});});
+    const user=pushAuth.currentUser || (await pushAuth.signInAnonymously()).user;
+    return user.getIdToken();
+}
+async function eeConnectDevice(token) {
+    const idToken=await eePushIdentity();
+    const response=await fetch(EE_PUSH_SERVER+"/register",{
+        method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+idToken},
+        body:JSON.stringify({token}),signal:AbortSignal.timeout(25000)
+    });
+    const result=await response.json().catch(()=>({}));
+    if(!response.ok || !result.ok) throw new Error("ফোন নিবন্ধন হয়নি: "+(result.error||"আবার চেষ্টা করুন।"));
+    localStorage.setItem("eePushEnabled","1");
+}
 function eeLoadMessaging() {
     if (typeof firebase.messaging === "function") return Promise.resolve();
     if (!eeMessagingLoader) eeMessagingLoader = new Promise((resolve, reject) => {
@@ -6461,6 +6488,10 @@ async function eePreparePush() {
             const title = payload.notification?.title || payload.data?.title || "EasyEarn";
             const body = payload.notification?.body || payload.data?.body || "নতুন নোটিস এসেছে";
             if (window.Swal) Swal.fire({title, text:body, toast:true, position:"top", timer:6000, showConfirmButton:false});
+            if (Notification.permission === "granted") eeRegistration.showNotification(title,{
+                body,icon:"./icons/icon-192.png",tag:payload.data?.noticeId || "easyearn-notice",
+                data:{noticeId:payload.data?.noticeId || ""}
+            }).catch(()=>{});
         });
     }
     return api;
@@ -6468,6 +6499,8 @@ async function eePreparePush() {
 
 window.enableEasyEarnPush = async function() {
     const status = document.getElementById("ee-push-status");
+    if (eePushBusy) return;
+    eePushBusy=true;
     try {
         if (window.EASY_EARN_VAPID_KEY.includes("PASTE_")) throw new Error("Firebase Console-এর Web Push public key আগে HTML-এ বসাতে হবে।");
         if (!("Notification" in window)) throw new Error("Chrome-এ এই লিংক খুলে আবার চেষ্টা করুন।");
@@ -6477,15 +6510,10 @@ window.enableEasyEarnPush = async function() {
         const api = await eePreparePush();
         const token = await api.getToken(eeMessaging,{vapidKey:window.EASY_EARN_VAPID_KEY,serviceWorkerRegistration:eeRegistration});
         if (!token) throw new Error("Notification token পাওয়া যায়নি।");
-        document.getElementById("ee-token").value = token;
-        status.textContent = "ফোনে Firebase টেস্ট নোটিফিকেশনের অনুমতি প্রস্তুত। এই সংস্করণের অ্যাডমিন থেকে শুধু অ্যাপের ভেতরে নোটিশ প্রকাশ হয়।";
+        await eeConnectDevice(token);
+        status.textContent = "নোটিফিকেশন চালু হয়েছে। এখন অ্যাডমিনের নতুন নোটিশ এই ফোনে পাঠানো যাবে।";
     } catch(error) { status.textContent = error.message; }
-};
-window.copyEasyEarnToken = async function() {
-    const el = document.getElementById("ee-token");
-    if (!el.value) return;
-    try { await navigator.clipboard.writeText(el.value); }
-    catch { el.focus(); el.select(); document.execCommand("copy"); }
+    finally { eePushBusy=false; }
 };
 window.openNotification = window.openNotifications = function() {
     document.getElementById("ee-push-settings").style.display = "block";
@@ -6494,6 +6522,12 @@ if (isSecureContext && "serviceWorker" in navigator) {
     navigator.serviceWorker.register("./firebase-messaging-sw.js").catch(error => console.warn("Push worker:",error.message));
 }
 
+if ("Notification" in window && Notification.permission === "granted" && localStorage.getItem("eePushEnabled") === "1") {
+    window.addEventListener("load",async()=>{
+        try { const api=await eePreparePush(); const token=await api.getToken(eeMessaging,{vapidKey:window.EASY_EARN_VAPID_KEY,serviceWorkerRegistration:eeRegistration}); if(token)await eeConnectDevice(token); }
+        catch { document.getElementById("ee-push-status").textContent="ফোনের সংযোগ নবায়ন হয়নি। নোটিফিকেশন চালু করুন বাটন চাপুন।"; }
+    },{once:true});
+}
 window.openTaskPage = window.openTaskPopup;
 window.openVip = window.openVipPopup;
 window.openTasks = window.openTaskPopup;
@@ -6515,8 +6549,7 @@ window.addEventListener("ee-home", () => {
 <button onclick="EasyEarnNav.back()">← ফিরে যান</button><h2>নোটিফিকেশন</h2>
 <p style="margin:18px 0">অ্যাপ বন্ধ থাকলেও নোটিস পেতে এই ফোনে অনুমতি দিন।</p>
 <button onclick="enableEasyEarnPush()">নোটিফিকেশন চালু করুন</button>
-<p id="ee-push-status" role="status"></p><p style="margin:15px 0">FCM টেস্ট token (শুধু নিজের admin-কে দিন)</p>
-<textarea id="ee-token" readonly></textarea><button onclick="copyEasyEarnToken()">Token কপি</button>
+<p id="ee-push-status" role="status"></p>
 </div>
 <script>
 (() => {

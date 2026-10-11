@@ -27,6 +27,7 @@ jobs:
         run: |
           mkdir -p android-build
           unzip -q easyearn-android-source.zip -d android-build
+          sed -i '/^systemProp\.http\.proxy/d; /^systemProp\.https\.proxy/d' android-build/gradle.properties
           chmod +x android-build/gradlew
           printf 'sdk.dir=%s\n' "$ANDROID_HOME" > android-build/local.properties
           sdkmanager "platforms;android-36" "build-tools;36.0.0"
@@ -41,7 +42,10 @@ jobs:
           test -n "$KEY_B64" && test -n "$EE_STORE_PASSWORD" && test -n "$EE_KEY_PASSWORD" && test -n "$EE_KEY_ALIAS"
           umask 077
           printf '%s' "$KEY_B64" | base64 --decode > "$RUNNER_TEMP/easyearn-upload.jks"
-          keytool -list -keystore "$RUNNER_TEMP/easyearn-upload.jks" -storepass:env EE_STORE_PASSWORD -alias "$EE_KEY_ALIAS" > /dev/null
+          keytool -list \
+            -keystore "$RUNNER_TEMP/easyearn-upload.jks" \
+            -storepass:env EE_STORE_PASSWORD \
+            -alias "$EE_KEY_ALIAS" > /dev/null
 
       - name: Build signed bundle
         working-directory: android-build
@@ -58,7 +62,9 @@ jobs:
           jarsigner -verify android-build/app/build/outputs/bundle/release/app-release.aab
           python3 - <<'PYVERIFY'
           import zipfile
+
           p = 'android-build/app/build/outputs/bundle/release/app-release.aab'
+
           with zipfile.ZipFile(p) as z:
               assert z.testzip() is None
               assert any(
